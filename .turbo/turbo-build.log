@@ -1,0 +1,94 @@
+
+> @tejj/mobile@0.1.0 build E:\Pavan\projects\indieProjects\Tejj\TEJJ\apps\mobile
+> expo export
+
+env: load .env
+env: export EXPO_PUBLIC_API_URL EXPO_PUBLIC_FIREBASE_API_KEY EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN EXPO_PUBLIC_FIREBASE_PROJECT_ID EXPO_PUBLIC_GOOGLE_MAPS_API_KEY EXPO_PUBLIC_GOOGLE_TRANSLATE_API_KEY
+Starting Metro Bundler
+Android Bundling failed 943ms node_modules\.pnpm\expo-router@4.0.22_f193b3488adeec2f0d92823e17b8b8e6\node_modules\expo-router\entry.js (1 module)
+SyntaxError: ..\..\node_modules\.pnpm\expo-router@4.0.22_f193b3488adeec2f0d92823e17b8b8e6\node_modules\expo-router\entry.js: Cannot find module 'babel-plugin-module-resolver'
+Require stack:
+- E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@babel+core@7.29.0\node_modules\@babel\core\lib\config\files\plugins.js
+- E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@babel+core@7.29.0\node_modules\@babel\core\lib\config\files\index.js
+- E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@babel+core@7.29.0\node_modules\@babel\core\lib\index.js
+- E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\metro-transform-worker@0.81.5\node_modules\metro-transform-worker\src\index.js
+- E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\react-native-css-interop@0._85436ded3aea2a14294d01ed66b937ef\node_modules\react-native-css-interop\dist\metro\transformer.js
+- E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\metro@0.81.5\node_modules\metro\src\DeltaBundler\Worker.flow.js
+- E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\metro@0.81.5\node_modules\metro\src\DeltaBundler\Worker.js
+- E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\jest-worker@29.7.0\node_modules\jest-worker\build\workers\processChild.js
+
+Make sure that all the Babel plugins and presets you are using
+are defined as dependencies or devDependencies in your package.json
+file. It's possible that the missing plugin is loaded by a preset
+you are using that forgot to add the plugin to its dependencies: you
+can workaround this problem by explicitly adding the missing package
+to your top-level package.json.
+
+Error: Cannot find module 'babel-plugin-module-resolver'
+Require stack:
+- E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@babel+core@7.29.0\node_modules\@babel\core\lib\config\files\plugins.js
+- E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@babel+core@7.29.0\node_modules\@babel\core\lib\config\files\index.js
+- E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@babel+core@7.29.0\node_modules\@babel\core\lib\index.js
+- E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\metro-transform-worker@0.81.5\node_modules\metro-transform-worker\src\index.js
+- E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\react-native-css-interop@0._85436ded3aea2a14294d01ed66b937ef\node_modules\react-native-css-interop\dist\metro\transformer.js
+- E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\metro@0.81.5\node_modules\metro\src\DeltaBundler\Worker.flow.js
+- E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\metro@0.81.5\node_modules\metro\src\DeltaBundler\Worker.js
+- E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\jest-worker@29.7.0\node_modules\jest-worker\build\workers\processChild.js
+
+Make sure that all the Babel plugins and presets you are using
+are defined as dependencies or devDependencies in your package.json
+file. It's possible that the missing plugin is loaded by a preset
+you are using that forgot to add the plugin to its dependencies: you
+can workaround this problem by explicitly adding the missing package
+to your top-level package.json.
+
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1456:15)
+    at resolve (node:internal/modules/helpers:163:19)
+    at tryRequireResolve (E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@babel+core@7.29.0\node_modules\@babel\core\lib\config\files\plugins.js:128:11)
+    at resolveStandardizedNameForRequire (E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@babel+core@7.29.0\node_modules\@babel\core\lib\config\files\plugins.js:162:19)
+    at resolveStandardizedName (E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@babel+core@7.29.0\node_modules\@babel\core\lib\config\files\plugins.js:183:12)
+    at loadPlugin (E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@babel+core@7.29.0\node_modules\@babel\core\lib\config\files\plugins.js:56:7)
+    at loadPlugin.next (<anonymous>)
+    at createDescriptor (E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@babel+core@7.29.0\node_modules\@babel\core\lib\config\config-descriptors.js:140:16)
+    at createDescriptor.next (<anonymous>)
+    at evaluateSync (E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\gensync@1.0.0-beta.2\node_modules\gensync\index.js:251:28)
+    at E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\gensync@1.0.0-beta.2\node_modules\gensync\index.js:31:34
+    at Array.map (<anonymous>)
+    at gensync.sync (E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\gensync@1.0.0-beta.2\node_modules\gensync\index.js:31:22)
+    at gensync.all (E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\gensync@1.0.0-beta.2\node_modules\gensync\index.js:210:24)
+    at Generator.next (<anonymous>)
+    at createDescriptors (E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@babel+core@7.29.0\node_modules\@babel\core\lib\config\config-descriptors.js:102:41)
+    at createDescriptors.next (<anonymous>)
+    at createPluginDescriptors (E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@babel+core@7.29.0\node_modules\@babel\core\lib\config\config-descriptors.js:99:17)
+    at createPluginDescriptors.next (<anonymous>)
+    at E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@babel+core@7.29.0\node_modules\@babel\core\lib\gensync-utils\functional.js:22:27
+    at Generator.next (<anonymous>)
+    at mergeChainOpts (E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@babel+core@7.29.0\node_modules\@babel\core\lib\config\config-chain.js:349:34)
+    at mergeChainOpts.next (<anonymous>)
+    at chainWalker (E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@babel+core@7.29.0\node_modules\@babel\core\lib\config\config-chain.js:316:14)
+    at chainWalker.next (<anonymous>)
+    at loadFileChain (E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@babel+core@7.29.0\node_modules\@babel\core\lib\config\config-chain.js:191:24)
+    at loadFileChain.next (<anonymous>)
+    at mergeExtendsChain (E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@babel+core@7.29.0\node_modules\@babel\core\lib\config\config-chain.js:328:28)
+    at mergeExtendsChain.next (<anonymous>)
+    at chainWalker (E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@babel+core@7.29.0\node_modules\@babel\core\lib\config\config-chain.js:312:20)
+    at chainWalker.next (<anonymous>)
+    at buildRootChain (E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@babel+core@7.29.0\node_modules\@babel\core\lib\config\config-chain.js:56:36)
+    at buildRootChain.next (<anonymous>)
+    at loadPrivatePartialConfig (E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@babel+core@7.29.0\node_modules\@babel\core\lib\config\partial.js:72:62)
+    at loadPrivatePartialConfig.next (<anonymous>)
+    at loadFullConfig (E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@babel+core@7.29.0\node_modules\@babel\core\lib\config\full.js:36:46)
+    at loadFullConfig.next (<anonymous>)
+    at transform (E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@babel+core@7.29.0\node_modules\@babel\core\lib\transform.js:20:44)
+    at transform.next (<anonymous>)
+    at evaluateSync (E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\gensync@1.0.0-beta.2\node_modules\gensync\index.js:251:28)
+    at sync (E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\gensync@1.0.0-beta.2\node_modules\gensync\index.js:89:14)
+    at stopHiding - secret - don't use this - v1 (E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@babel+core@7.29.0\node_modules\@babel\core\lib\errors\rewrite-stack-trace.js:47:12)
+    at Object.transformSync (E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@babel+core@7.29.0\node_modules\@babel\core\lib\transform.js:40:76)
+    at parseWithBabel (E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@expo+metro-config@0.19.12\node_modules\@expo\metro-config\build\transformSync.js:65:18)
+    at transformSync (E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@expo+metro-config@0.19.12\node_modules\@expo\metro-config\build\transformSync.js:54:12)
+    at Object.transform (E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@expo+metro-config@0.19.12\node_modules\@expo\metro-config\build\babel-transformer.js:115:58)
+    at transformJSWithBabel (E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@expo+metro-config@0.19.12\node_modules\@expo\metro-config\build\transform-worker\metro-transform-worker.js:440:47)
+    at Object.transform (E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@expo+metro-config@0.19.12\node_modules\@expo\metro-config\build\transform-worker\metro-transform-worker.js:549:12)
+    at transform (E:\Pavan\projects\indieProjects\Tejj\TEJJ\node_modules\.pnpm\@expo+metro-config@0.19.12\node_modules\@expo\metro-config\build\transform-worker\transform-worker.js:117:23)
+ ELIFECYCLE  Command failed with exit code 1.
