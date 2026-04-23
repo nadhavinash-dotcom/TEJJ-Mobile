@@ -1,9 +1,11 @@
 import React from 'react';
-import { View, Text, SafeAreaView, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../../src/lib/api';
 import { auth } from '../../../src/lib/firebase';
+import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 import { HIRING_LANES } from '@/utils';
 
 export default function EmployerJobsScreen() {
@@ -18,11 +20,12 @@ export default function EmployerJobsScreen() {
   });
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <View className="px-4 pt-6 pb-2 flex-row items-center justify-between">
         <Text className="text-white text-xl font-bold">My Jobs</Text>
-        <TouchableOpacity onPress={() => router.push('/(employer)/confirm-gate')} className="bg-blue-600 px-4 py-2 rounded-xl" activeOpacity={0.85}>
-          <Text className="text-white font-bold text-sm">+ Post</Text>
+        <TouchableOpacity onPress={() => router.push('/(employer)/confirm-gate')} className="bg-blue-600 px-4 py-2 rounded-xl flex-row items-center gap-1" activeOpacity={0.85}>
+          <LucideIcon name="Plus" size={16} color="#FFFFFF" />
+          <Text className="text-white font-bold text-sm">Post</Text>
         </TouchableOpacity>
       </View>
 
@@ -42,8 +45,9 @@ export default function EmployerJobsScreen() {
                 activeOpacity={0.85}
               >
                 <View className="flex-row items-center gap-2 mb-2">
-                  <View className="px-2 py-1 rounded-lg" style={{ backgroundColor: lane.color }}>
-                    <Text className="text-white text-xs font-bold">{lane.icon} {lane.label}</Text>
+                  <View className="px-2 py-1 rounded-lg flex-row items-center gap-1.5" style={{ backgroundColor: lane.color }}>
+                    <LucideIcon name={lane.icon} size={10} color="#FFFFFF" />
+                    <Text className="text-white text-xs font-bold">{lane.label}</Text>
                   </View>
                   <View className={`px-2 py-1 rounded-lg ${item.status === 'ACTIVE' ? 'bg-green-500/20' : 'bg-navy-700'}`}>
                     <Text className={`text-xs ${item.status === 'ACTIVE' ? 'text-green-400' : 'text-navy-400'}`}>{item.status}</Text>
@@ -59,7 +63,9 @@ export default function EmployerJobsScreen() {
           }}
           ListEmptyComponent={
             <View className="flex-1 items-center justify-center py-20">
-              <Text className="text-4xl mb-4">📋</Text>
+              <View className="mb-4">
+                <LucideIcon name="ClipboardList" size={64} color="#475569" />
+              </View>
               <Text className="text-white font-semibold mb-2">No jobs posted yet</Text>
               <Text className="text-navy-400 text-sm text-center px-8">Post your first job to find workers!</Text>
             </View>
@@ -67,6 +73,6 @@ export default function EmployerJobsScreen() {
           contentContainerStyle={{ paddingBottom: 20, flexGrow: 1 }}
         />
       )}
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

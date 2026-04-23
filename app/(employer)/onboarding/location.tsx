@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, SafeAreaView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import * as Location from 'expo-location';
 import { MapPicker } from '../../../src/components/shared/MapPicker';
+import { StepIndicator } from '../../../src/components/shared/StepIndicator';
+import { OnboardingFooter } from '../../../src/components/shared/OnboardingFooter';
 import { useOnboardingStore } from '../../../src/store/onboardingStore';
+import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 
 export default function EmployerLocationScreen() {
   const { employer, updateEmployer } = useOnboardingStore();
@@ -29,9 +33,9 @@ export default function EmployerLocationScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <View className="flex-1 px-6 pt-8">
-        <Text className="text-navy-400 text-sm mb-1">Step 2 of 5</Text>
+        <StepIndicator currentStep={2} totalSteps={4} />
         <Text className="text-white text-2xl font-bold mb-1">Property Location</Text>
         <Text className="text-navy-300 text-sm mb-4">Pin your property on the map</Text>
 
@@ -44,25 +48,24 @@ export default function EmployerLocationScreen() {
         </View>
 
         {employer.address && (
-          <View className="bg-navy-800 border border-navy-600 rounded-xl px-4 py-3 mb-4">
-            <Text className="text-white font-medium">📍 {employer.address}</Text>
+          <View className="bg-navy-800 border border-navy-600 rounded-xl px-4 py-3 mb-4 flex-row items-center gap-2">
+            <LucideIcon name="MapPin" size={16} color="#3B82F6" />
+            <Text className="text-white font-medium flex-1">{employer.address}</Text>
           </View>
         )}
 
         <TouchableOpacity onPress={detectLocation} disabled={detecting} className="bg-navy-800 border border-blue-500/40 rounded-2xl py-3 flex-row items-center justify-center gap-2 mb-6" activeOpacity={0.8}>
-          {detecting ? <ActivityIndicator color="#3B82F6" size="small" /> : <Text className="text-blue-400">📍</Text>}
+          {detecting ? <ActivityIndicator color="#3B82F6" size="small" /> : <LucideIcon name="Locate" size={18} color="#3B82F6" />}
           <Text className="text-blue-400 font-semibold">{detecting ? 'Detecting...' : 'Detect my location'}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() => router.push('/(employer)/onboarding/contact')}
-          disabled={!employer.lat}
-          className={`rounded-2xl py-4 items-center ${employer.lat ? 'bg-blue-600' : 'bg-navy-700'}`}
-          activeOpacity={0.85}
-        >
-          <Text className="text-white font-bold text-base">Next →</Text>
-        </TouchableOpacity>
+        <OnboardingFooter 
+          onBack={() => router.back()}
+          onNext={() => router.push('/(employer)/onboarding/contact')}
+          nextDisabled={!employer.lat}
+          color="bg-blue-600"
+        />
       </View>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

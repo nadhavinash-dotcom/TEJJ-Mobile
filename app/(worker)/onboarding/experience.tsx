@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import Slider from '@react-native-community/slider';
 import { VoiceMicButton } from '../../../src/components/shared/VoiceMicButton';
+import { StepIndicator } from '../../../src/components/shared/StepIndicator';
+import { OnboardingFooter } from '../../../src/components/shared/OnboardingFooter';
 import { useOnboardingStore } from '../../../src/store/onboardingStore';
 import { mapVoiceToExperience } from '@/utils';
 
@@ -22,11 +25,11 @@ export default function ExperienceScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-6 pt-8">
-          <Text className="text-navy-400 text-sm mb-1">Step 3 of 10</Text>
-          <Text className="text-white text-2xl font-bold mb-1">Kitne saal ka experience?</Text>
+          <StepIndicator currentStep={3} totalSteps={10} />
+          <Text className="text-white text-2xl font-bold mb-1">How many years of experience?</Text>
           <Text className="text-navy-300 text-sm mb-4">How many years of experience do you have?</Text>
           <VoiceMicButton onResult={handleVoiceResult} />
         </View>
@@ -65,16 +68,11 @@ export default function ExperienceScreen() {
           ))}
         </View>
 
-        <View className="px-6 pb-8">
-          <TouchableOpacity
-            onPress={() => router.push('/(worker)/onboarding/photo')}
-            className="bg-amber-500 rounded-2xl py-4 items-center"
-            activeOpacity={0.85}
-          >
-            <Text className="text-white font-bold text-base">Aage Badhein →</Text>
-          </TouchableOpacity>
-        </View>
+        <OnboardingFooter 
+          onBack={() => router.back()}
+          onNext={() => router.push('/(worker)/onboarding/photo')}
+        />
       </ScrollView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, SafeAreaView, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
+import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { useQuery } from '@tanstack/react-query';
 import { TrustGauge } from '../../../src/components/worker/TrustGauge';
 import api from '../../../src/lib/api';
@@ -30,9 +31,9 @@ export default function TrustScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-navy-900 items-center justify-center">
+      <SafeScreen className="justify-center items-center">
         <ActivityIndicator color="#F59E0B" size="large" />
-      </SafeAreaView>
+      </SafeScreen>
     );
   }
 
@@ -40,7 +41,7 @@ export default function TrustScreen() {
   const metrics = data?.trust_score_breakdown ?? {};
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-4 pt-6 pb-2">
           <Text className="text-white text-xl font-bold mb-1">Trust Score</Text>
@@ -82,6 +83,6 @@ export default function TrustScreen() {
           )}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

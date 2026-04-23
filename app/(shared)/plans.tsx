@@ -1,11 +1,12 @@
 import React from 'react';
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { SafeScreen } from '../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { EMPLOYER_PLANS } from '@/utils';
 
 export default function PlansScreen() {
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-4 pt-4 pb-2">
           <TouchableOpacity onPress={() => router.back()} className="mb-4">
@@ -57,6 +58,6 @@ export default function PlansScreen() {
         </View>
         <View className="h-8" />
       </ScrollView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

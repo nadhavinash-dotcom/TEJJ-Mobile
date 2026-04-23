@@ -36,6 +36,7 @@
     "expo-splash-screen": "~55.0.19",
     "expo-status-bar": "~55.0.5",
     "firebase": "^12.12.1",
+    "lucide-react-native": "^1.8.0",
     "metro": "^0.83.6",
     "metro-resolver": "^0.84.3",
     "nativewind": "^4.2.3",

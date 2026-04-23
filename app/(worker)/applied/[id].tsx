@@ -1,11 +1,15 @@
 import React from 'react';
-import { View, Text, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
+import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
+import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 
 export default function AppliedScreen() {
   return (
-    <SafeAreaView className="flex-1 bg-navy-900 items-center justify-center px-6">
-      <Text className="text-6xl mb-6">🎉</Text>
+    <SafeScreen className="items-center justify-center px-6">
+      <View className="mb-6">
+        <LucideIcon name="PartyPopper" size={64} color="#F59E0B" />
+      </View>
       <Text className="text-white text-2xl font-bold mb-2 text-center">Application Submitted!</Text>
       <Text className="text-navy-300 text-base text-center mb-8">
         We've sent your profile to the employer. You'll get a notification if you're shortlisted or matched.
@@ -29,6 +33,6 @@ export default function AppliedScreen() {
       <TouchableOpacity onPress={() => router.push('/(worker)/(tabs)/applications')} activeOpacity={0.75}>
         <Text className="text-navy-300 text-sm">View My Applications</Text>
       </TouchableOpacity>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

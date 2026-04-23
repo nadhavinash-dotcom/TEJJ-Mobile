@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, Text, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
+import { SafeScreen } from '../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 
 export default function ArrivalConfirmedScreen() {
   return (
-    <SafeAreaView className="flex-1 bg-navy-900 items-center justify-center px-6">
+    <SafeScreen className="items-center justify-center px-6">
       <Text className="text-7xl mb-6">🎊</Text>
       <Text className="text-green-400 text-2xl font-bold mb-2 text-center">Shift Started!</Text>
       <Text className="text-white text-lg font-semibold mb-2 text-center">Welcome to your workplace</Text>
@@ -23,6 +24,6 @@ export default function ArrivalConfirmedScreen() {
       <TouchableOpacity onPress={() => router.replace('/(worker)/(tabs)/feed')} className="bg-amber-500 rounded-2xl py-4 px-10" activeOpacity={0.85}>
         <Text className="text-white font-bold text-base">Go to Feed</Text>
       </TouchableOpacity>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

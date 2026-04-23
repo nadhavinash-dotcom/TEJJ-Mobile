@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Switch, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Switch, ActivityIndicator, Alert } from 'react-native';
+import { SafeScreen } from '../../src/components/shared/SafeScreen';
 import Slider from '@react-native-community/slider';
 import { router } from 'expo-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -31,7 +32,7 @@ export default function AgentScreen() {
   });
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-4 pt-4">
           <TouchableOpacity onPress={() => router.back()} className="mb-6">
@@ -107,6 +108,6 @@ export default function AgentScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

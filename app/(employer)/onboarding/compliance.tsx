@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { useOnboardingStore } from '../../../src/store/onboardingStore';
+import { StepIndicator } from '../../../src/components/shared/StepIndicator';
+import { OnboardingFooter } from '../../../src/components/shared/OnboardingFooter';
 import { useAuthStore } from '../../../src/store/authStore';
 import api from '../../../src/lib/api';
 import { auth } from '../../../src/lib/firebase';
+import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 
 export default function ComplianceScreen() {
   const { employer, updateEmployer, resetEmployer } = useOnboardingStore();
@@ -15,7 +19,7 @@ export default function ComplianceScreen() {
     setSubmitting(true);
     try {
       const token = await auth.currentUser?.getIdToken();
-      const res = await api.post('/employers/onboarding', {
+      const res = await api.post('/employers/', {
         property_type: employer.property_type,
         property_name: employer.property_name,
         lat: employer.lat,
@@ -40,11 +44,11 @@ export default function ComplianceScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-6 pt-8 gap-4">
+          <StepIndicator currentStep={4} totalSteps={4} />
           <View>
-            <Text className="text-navy-400 text-sm mb-1">Step 4 of 5</Text>
             <Text className="text-white text-2xl font-bold mb-1">Business Compliance</Text>
             <Text className="text-navy-300 text-sm mb-6">GSTIN verification builds trust with workers</Text>
           </View>
@@ -61,25 +65,27 @@ export default function ComplianceScreen() {
               className="bg-navy-800 border border-navy-600 rounded-xl px-4 py-3 text-white text-sm font-mono"
             />
             {employer.gstin && employer.gstin.length === 15 && (
-              <Text className="text-green-400 text-xs mt-1">✓ Valid GSTIN format — will be verified</Text>
+              <View className="flex-row items-center gap-1 mt-1">
+                <LucideIcon name="Check" size={12} color="#4ADE80" />
+                <Text className="text-green-400 text-xs">Valid GSTIN format — will be verified</Text>
+              </View>
             )}
           </View>
 
           <View className="bg-navy-800 border border-navy-700 rounded-xl p-4">
             <Text className="text-white font-medium mb-1">Why add GSTIN?</Text>
-            <Text className="text-navy-300 text-sm">Verified employers get a ✓ GST badge on job cards, which increases worker applications by 40%.</Text>
+            <Text className="text-navy-300 text-sm">Verified employers get a GST badge on job cards, which increases worker applications by 40%.</Text>
           </View>
 
-          <TouchableOpacity
-            onPress={handleComplete}
-            disabled={submitting}
-            className="bg-blue-600 rounded-2xl py-4 items-center mt-2 mb-8"
-            activeOpacity={0.85}
-          >
-            {submitting ? <ActivityIndicator color="#fff" /> : <Text className="text-white font-bold text-base">Complete Setup →</Text>}
-          </TouchableOpacity>
+          <OnboardingFooter 
+            onBack={() => router.back()}
+            onNext={handleComplete}
+            nextLabel={submitting ? 'Setting up...' : 'Complete Setup →'}
+            nextDisabled={submitting}
+            color="bg-blue-600"
+          />
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert } from 'react-native';
+import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router, useLocalSearchParams } from 'expo-router';
 import api from '../../../src/lib/api';
 import { auth } from '../../../src/lib/firebase';
+import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 
 function StarRating({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
   return (
@@ -11,7 +13,7 @@ function StarRating({ label, value, onChange }: { label: string; value: number; 
       <View className="flex-row gap-2">
         {[1, 2, 3, 4, 5].map((s) => (
           <TouchableOpacity key={s} onPress={() => onChange(s)} activeOpacity={0.7}>
-            <Text className="text-2xl">{s <= value ? '⭐' : '☆'}</Text>
+            <LucideIcon name="Star" size={28} color={s <= value ? '#F59E0B' : '#475569'} fill={s <= value ? '#F59E0B' : 'transparent'} />
           </TouchableOpacity>
         ))}
       </View>
@@ -52,7 +54,7 @@ export default function RateWorkerScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-4 pt-6">
           <Text className="text-white text-2xl font-bold mb-1">Rate the Worker</Text>
@@ -68,11 +70,13 @@ export default function RateWorkerScreen() {
           <View className="mb-6">
             <Text className="text-navy-300 text-sm mb-3">Would you rehire this worker?</Text>
             <View className="flex-row gap-3">
-              <TouchableOpacity onPress={() => setRehire(true)} className={`flex-1 py-3 rounded-xl border items-center ${rehire === true ? 'bg-green-600 border-green-500' : 'bg-navy-800 border-navy-600'}`} activeOpacity={0.75}>
-                <Text className="text-white font-semibold">Yes 👍</Text>
+              <TouchableOpacity onPress={() => setRehire(true)} className={`flex-1 py-3 rounded-xl border flex-row items-center justify-center gap-2 ${rehire === true ? 'bg-green-600 border-green-500' : 'bg-navy-800 border-navy-600'}`} activeOpacity={0.75}>
+                <LucideIcon name="ThumbsUp" size={16} color="#FFFFFF" />
+                <Text className="text-white font-semibold">Yes</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => setRehire(false)} className={`flex-1 py-3 rounded-xl border items-center ${rehire === false ? 'bg-red-600 border-red-500' : 'bg-navy-800 border-navy-600'}`} activeOpacity={0.75}>
-                <Text className="text-white font-semibold">No 👎</Text>
+              <TouchableOpacity onPress={() => setRehire(false)} className={`flex-1 py-3 rounded-xl border flex-row items-center justify-center gap-2 ${rehire === false ? 'bg-red-600 border-red-500' : 'bg-navy-800 border-navy-600'}`} activeOpacity={0.75}>
+                <LucideIcon name="ThumbsDown" size={16} color="#FFFFFF" />
+                <Text className="text-white font-semibold">No</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -84,6 +88,6 @@ export default function RateWorkerScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

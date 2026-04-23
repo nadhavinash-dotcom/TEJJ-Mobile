@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, SafeAreaView, FlatList, RefreshControl, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, RefreshControl, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { JobCard } from '../../../src/components/worker/JobCard';
@@ -10,13 +11,14 @@ import { useAuthStore } from '../../../src/store/authStore';
 import api from '../../../src/lib/api';
 import { auth } from '../../../src/lib/firebase';
 import { SKILL_LIST } from '@/utils';
+import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 
 const LANES = [
-  { id: 0, label: 'All' },
-  { id: 1, label: '⚡ Flash' },
-  { id: 2, label: '☀️ Same-Day' },
-  { id: 3, label: '📋 Contract' },
-  { id: 4, label: '🏢 Permanent' },
+  { id: 0, label: 'All', icon: null },
+  { id: 1, label: 'Flash', icon: 'Zap' },
+  { id: 2, label: 'Same-Day', icon: 'Sun' },
+  { id: 3, label: 'Contract', icon: 'FileText' },
+  { id: 4, label: 'Permanent', icon: 'Briefcase' },
 ];
 
 export default function FeedScreen() {
@@ -43,7 +45,7 @@ export default function FeedScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       {flashJob && <FlashNotification job={flashJob} />}
 
       <View className="px-4 pt-4 pb-2">
@@ -62,9 +64,16 @@ export default function FeedScreen() {
           renderItem={({ item }) => (
             <TouchableOpacity
               onPress={() => setLaneFilter(item.id)}
-              className={`px-4 py-2 rounded-xl border ${laneFilter === item.id ? 'bg-amber-500 border-amber-500' : 'bg-navy-800 border-navy-600'}`}
+              className={`px-4 py-2 rounded-xl border flex-row items-center gap-1.5 ${laneFilter === item.id ? 'bg-amber-500 border-amber-500' : 'bg-navy-800 border-navy-600'}`}
               activeOpacity={0.75}
             >
+              {item.icon && (
+                <LucideIcon 
+                  name={item.icon} 
+                  size={12} 
+                  color={laneFilter === item.id ? '#FFFFFF' : '#94A3B8'} 
+                />
+              )}
               <Text className={`text-xs font-semibold ${laneFilter === item.id ? 'text-white' : 'text-navy-300'}`}>{item.label}</Text>
             </TouchableOpacity>
           )}
@@ -85,7 +94,9 @@ export default function FeedScreen() {
           )}
           ListEmptyComponent={
             <View className="flex-1 items-center justify-center py-20">
-              <Text className="text-4xl mb-4">🔍</Text>
+              <View className="mb-4">
+                <LucideIcon name="Search" size={64} color="#475569" />
+              </View>
               <Text className="text-white font-semibold text-lg mb-2">No jobs nearby</Text>
               <Text className="text-navy-400 text-sm text-center px-8">Try changing filters or check back soon.</Text>
             </View>
@@ -93,6 +104,6 @@ export default function FeedScreen() {
           contentContainerStyle={{ paddingBottom: 20, flexGrow: 1 }}
         />
       )}
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

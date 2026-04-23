@@ -1,7 +1,10 @@
 import React from 'react';
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { VoiceMicButton } from '../../../src/components/shared/VoiceMicButton';
+import { StepIndicator } from '../../../src/components/shared/StepIndicator';
+import { OnboardingFooter } from '../../../src/components/shared/OnboardingFooter';
 import { useOnboardingStore } from '../../../src/store/onboardingStore';
 import { CUISINE_LIST, SKILL_LIST } from '@/utils';
 
@@ -26,11 +29,11 @@ export default function SubSkillScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-6 pt-8 pb-4">
-          <Text className="text-navy-400 text-sm mb-1">Step 2 of 10</Text>
-          <Text className="text-white text-2xl font-bold mb-1">Speciality kya hai?</Text>
+          <StepIndicator currentStep={2} totalSteps={10} />
+          <Text className="text-white text-2xl font-bold mb-1">What is your speciality?</Text>
           <Text className="text-navy-300 text-sm mb-4">
             {skillDef ? `${skillDef.label} — ` : ''}Select your specialisation
           </Text>
@@ -64,16 +67,11 @@ export default function SubSkillScreen() {
           </View>
         )}
 
-        <View className="px-6 py-6">
-          <TouchableOpacity
-            onPress={() => router.push('/(worker)/onboarding/experience')}
-            className="bg-amber-500 rounded-2xl py-4 items-center"
-            activeOpacity={0.85}
-          >
-            <Text className="text-white font-bold text-base">Aage Badhein →</Text>
-          </TouchableOpacity>
-        </View>
+        <OnboardingFooter 
+          onBack={() => router.back()}
+          onNext={() => router.push('/(worker)/onboarding/experience')}
+        />
       </ScrollView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

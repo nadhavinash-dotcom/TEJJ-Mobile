@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { SafeScreen } from '../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 
 const BENEFITS = [
@@ -34,7 +35,7 @@ const BENEFITS = [
 
 export default function BenefitsScreen() {
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-4 pt-4 pb-2">
           <TouchableOpacity onPress={() => router.back()} className="mb-6">
@@ -67,6 +68,6 @@ export default function BenefitsScreen() {
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

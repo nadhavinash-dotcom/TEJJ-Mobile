@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, SafeAreaView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { SafeScreen } from '../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { QRCodeDisplay } from '../../src/components/shared/QRCodeDisplay';
 import api from '../../src/lib/api';
 import { auth } from '../../src/lib/firebase';
+import { LucideIcon } from '../../src/components/shared/LucideIcon';
 
 export default function QRCodeScreen() {
   const { data, isLoading, refetch } = useQuery({
@@ -32,10 +34,11 @@ export default function QRCodeScreen() {
   }, [data?.expires_at]);
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <View className="flex-1 px-6 pt-4">
-        <TouchableOpacity onPress={() => router.back()} className="mb-6">
-          <Text className="text-amber-400 text-base">← Back</Text>
+        <TouchableOpacity onPress={() => router.back()} className="mb-6 flex-row items-center gap-1">
+          <LucideIcon name="ChevronLeft" size={20} color="#F59E0B" />
+          <Text className="text-amber-400 text-base">Back</Text>
         </TouchableOpacity>
 
         <Text className="text-white text-2xl font-bold mb-2">Arrival QR Code</Text>
@@ -58,14 +61,15 @@ export default function QRCodeScreen() {
               </Text>
             </View>
 
-            <View className="bg-amber-500/10 border border-amber-500/20 rounded-xl px-4 py-3 w-full">
-              <Text className="text-amber-300 text-sm text-center">
-                💡 The employer scans this with the TEJJ employer app to confirm your arrival and start the shift.
+            <View className="bg-amber-500/10 border border-amber-500/20 rounded-xl px-4 py-3 w-full flex-row items-center gap-3">
+              <LucideIcon name="Lightbulb" size={20} color="#FCD34D" />
+              <Text className="text-amber-300 text-sm flex-1">
+                The employer scans this with the TEJJ employer app to confirm your arrival and start the shift.
               </Text>
             </View>
           </View>
         )}
       </View>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

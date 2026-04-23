@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { HIRING_LANES } from '@/utils';
+import { LucideIcon } from '../shared/LucideIcon';
 
 interface JobCardProps {
   job: {
@@ -36,6 +37,10 @@ export function JobCard({ job, onPress }: JobCardProps) {
 
   const spotsLeft = job.number_of_openings - job.openings_filled;
 
+  useEffect(() => {
+    console.log('Job:', job.distance_km, job.employer_area_locality);
+  }, []);
+
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -45,8 +50,9 @@ export function JobCard({ job, onPress }: JobCardProps) {
       {/* Header row */}
       <View className="flex-row items-center justify-between mb-2">
         <View className="flex-row items-center gap-2">
-          <View className="px-2 py-1 rounded-lg" style={{ backgroundColor: lane.color }}>
-            <Text className="text-white text-xs font-bold">{lane.icon} {lane.label}</Text>
+          <View className="px-2 py-1 rounded-lg flex-row items-center gap-1" style={{ backgroundColor: lane.color }}>
+            <LucideIcon name={lane.icon} size={10} color="#FFFFFF" />
+            <Text className="text-white text-[10px] font-bold">{lane.label}</Text>
           </View>
           <View className={`w-2 h-2 rounded-full ${supsColor}`} />
         </View>
@@ -76,10 +82,16 @@ export function JobCard({ job, onPress }: JobCardProps) {
             <Text className="text-navy-400 text-sm font-normal"> /shift</Text>
           </Text>
           {job.employer_dignity_score >= 4.0 && (
-            <Text className="text-amber-400 text-xs">⭐ {job.employer_dignity_score.toFixed(1)}</Text>
+            <View className="flex-row items-center gap-0.5">
+              <LucideIcon name="Star" size={12} color="#F59E0B" fill="#F59E0B" />
+              <Text className="text-amber-400 text-xs">{job.employer_dignity_score.toFixed(1)}</Text>
+            </View>
           )}
           {job.employer_gstin_verified && (
-            <Text className="text-green-400 text-xs">✓ GST</Text>
+            <View className="flex-row items-center gap-0.5">
+              <LucideIcon name="CheckCircle" size={12} color="#22C55E" />
+              <Text className="text-green-400 text-xs">GST</Text>
+            </View>
           )}
         </View>
         <View className="bg-amber-500 px-4 py-2 rounded-xl">
@@ -89,12 +101,18 @@ export function JobCard({ job, onPress }: JobCardProps) {
 
       {/* Market rate indicator */}
       {job.market_rate_delta !== undefined && job.market_rate_delta > 0 && (
-        <Text className="text-green-400 text-xs mt-2">↑ Market rate se upar</Text>
+        <View className="flex-row items-center gap-1 mt-2">
+          <LucideIcon name="TrendingUp" size={12} color="#22C55E" />
+          <Text className="text-green-400 text-xs">Market rate se upar</Text>
+        </View>
       )}
 
       {/* Spots left */}
       {spotsLeft <= 2 && spotsLeft > 0 && (
-        <Text className="text-red-400 text-xs mt-1">⚡ Sirf {spotsLeft} jagah baaki</Text>
+        <View className="flex-row items-center gap-1 mt-1">
+          <LucideIcon name="Zap" size={12} color="#EF4444" />
+          <Text className="text-red-400 text-xs">Sirf {spotsLeft} jagah baaki</Text>
+        </View>
       )}
     </TouchableOpacity>
   );

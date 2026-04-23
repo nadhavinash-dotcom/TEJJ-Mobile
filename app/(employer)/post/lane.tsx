@@ -1,8 +1,10 @@
 import React from 'react';
-import { View, Text, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
+import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { useOnboardingStore } from '../../../src/store/onboardingStore';
 import { HIRING_LANES } from '@/utils';
+import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 
 const LANES = [
   { key: 'L1', ...HIRING_LANES.L1, description: 'Fill urgent shift today. Workers get notified instantly.' },
@@ -20,10 +22,11 @@ export default function LaneScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <View className="flex-1 px-6 pt-8">
-        <TouchableOpacity onPress={() => router.back()} className="mb-6">
-          <Text className="text-amber-400 text-base">← Back</Text>
+        <TouchableOpacity onPress={() => router.back()} className="mb-6 flex-row items-center gap-1">
+          <LucideIcon name="ChevronLeft" size={20} color="#F59E0B" />
+          <Text className="text-amber-400 text-base">Back</Text>
         </TouchableOpacity>
         <Text className="text-white text-2xl font-bold mb-1">Select Hiring Lane</Text>
         <Text className="text-navy-300 text-sm mb-6">What type of job are you posting?</Text>
@@ -37,8 +40,9 @@ export default function LaneScreen() {
               activeOpacity={0.85}
             >
               <View className="flex-row items-center gap-3 mb-2">
-                <View className="px-3 py-1 rounded-lg" style={{ backgroundColor: lane.color }}>
-                  <Text className="text-white font-bold">{lane.icon} {lane.label}</Text>
+                <View className="px-3 py-1 rounded-lg flex-row items-center gap-2" style={{ backgroundColor: lane.color }}>
+                  <LucideIcon name={lane.icon} size={16} color="#FFFFFF" />
+                  <Text className="text-white font-bold">{lane.label}</Text>
                 </View>
               </View>
               <Text className="text-navy-300 text-sm">{lane.description}</Text>
@@ -46,6 +50,6 @@ export default function LaneScreen() {
           ))}
         </View>
       </View>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

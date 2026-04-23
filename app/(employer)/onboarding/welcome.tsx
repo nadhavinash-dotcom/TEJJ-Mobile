@@ -1,14 +1,18 @@
 import React from 'react';
-import { View, Text, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
+import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { EMPLOYER_PLANS } from '@/utils';
+import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 
 export default function EmployerWelcomeScreen() {
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <View className="flex-1 px-6 py-8 justify-between">
         <View className="items-center">
-          <Text className="text-6xl mb-4">🎉</Text>
+          <View className="mb-4">
+            <LucideIcon name="PartyPopper" size={64} color="#F59E0B" />
+          </View>
           <Text className="text-white text-2xl font-bold mb-2 text-center">Welcome to TEJJ!</Text>
           <Text className="text-navy-300 text-sm text-center mb-8">Your employer account is ready. Start posting jobs.</Text>
         </View>
@@ -33,6 +37,6 @@ export default function EmployerWelcomeScreen() {
           <Text className="text-white font-bold text-lg">Go to Dashboard →</Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

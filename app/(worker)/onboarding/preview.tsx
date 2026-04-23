@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Image } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Image } from 'react-native';
+import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { useOnboardingStore } from '../../../src/store/onboardingStore';
 import { useAuthStore } from '../../../src/store/authStore';
 import { AIScoreBar } from '../../../src/components/worker/AIScoreBar';
 import { SKILL_LIST } from '@/utils';
+import { StepIndicator } from '../../../src/components/shared/StepIndicator';
+import { OnboardingFooter } from '../../../src/components/shared/OnboardingFooter';
 import api from '../../../src/lib/api';
 import { auth } from '../../../src/lib/firebase';
+import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 
 export default function PreviewScreen() {
   const { worker, resetWorker } = useOnboardingStore();
@@ -35,7 +39,7 @@ export default function PreviewScreen() {
         ai_score: worker.ai_score,
         fcm_token: worker.fcm_token,
       };
-      const res = await api.post('/workers/onboarding', payload, {
+      const res = await api.post('/workers/', payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const user = res.data.data;
@@ -56,11 +60,11 @@ export default function PreviewScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-6 pt-8">
-          <Text className="text-navy-400 text-sm mb-1">Step 10 of 10</Text>
-          <Text className="text-white text-2xl font-bold mb-1">Aapka Skill Card</Text>
+          <StepIndicator currentStep={10} totalSteps={10} />
+          <Text className="text-white text-2xl font-bold mb-1">Your Skill Card</Text>
           <Text className="text-navy-300 text-sm mb-6">This is how employers will see your profile</Text>
         </View>
 
@@ -71,16 +75,21 @@ export default function PreviewScreen() {
               <Image source={{ uri: worker.profile_photo_url }} className="w-16 h-16 rounded-full" />
             ) : (
               <View className="w-16 h-16 rounded-full bg-navy-700 items-center justify-center">
-                <Text className="text-2xl">👤</Text>
+                <LucideIcon name="User" size={24} color="#94A3B8" />
               </View>
             )}
             <View className="flex-1">
               <View className="flex-row items-center gap-2 mb-1">
-                <Text className="text-2xl">{skill?.icon}</Text>
+                {skill?.icon && <LucideIcon name={skill.icon} size={22} color="#F59E0B" />}
                 <Text className="text-white text-lg font-bold">{skill?.label ?? 'Worker'}</Text>
               </View>
               <Text className="text-navy-300 text-sm">{worker.years_experience} yrs experience</Text>
-              {worker.home_city && <Text className="text-navy-400 text-xs">📍 {worker.home_city}</Text>}
+              {worker.home_city && (
+                <View className="flex-row items-center gap-1 mt-1">
+                  <LucideIcon name="MapPin" size={12} color="#94A3B8" />
+                  <Text className="text-navy-400 text-xs">{worker.home_city}</Text>
+                </View>
+              )}
             </View>
           </View>
 
@@ -104,7 +113,8 @@ export default function PreviewScreen() {
 
           {worker.skill_video_url && (
             <View className="mt-3 bg-green-500/10 border border-green-500/20 rounded-xl px-4 py-2 flex-row items-center gap-2">
-              <Text className="text-green-400 text-xs">🎥 Skill video uploaded</Text>
+              <LucideIcon name="Video" size={14} color="#22C55E" />
+              <Text className="text-green-400 text-xs">Skill video uploaded</Text>
             </View>
           )}
         </View>
@@ -116,18 +126,13 @@ export default function PreviewScreen() {
           </View>
         )}
 
-        <View className="px-6 pb-8">
-          <TouchableOpacity
-            onPress={handleGoLive}
-            disabled={loading}
-            className="bg-amber-500 rounded-2xl py-4 flex-row items-center justify-center gap-2"
-            activeOpacity={0.85}
-          >
-            {loading ? <ActivityIndicator color="#fff" /> : <Text className="text-white text-xl">🚀</Text>}
-            <Text className="text-white font-bold text-lg">{loading ? 'Setting up...' : 'Go Live!'}</Text>
-          </TouchableOpacity>
-        </View>
+        <OnboardingFooter 
+          onBack={() => router.back()}
+          onNext={handleGoLive}
+          nextLabel={loading ? 'Setting up...' : 'Go Live!'}
+          nextDisabled={loading}
+        />
       </ScrollView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

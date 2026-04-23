@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, SafeAreaView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 let Notifications: any = null;
 try {
@@ -8,7 +9,10 @@ try {
   // Ignored in Expo Go
 }
 
+import { StepIndicator } from '../../../src/components/shared/StepIndicator';
+import { OnboardingFooter } from '../../../src/components/shared/OnboardingFooter';
 import { useOnboardingStore } from '../../../src/store/onboardingStore';
+import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 
 export default function NotificationsScreen() {
   const { updateWorker } = useOnboardingStore();
@@ -35,15 +39,17 @@ export default function NotificationsScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <View className="flex-1 px-6 pt-8 justify-between">
         <View>
-          <Text className="text-navy-400 text-sm mb-1">Step 9 of 10</Text>
-          <Text className="text-white text-2xl font-bold mb-1">Job alerts ON karo</Text>
+          <StepIndicator currentStep={9} totalSteps={10} />
+          <Text className="text-white text-2xl font-bold mb-1">Turn ON job alerts</Text>
           <Text className="text-navy-300 text-sm mb-8">Get instant notifications for flash jobs near you. Don't miss out!</Text>
 
           <View className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-6 mb-6">
-            <Text className="text-4xl text-center mb-4">🔔</Text>
+            <View className="items-center mb-4">
+              <LucideIcon name="Bell" size={48} color="#F59E0B" />
+            </View>
             <Text className="text-white font-semibold text-center text-lg mb-2">Flash Job Alerts</Text>
             <Text className="text-navy-300 text-sm text-center">
               L1 Flash jobs fill in minutes. Push notifications ensure you never miss a high-paying same-day gig near you.
@@ -52,7 +58,7 @@ export default function NotificationsScreen() {
 
           {granted && (
             <View className="bg-green-500/10 border border-green-500/30 rounded-2xl p-4 flex-row items-center gap-3">
-              <Text className="text-green-400 text-xl">✓</Text>
+              <LucideIcon name="Check" size={20} color="#4ADE80" />
               <Text className="text-green-400 font-semibold">Notifications enabled!</Text>
             </View>
           )}
@@ -66,21 +72,17 @@ export default function NotificationsScreen() {
               className="bg-amber-500 rounded-2xl py-4 flex-row items-center justify-center gap-2"
               activeOpacity={0.85}
             >
-              {requesting ? <ActivityIndicator color="#fff" size="small" /> : <Text className="text-white text-xl">🔔</Text>}
-              <Text className="text-white font-bold text-base">Notifications ON karo</Text>
+              {requesting ? <ActivityIndicator color="#fff" size="small" /> : <LucideIcon name="Bell" size={20} color="#FFFFFF" />}
+              <Text className="text-white font-bold text-base">Turn ON notifications</Text>
             </TouchableOpacity>
           )}
-          <TouchableOpacity
-            onPress={() => router.push('/(worker)/onboarding/preview')}
-            className={`rounded-2xl py-4 items-center ${granted ? 'bg-amber-500' : 'bg-navy-700'}`}
-            activeOpacity={0.85}
-          >
-            <Text className="text-white font-bold text-base">
-              {granted ? 'Aage Badhein →' : 'Skip for now →'}
-            </Text>
-          </TouchableOpacity>
+          <OnboardingFooter 
+            onBack={() => router.back()}
+            onNext={() => router.push('/(worker)/onboarding/preview')}
+            nextLabel={granted ? 'Next →' : 'Skip for now →'}
+          />
         </View>
       </View>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

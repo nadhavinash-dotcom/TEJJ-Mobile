@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert } from 'react-native';
+import { SafeScreen } from '../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { VoiceMicButton } from '../../src/components/shared/VoiceMicButton';
 import api from '../../src/lib/api';
 import { auth } from '../../src/lib/firebase';
+import { LucideIcon } from '../../src/components/shared/LucideIcon';
 
 const CATEGORIES = ['Late / no payment', 'Unsafe workplace', 'Harassment', 'Work mismatch', 'Other'];
 
@@ -34,16 +36,18 @@ export default function WhisperScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-4 pt-4">
-          <TouchableOpacity onPress={() => router.back()} className="mb-6">
-            <Text className="text-amber-400 text-base">← Back</Text>
+          <TouchableOpacity onPress={() => router.back()} className="mb-6 flex-row items-center gap-1">
+            <LucideIcon name="ChevronLeft" size={20} color="#F59E0B" />
+            <Text className="text-amber-400 text-base">Back</Text>
           </TouchableOpacity>
           <Text className="text-white text-2xl font-bold mb-1">Whisper Network</Text>
           <Text className="text-navy-300 text-sm mb-2">Anonymous employer report — your identity is protected</Text>
-          <View className="bg-green-500/10 border border-green-500/20 rounded-xl px-3 py-2 mb-6">
-            <Text className="text-green-400 text-xs">🔒 Your worker ID is hashed — completely anonymous</Text>
+          <View className="bg-green-500/10 border border-green-500/20 rounded-xl px-3 py-2 mb-6 flex-row items-center gap-2">
+            <LucideIcon name="ShieldCheck" size={14} color="#22C55E" />
+            <Text className="text-green-400 text-xs font-medium">Your worker ID is hashed — completely anonymous</Text>
           </View>
         </View>
 
@@ -102,6 +106,6 @@ export default function WhisperScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

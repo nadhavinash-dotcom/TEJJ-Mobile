@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { signOut } from 'firebase/auth';
 import { useQuery } from '@tanstack/react-query';
@@ -37,7 +38,7 @@ export default function EmployerProfileScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-4 pt-6 pb-4">
           <Text className="text-white text-xl font-bold mb-1">{data?.property_name ?? 'My Property'}</Text>
@@ -63,6 +64,6 @@ export default function EmployerProfileScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

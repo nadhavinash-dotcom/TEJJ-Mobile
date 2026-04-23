@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert } from 'react-native';
+import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router, useLocalSearchParams } from 'expo-router';
 import api from '../../../src/lib/api';
 import { auth } from '../../../src/lib/firebase';
@@ -52,7 +53,7 @@ export default function RateEmployerScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-4 pt-6">
           <Text className="text-white text-2xl font-bold mb-1">Rate the Employer</Text>
@@ -93,6 +94,6 @@ export default function RateEmployerScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, SafeAreaView, FlatList, TouchableOpacity, ActivityIndicator, Alert, TextInput } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert, TextInput } from 'react-native';
+import { SafeScreen } from '../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../src/lib/api';
 import { auth } from '../../src/lib/firebase';
+import { LucideIcon } from '../../src/components/shared/LucideIcon';
 
 export default function CrewPoolsScreen() {
   const qc = useQueryClient();
@@ -29,10 +31,11 @@ export default function CrewPoolsScreen() {
   });
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <View className="px-4 pt-4 pb-2">
-        <TouchableOpacity onPress={() => router.back()} className="mb-4">
-          <Text className="text-amber-400 text-base">← Back</Text>
+        <TouchableOpacity onPress={() => router.back()} className="mb-4 flex-row items-center gap-1">
+          <LucideIcon name="ChevronLeft" size={20} color="#F59E0B" />
+          <Text className="text-amber-400 text-base">Back</Text>
         </TouchableOpacity>
         <Text className="text-white text-xl font-bold mb-1">Crew Pools</Text>
         <Text className="text-navy-300 text-sm mb-4">Save your best workers for future jobs</Text>
@@ -74,7 +77,7 @@ export default function CrewPoolsScreen() {
           ListHeaderComponent={
             !creating ? (
               <TouchableOpacity onPress={() => setCreating(true)} className="mx-4 mb-3 bg-blue-600/20 border border-blue-500/40 rounded-2xl p-4 flex-row items-center gap-3" activeOpacity={0.85}>
-                <Text className="text-blue-300 text-xl">+</Text>
+                <LucideIcon name="Plus" size={20} color="#3B82F6" />
                 <Text className="text-blue-300 font-bold">Create New Pool</Text>
               </TouchableOpacity>
             ) : null
@@ -82,6 +85,6 @@ export default function CrewPoolsScreen() {
           contentContainerStyle={{ paddingBottom: 20 }}
         />
       )}
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

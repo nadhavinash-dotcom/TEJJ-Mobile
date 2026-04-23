@@ -1,5 +1,6 @@
 import '../global.css';
 import React, { useEffect } from 'react';
+import { View, ActivityIndicator } from 'react-native';
 import { Stack } from 'expo-router';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -26,9 +27,11 @@ try {
 
 
 export default function RootLayout() {
-  const { setUser, setLoading, clear } = useAuthStore();
+  const { setUser, setLoading, clear, _hasHydrated } = useAuthStore();
 
   useEffect(() => {
+    if (!_hasHydrated) return;
+
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         try {
@@ -52,7 +55,16 @@ export default function RootLayout() {
       }
     });
     return unsubscribe;
-  }, []);
+  }, [_hasHydrated]);
+
+  // Show loading screen while store rehydrates from AsyncStorage
+  if (!_hasHydrated) {
+    return (
+      <View style={{ flex: 1, backgroundColor: '#0A1628', alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator color="#F59E0B" size="large" />
+      </View>
+    );
+  }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -69,3 +81,4 @@ export default function RootLayout() {
     </GestureHandlerRootView>
   );
 }
+

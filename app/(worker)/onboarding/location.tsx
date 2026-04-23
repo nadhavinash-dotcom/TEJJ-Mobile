@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, SafeAreaView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import * as Location from 'expo-location';
 import { VoiceMicButton } from '../../../src/components/shared/VoiceMicButton';
 import { MapPicker } from '../../../src/components/shared/MapPicker';
+import { StepIndicator } from '../../../src/components/shared/StepIndicator';
+import { OnboardingFooter } from '../../../src/components/shared/OnboardingFooter';
 import { useOnboardingStore } from '../../../src/store/onboardingStore';
+import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 
 export default function LocationScreen() {
   const { worker, updateWorker } = useOnboardingStore();
@@ -43,10 +47,10 @@ export default function LocationScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <View className="flex-1 px-6 pt-8">
-        <Text className="text-navy-400 text-sm mb-1">Step 5 of 10</Text>
-        <Text className="text-white text-2xl font-bold mb-1">Aap kahan rehte hain?</Text>
+        <StepIndicator currentStep={5} totalSteps={10} />
+        <Text className="text-white text-2xl font-bold mb-1">Where do you live?</Text>
         <Text className="text-navy-300 text-sm mb-4">Where do you live? We'll find jobs near you.</Text>
         <VoiceMicButton onResult={handleVoiceResult} />
 
@@ -63,8 +67,9 @@ export default function LocationScreen() {
         </View>
 
         {worker.home_city && (
-          <View className="bg-navy-800 border border-navy-600 rounded-xl px-4 py-3 mb-4">
-            <Text className="text-white font-medium">📍 {worker.home_area ? `${worker.home_area}, ` : ''}{worker.home_city}</Text>
+          <View className="bg-navy-800 border border-navy-600 rounded-xl px-4 py-3 mb-4 flex-row items-center gap-2">
+            <LucideIcon name="MapPin" size={16} color="#F59E0B" />
+            <Text className="text-white font-medium flex-1">{worker.home_area ? `${worker.home_area}, ` : ''}{worker.home_city}</Text>
           </View>
         )}
 
@@ -74,19 +79,16 @@ export default function LocationScreen() {
           className="bg-navy-800 border border-amber-500/40 rounded-2xl py-3 flex-row items-center justify-center gap-2 mb-6"
           activeOpacity={0.8}
         >
-          {detecting ? <ActivityIndicator color="#F59E0B" size="small" /> : <Text className="text-amber-400">📍</Text>}
-          <Text className="text-amber-400 font-semibold">{detecting ? 'Detecting...' : 'Apni location detect karo'}</Text>
+          {detecting ? <ActivityIndicator color="#F59E0B" size="small" /> : <LucideIcon name="Locate" size={18} color="#F59E0B" />}
+          <Text className="text-amber-400 font-semibold">{detecting ? 'Detecting...' : 'Detect my location'}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() => router.push('/(worker)/onboarding/availability')}
-          disabled={!worker.home_lat && !worker.home_city}
-          className={`rounded-2xl py-4 items-center ${worker.home_lat || worker.home_city ? 'bg-amber-500' : 'bg-navy-700'}`}
-          activeOpacity={0.85}
-        >
-          <Text className="text-white font-bold text-base">Aage Badhein →</Text>
-        </TouchableOpacity>
+        <OnboardingFooter 
+          onBack={() => router.back()}
+          onNext={() => router.push('/(worker)/onboarding/availability')}
+          nextDisabled={!worker.home_lat && !worker.home_city}
+        />
       </View>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

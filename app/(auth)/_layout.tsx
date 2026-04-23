@@ -6,6 +6,7 @@ export default function AuthLayout() {
       <Stack.Screen name="language" />
       <Stack.Screen name="phone" />
       <Stack.Screen name="otp" />
+      <Stack.Screen name="role" />
     </Stack>
   );
 }

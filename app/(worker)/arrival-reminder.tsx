@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, Text, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
+import { SafeScreen } from '../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 
 export default function ArrivalReminderScreen() {
   return (
-    <SafeAreaView className="flex-1 bg-navy-900 items-center justify-center px-6">
+    <SafeScreen className="items-center justify-center px-6">
       <Text className="text-7xl mb-6">⏰</Text>
       <Text className="text-white text-2xl font-bold mb-2 text-center">30 minutes to go!</Text>
       <Text className="text-amber-400 text-lg font-semibold mb-2 text-center">Your shift starts soon</Text>
@@ -23,6 +24,6 @@ export default function ArrivalReminderScreen() {
       <TouchableOpacity onPress={() => router.push('/(worker)/qr-code')} className="bg-amber-500 rounded-2xl py-4 px-8 w-full items-center mb-3" activeOpacity={0.85}>
         <Text className="text-white font-bold text-base">Show My QR Code</Text>
       </TouchableOpacity>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }
