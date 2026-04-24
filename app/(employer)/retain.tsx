@@ -1,9 +1,11 @@
 import React from 'react';
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { SafeScreen } from '../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../src/lib/api';
 import { auth } from '../../src/lib/firebase';
+import { LucideIcon } from '../../src/components/shared/LucideIcon';
 
 export default function RetainScreen() {
   const { data, isLoading } = useQuery({
@@ -16,11 +18,12 @@ export default function RetainScreen() {
   });
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-4 pt-4 pb-2">
-          <TouchableOpacity onPress={() => router.back()} className="mb-4">
-            <Text className="text-amber-400 text-base">← Back</Text>
+          <TouchableOpacity onPress={() => router.back()} className="mb-4 flex-row items-center gap-1">
+            <LucideIcon name="ChevronLeft" size={20} color="#F59E0B" />
+            <Text className="text-amber-400 text-base">Back</Text>
           </TouchableOpacity>
           <Text className="text-white text-xl font-bold mb-1">TEJJ Retain</Text>
           <Text className="text-navy-300 text-sm mb-4">Your long-term workers and their benefit status</Text>
@@ -53,10 +56,25 @@ export default function RetainScreen() {
                     <Text className="text-white font-bold">{w.worker_skill}</Text>
                     <Text className="text-amber-400 text-sm">{w.days_with_employer} days</Text>
                   </View>
-                  <View className="flex-row gap-2">
-                    {w.days_with_employer >= 90 && <Text className="text-blue-400 text-xs bg-blue-500/10 px-2 py-1 rounded">🏥 Insurance</Text>}
-                    {w.days_with_employer >= 180 && <Text className="text-green-400 text-xs bg-green-500/10 px-2 py-1 rounded">🛵 Loan</Text>}
-                    {w.days_with_employer >= 365 && <Text className="text-amber-400 text-xs bg-amber-500/10 px-2 py-1 rounded">💸 EWA</Text>}
+                  <View className="flex-row gap-2 mt-2">
+                    {w.days_with_employer >= 90 && (
+                      <View className="flex-row items-center gap-1 bg-blue-500/10 px-2 py-1 rounded">
+                        <LucideIcon name="Stethoscope" size={10} color="#60A5FA" />
+                        <Text className="text-blue-400 text-[10px]">Insurance</Text>
+                      </View>
+                    )}
+                    {w.days_with_employer >= 180 && (
+                      <View className="flex-row items-center gap-1 bg-green-500/10 px-2 py-1 rounded">
+                        <LucideIcon name="Bike" size={10} color="#4ADE80" />
+                        <Text className="text-green-400 text-[10px]">Loan</Text>
+                      </View>
+                    )}
+                    {w.days_with_employer >= 365 && (
+                      <View className="flex-row items-center gap-1 bg-amber-500/10 px-2 py-1 rounded">
+                        <LucideIcon name="Banknote" size={10} color="#FBBF24" />
+                        <Text className="text-amber-400 text-[10px]">EWA</Text>
+                      </View>
+                    )}
                   </View>
                 </View>
               ))
@@ -64,6 +82,6 @@ export default function RetainScreen() {
           </View>
         )}
       </ScrollView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

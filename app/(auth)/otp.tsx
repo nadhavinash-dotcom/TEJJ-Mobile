@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, SafeAreaView, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { SafeScreen } from '../../src/components/shared/SafeScreen';
 import { router, useLocalSearchParams } from 'expo-router';
 import { PhoneAuthProvider, signInWithCredential } from 'firebase/auth';
 import { auth } from '../../src/lib/firebase';
@@ -45,6 +46,8 @@ export default function OTPScreen() {
       const meRes = await api.get('/auth/me', { headers: { Authorization: `Bearer ${token}` } });
       const user = meRes.data.data;
 
+      console.log('User:', user);
+
       setUser({
         userId: user._id,
         firebaseUid: result.user.uid,
@@ -52,12 +55,20 @@ export default function OTPScreen() {
         hasEmployer: user.has_employer,
         activeRole: user.active_role,
       });
-      if (!user.has_worker && !user.has_employer) {
-        router.replace('/(worker)/onboarding/role');
+      if (!user.active_role) {
+        router.replace('/(auth)/role');
       } else if (user.active_role === 'employer') {
-        router.replace('/(employer)/(tabs)/dashboard');
+        if(user.hasEmployer) {
+          router.replace('/(employer)/(tabs)/dashboard');
+        } else {
+          router.replace('/(employer)/onboarding/property');
+        }
       } else {
-        router.replace('/(worker)/(tabs)/feed');
+        if(user.hasWorker) {
+          router.replace('/(worker)/(tabs)/feed');
+        } else {
+          router.replace('/(worker)/onboarding/role');
+        }
       }
     } catch (e: any) {
       console.error('OTP Verification Error:', e);
@@ -74,7 +85,7 @@ export default function OTPScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <View className="flex-1 px-6 pt-12">
         <TouchableOpacity onPress={() => router.back()} className="mb-8">
           <Text className="text-amber-400 text-base">← Back</Text>
@@ -113,6 +124,6 @@ export default function OTPScreen() {
           </Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

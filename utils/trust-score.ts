@@ -83,11 +83,11 @@ export function mockAIScore(): {
   const overall = computeAIScore({ technique, speed, hygiene, warmth });
 
   const feedbackOptions = [
-    'Aapka kaam achha dikhta hai. Speed aur hygiene strong hain.',
-    'Technique solid hai. Warmth aur customer interaction improve kar sakte ho.',
-    'Hygiene bahut achha. Knife skills aur speed thodi aur badhao.',
+    'Your work looks good. Speed and hygiene are strong.',
+    'Solid technique. You can improve on warmth and customer interaction.',
+    'Very good hygiene. Work on increasing your knife skills and speed.',
     'Overall strong performance. Keep it up!',
-    'Achha presentation. Timing aur speed pe focus karo.',
+    'Good presentation. Focus on timing and speed.',
   ];
 
   return {

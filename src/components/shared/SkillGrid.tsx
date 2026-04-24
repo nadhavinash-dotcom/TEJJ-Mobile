@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { SKILL_LIST } from '@/utils';
+import { LucideIcon } from './LucideIcon';
+import { TouchableOpacity, View, Text } from 'react-native';
 
 interface SkillGridProps {
   selected?: string;
@@ -37,11 +37,21 @@ export function SkillGrid({ selected, onSelect, multiSelect, selectedList = [], 
               }`}
             activeOpacity={0.7}
           >
-            <Text className="text-2xl mb-1">{skill.icon}</Text>
-            <Text className={`text-xs text-center font-medium ${isSelected ? 'text-white' : 'text-navy-200'}`} numberOfLines={1}>
+            <View className="mb-2">
+              <LucideIcon 
+                name={skill.icon} 
+                size={22} 
+                color={isSelected ? '#FFFFFF' : '#94A3B8'} 
+              />
+            </View>
+            <Text className={`text-[10px] text-center font-medium ${isSelected ? 'text-white' : 'text-navy-200'}`} numberOfLines={1}>
               {skill.label}
             </Text>
-            {isSelected && <Text className="text-white text-xs absolute top-1 right-1">✓</Text>}
+            {isSelected && (
+              <View className="absolute top-1 right-1">
+                <LucideIcon name="CheckCircle" size={10} color="#FFFFFF" />
+              </View>
+            )}
           </TouchableOpacity>
         );
       })}

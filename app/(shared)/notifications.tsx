@@ -1,9 +1,11 @@
 import React from 'react';
-import { View, Text, SafeAreaView, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { SafeScreen } from '../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../src/lib/api';
 import { auth } from '../../src/lib/firebase';
+import { LucideIcon } from '../../src/components/shared/LucideIcon';
 
 export default function NotificationsScreen() {
   const qc = useQueryClient();
@@ -26,18 +28,19 @@ export default function NotificationsScreen() {
   });
 
   const ICONS: Record<string, string> = {
-    job_match: '✅',
-    job_posted: '📋',
-    application_received: '👤',
-    reminder: '⏰',
-    system: '📢',
+    job_match: 'CheckCircle',
+    job_posted: 'ClipboardList',
+    application_received: 'User',
+    reminder: 'Clock',
+    system: 'Megaphone',
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <View className="px-4 pt-4 pb-2">
-        <TouchableOpacity onPress={() => router.back()} className="mb-4">
-          <Text className="text-amber-400 text-base">← Back</Text>
+        <TouchableOpacity onPress={() => router.back()} className="mb-4 flex-row items-center gap-1">
+          <LucideIcon name="ChevronLeft" size={20} color="#F59E0B" />
+          <Text className="text-amber-400 text-base">Back</Text>
         </TouchableOpacity>
         <Text className="text-white text-xl font-bold">Notifications</Text>
       </View>
@@ -55,7 +58,9 @@ export default function NotificationsScreen() {
               activeOpacity={0.85}
             >
               <View className="flex-row items-start gap-3">
-                <Text className="text-xl">{ICONS[item.type] ?? '🔔'}</Text>
+                <View className="mt-0.5">
+                  <LucideIcon name={ICONS[item.type] || 'Bell'} size={20} color="#F59E0B" />
+                </View>
                 <View className="flex-1">
                   <Text className={`font-semibold ${item.read ? 'text-navy-300' : 'text-white'}`}>{item.title}</Text>
                   <Text className="text-navy-400 text-sm mt-1">{item.body}</Text>
@@ -67,13 +72,15 @@ export default function NotificationsScreen() {
           )}
           ListEmptyComponent={
             <View className="flex-1 items-center justify-center py-20">
-              <Text className="text-4xl mb-4">🔔</Text>
+              <View className="mb-4">
+                <LucideIcon name="Bell" size={48} color="#475569" />
+              </View>
               <Text className="text-white font-semibold mb-2">No notifications yet</Text>
             </View>
           }
           contentContainerStyle={{ paddingBottom: 20, flexGrow: 1 }}
         />
       )}
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

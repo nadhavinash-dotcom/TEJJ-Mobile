@@ -1,10 +1,12 @@
 import React from 'react';
-import { View, Text, SafeAreaView, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { useOnboardingStore } from '../../../src/store/onboardingStore';
 import api from '../../../src/lib/api';
 import { auth } from '../../../src/lib/firebase';
+import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 
 export default function TemplateScreen() {
   const { updateJobDraft } = useOnboardingStore();
@@ -31,10 +33,11 @@ export default function TemplateScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <View className="px-4 pt-4 pb-2">
-        <TouchableOpacity onPress={() => router.back()} className="mb-4">
-          <Text className="text-amber-400 text-base">← Back</Text>
+        <TouchableOpacity onPress={() => router.back()} className="mb-4 flex-row items-center gap-1">
+          <LucideIcon name="ChevronLeft" size={20} color="#F59E0B" />
+          <Text className="text-amber-400 text-base">Back</Text>
         </TouchableOpacity>
         <Text className="text-white text-xl font-bold mb-1">Use a Template</Text>
         <Text className="text-navy-300 text-sm mb-4">Save time with your previous job templates</Text>
@@ -54,7 +57,7 @@ export default function TemplateScreen() {
           )}
           ListHeaderComponent={
             <TouchableOpacity onPress={() => router.push('/(employer)/post/form')} className="mx-4 mb-3 bg-blue-600/20 border border-blue-500/40 rounded-2xl p-4 flex-row items-center gap-3" activeOpacity={0.85}>
-              <Text className="text-2xl">✏️</Text>
+              <LucideIcon name="Pencil" size={24} color="#3B82F6" />
               <View>
                 <Text className="text-blue-300 font-bold">Start from scratch</Text>
                 <Text className="text-navy-400 text-sm">Create a new job posting</Text>
@@ -64,6 +67,6 @@ export default function TemplateScreen() {
           contentContainerStyle={{ paddingBottom: 20 }}
         />
       )}
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

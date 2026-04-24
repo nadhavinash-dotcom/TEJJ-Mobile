@@ -1,8 +1,10 @@
 import React from 'react';
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Switch } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Switch } from 'react-native';
+import { SafeScreen } from '../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { useAuthStore } from '../../src/store/authStore';
 import { LANGUAGES } from '@/utils';
+import { LucideIcon } from '../../src/components/shared/LucideIcon';
 
 export default function SettingsScreen() {
   const { language, setLanguage, activeRole, setActiveRole, hasWorker, hasEmployer } = useAuthStore();
@@ -10,11 +12,12 @@ export default function SettingsScreen() {
   const currentLang = LANGUAGES.find((l) => l.code === language);
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-4 pt-4 pb-2">
-          <TouchableOpacity onPress={() => router.back()} className="mb-4">
-            <Text className="text-amber-400 text-base">← Back</Text>
+          <TouchableOpacity onPress={() => router.back()} className="mb-4 flex-row items-center gap-1">
+            <LucideIcon name="ChevronLeft" size={20} color="#F59E0B" />
+            <Text className="text-amber-400 text-base">Back</Text>
           </TouchableOpacity>
           <Text className="text-white text-xl font-bold mb-4">Settings</Text>
         </View>
@@ -27,10 +30,11 @@ export default function SettingsScreen() {
                 <TouchableOpacity
                   key={lang.code}
                   onPress={() => setLanguage(lang.code)}
-                  className={`px-3 py-2 rounded-xl border ${language === lang.code ? 'bg-amber-500 border-amber-500' : 'bg-navy-700 border-navy-600'}`}
+                  className={`px-3 py-2 rounded-xl border flex-row items-center gap-1.5 ${language === lang.code ? 'bg-amber-500 border-amber-500' : 'bg-navy-700 border-navy-600'}`}
                   activeOpacity={0.75}
                 >
-                  <Text className="text-sm">{lang.flag} {lang.label}</Text>
+                  <LucideIcon name={lang.flag} size={14} color={language === lang.code ? '#FFFFFF' : '#F59E0B'} />
+                  <Text className={`text-sm ${language === lang.code ? 'text-white font-bold' : 'text-navy-300'}`}>{lang.label}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -42,17 +46,19 @@ export default function SettingsScreen() {
               <View className="flex-row gap-3">
                 <TouchableOpacity
                   onPress={() => { setActiveRole('worker'); router.replace('/(worker)/(tabs)/feed'); }}
-                  className={`flex-1 py-3 rounded-xl border items-center ${activeRole === 'worker' ? 'bg-amber-500 border-amber-500' : 'bg-navy-700 border-navy-600'}`}
+                  className={`flex-1 py-3 rounded-xl border flex-row items-center justify-center gap-2 ${activeRole === 'worker' ? 'bg-amber-500 border-amber-500' : 'bg-navy-700 border-navy-600'}`}
                   activeOpacity={0.75}
                 >
-                  <Text className={`font-semibold ${activeRole === 'worker' ? 'text-white' : 'text-navy-300'}`}>👷 Worker</Text>
+                  <LucideIcon name="HardHat" size={16} color={activeRole === 'worker' ? '#FFFFFF' : '#94A3B8'} />
+                  <Text className={`font-semibold ${activeRole === 'worker' ? 'text-white' : 'text-navy-300'}`}>Worker</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => { setActiveRole('employer'); router.replace('/(employer)/(tabs)/dashboard'); }}
-                  className={`flex-1 py-3 rounded-xl border items-center ${activeRole === 'employer' ? 'bg-blue-600 border-blue-500' : 'bg-navy-700 border-navy-600'}`}
+                  className={`flex-1 py-3 rounded-xl border flex-row items-center justify-center gap-2 ${activeRole === 'employer' ? 'bg-blue-600 border-blue-500' : 'bg-navy-700 border-navy-600'}`}
                   activeOpacity={0.75}
                 >
-                  <Text className={`font-semibold ${activeRole === 'employer' ? 'text-white' : 'text-navy-300'}`}>🏨 Employer</Text>
+                  <LucideIcon name="Hotel" size={16} color={activeRole === 'employer' ? '#FFFFFF' : '#94A3B8'} />
+                  <Text className={`font-semibold ${activeRole === 'employer' ? 'text-white' : 'text-navy-300'}`}>Employer</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -60,7 +66,7 @@ export default function SettingsScreen() {
 
           <TouchableOpacity onPress={() => router.push('/(shared)/plans')} className="px-4 py-4 flex-row items-center justify-between border-b border-navy-700" activeOpacity={0.7}>
             <Text className="text-white">Plans & Billing</Text>
-            <Text className="text-navy-500">›</Text>
+            <LucideIcon name="ChevronRight" size={16} color="#475569" />
           </TouchableOpacity>
 
           <View className="px-4 py-4">
@@ -68,6 +74,6 @@ export default function SettingsScreen() {
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

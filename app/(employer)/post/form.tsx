@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert } from 'react-native';
+import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
-import DateTimePicker from '@react-native-community/datetimepicker';
+// import DateTimePicker from '@react-native-community/datetimepicker';
 import { VoiceMicButton } from '../../../src/components/shared/VoiceMicButton';
 import { SkillGrid } from '../../../src/components/shared/SkillGrid';
 import { useOnboardingStore } from '../../../src/store/onboardingStore';
 import { PayBenchmarkBox } from '../../../src/components/employer/PayBenchmarkBox';
 import api from '../../../src/lib/api';
 import { auth } from '../../../src/lib/firebase';
+import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 
 export default function JobFormScreen() {
   const { jobDraft, updateJobDraft, clearJobDraft } = useOnboardingStore();
@@ -39,11 +41,12 @@ export default function JobFormScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-4 pt-4">
-          <TouchableOpacity onPress={() => router.back()} className="mb-4">
-            <Text className="text-amber-400 text-base">← Back</Text>
+          <TouchableOpacity onPress={() => router.back()} className="mb-4 flex-row items-center gap-1">
+            <LucideIcon name="ChevronLeft" size={20} color="#F59E0B" />
+            <Text className="text-amber-400 text-base">Back</Text>
           </TouchableOpacity>
           <View className="flex-row items-center justify-between mb-4">
             <Text className="text-white text-xl font-bold">Post a Job</Text>
@@ -140,6 +143,6 @@ export default function JobFormScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

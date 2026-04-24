@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, SafeAreaView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../../../src/lib/firebase';
+import { AIScoreBar } from '../../../src/components/worker/AIScoreBar';
+import { StepIndicator } from '../../../src/components/shared/StepIndicator';
+import { OnboardingFooter } from '../../../src/components/shared/OnboardingFooter';
 import { useOnboardingStore } from '../../../src/store/onboardingStore';
 import { useAuthStore } from '../../../src/store/authStore';
-import { AIScoreBar } from '../../../src/components/worker/AIScoreBar';
+import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 
 export default function VideoScreen() {
   const { worker, updateWorker } = useOnboardingStore();
@@ -51,15 +55,17 @@ export default function VideoScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <View className="flex-1 px-6 pt-8">
-        <Text className="text-navy-400 text-sm mb-1">Step 8 of 10</Text>
-        <Text className="text-white text-2xl font-bold mb-1">Apna skill video daalo</Text>
+        <StepIndicator currentStep={8} totalSteps={10} />
+        <Text className="text-white text-2xl font-bold mb-1">Add your skill video</Text>
         <Text className="text-navy-300 text-sm mb-6">Record a 30–60 sec video showing your skill. AI will score it.</Text>
 
         {!worker.skill_video_url && !uploading && !scoring && (
           <View className="bg-navy-800 border-2 border-dashed border-navy-600 rounded-2xl py-12 items-center mb-6">
-            <Text className="text-6xl mb-4">🎥</Text>
+            <View className="mb-4">
+              <LucideIcon name="Video" size={48} color="#475569" />
+            </View>
             <Text className="text-white font-semibold mb-1">Record your skill video</Text>
             <Text className="text-navy-400 text-sm text-center px-6">Show your cooking, serving, or housekeeping skills in 30–60 seconds</Text>
           </View>
@@ -88,22 +94,18 @@ export default function VideoScreen() {
             className="bg-navy-800 border border-amber-500/40 rounded-2xl py-4 flex-row items-center justify-center gap-2 mb-6"
             activeOpacity={0.8}
           >
-            <Text className="text-amber-400 text-xl">🎥</Text>
+            <LucideIcon name="Video" size={20} color="#F59E0B" />
             <Text className="text-amber-400 font-semibold">{worker.skill_video_url ? 'Re-record video' : 'Record video'}</Text>
           </TouchableOpacity>
         )}
 
-        <TouchableOpacity
-          onPress={() => router.push('/(worker)/onboarding/notifications')}
-          disabled={uploading || scoring}
-          className={`rounded-2xl py-4 items-center ${!uploading && !scoring ? 'bg-amber-500' : 'bg-navy-700'}`}
-          activeOpacity={0.85}
-        >
-          <Text className="text-white font-bold text-base">
-            {worker.skill_video_url ? 'Aage Badhein →' : 'Skip for now →'}
-          </Text>
-        </TouchableOpacity>
+        <OnboardingFooter 
+          onBack={() => router.back()}
+          onNext={() => router.push('/(worker)/onboarding/notifications')}
+          nextLabel={worker.skill_video_url ? 'Next →' : 'Skip for now →'}
+          nextDisabled={uploading || scoring}
+        />
       </View>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

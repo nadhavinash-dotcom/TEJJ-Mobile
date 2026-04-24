@@ -1,17 +1,20 @@
 import React from 'react';
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { useOnboardingStore } from '../../../src/store/onboardingStore';
+import { StepIndicator } from '../../../src/components/shared/StepIndicator';
+import { OnboardingFooter } from '../../../src/components/shared/OnboardingFooter';
 
 export default function EmployerContactScreen() {
   const { employer, updateEmployer } = useOnboardingStore();
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-6 pt-8 gap-4">
+          <StepIndicator currentStep={3} totalSteps={4} />
           <View>
-            <Text className="text-navy-400 text-sm mb-1">Step 3 of 5</Text>
             <Text className="text-white text-2xl font-bold mb-1">Contact Details</Text>
             <Text className="text-navy-300 text-sm mb-6">Who should workers contact on arrival?</Text>
           </View>
@@ -53,16 +56,14 @@ export default function EmployerContactScreen() {
             />
           </View>
 
-          <TouchableOpacity
-            onPress={() => router.push('/(employer)/onboarding/compliance')}
-            disabled={!employer.contact_name || !employer.contact_phone}
-            className={`rounded-2xl py-4 items-center mt-2 mb-8 ${employer.contact_name && employer.contact_phone ? 'bg-blue-600' : 'bg-navy-700'}`}
-            activeOpacity={0.85}
-          >
-            <Text className="text-white font-bold text-base">Next →</Text>
-          </TouchableOpacity>
+          <OnboardingFooter 
+            onBack={() => router.back()}
+            onNext={() => router.push('/(employer)/onboarding/compliance')}
+            nextDisabled={!employer.contact_name || !employer.contact_phone}
+            color="bg-blue-600"
+          />
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

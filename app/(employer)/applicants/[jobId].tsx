@@ -1,10 +1,12 @@
 import React from 'react';
-import { View, Text, SafeAreaView, FlatList, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
+import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../../src/lib/api';
 import { auth } from '../../../src/lib/firebase';
 import { SKILL_LIST } from '@/utils';
+import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 
 export default function ApplicantsScreen() {
   const { jobId } = useLocalSearchParams<{ jobId: string }>();
@@ -36,10 +38,11 @@ export default function ApplicantsScreen() {
   });
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <View className="px-4 pt-4 pb-2">
-        <TouchableOpacity onPress={() => router.back()} className="mb-3">
-          <Text className="text-amber-400 text-base">← Back</Text>
+        <TouchableOpacity onPress={() => router.back()} className="mb-3 flex-row items-center gap-1">
+          <LucideIcon name="ChevronLeft" size={20} color="#F59E0B" />
+          <Text className="text-amber-400 text-base">Back</Text>
         </TouchableOpacity>
         <Text className="text-white text-xl font-bold mb-1">Applicants</Text>
         <Text className="text-navy-300 text-sm">{data?.length ?? 0} applications received</Text>
@@ -60,13 +63,16 @@ export default function ApplicantsScreen() {
                     <Image source={{ uri: item.worker_photo }} className="w-12 h-12 rounded-full" />
                   ) : (
                     <View className="w-12 h-12 rounded-full bg-navy-700 items-center justify-center">
-                      <Text className="text-xl">{skill?.icon ?? '👤'}</Text>
+                      <LucideIcon name={skill?.icon || 'User'} size={24} color="#94A3B8" />
                     </View>
                   )}
                   <View className="flex-1">
                     <View className="flex-row items-center gap-2">
                       <Text className="text-white font-bold">{skill?.label ?? 'Worker'}</Text>
-                      <Text className="text-amber-400 text-xs">⭐ {(item.worker_trust_score ?? 0).toFixed(1)}</Text>
+                      <View className="flex-row items-center gap-0.5">
+                        <LucideIcon name="Star" size={12} color="#F59E0B" fill="#F59E0B" />
+                        <Text className="text-amber-400 text-xs">{(item.worker_trust_score ?? 0).toFixed(1)}</Text>
+                      </View>
                     </View>
                     <Text className="text-navy-300 text-xs">{item.worker_years_experience} yrs · {item.worker_sups_score ?? 70} SUPS</Text>
                   </View>
@@ -96,7 +102,12 @@ export default function ApplicantsScreen() {
                       <Text className="text-white font-semibold text-sm">Match →</Text>
                     </TouchableOpacity>
                   )}
-                  {item.status === 'MATCHED' && <Text className="text-green-400 text-sm font-semibold">✅ Matched</Text>}
+                  {item.status === 'MATCHED' && (
+                    <View className="flex-row items-center gap-1">
+                      <LucideIcon name="CheckCircle" size={16} color="#22C55E" />
+                      <Text className="text-green-400 text-sm font-semibold">Matched</Text>
+                    </View>
+                  )}
                 </View>
               </View>
             );
@@ -104,6 +115,6 @@ export default function ApplicantsScreen() {
           contentContainerStyle={{ paddingBottom: 20 }}
         />
       )}
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

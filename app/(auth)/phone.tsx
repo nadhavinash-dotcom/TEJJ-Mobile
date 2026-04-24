@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, SafeAreaView, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { SafeScreen } from '../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { FirebaseRecaptchaVerifierModal } from 'expo-firebase-recaptcha';
 import { signInWithPhoneNumber, PhoneAuthProvider } from 'firebase/auth';
@@ -32,7 +33,7 @@ export default function PhoneScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <FirebaseRecaptchaVerifierModal
         ref={recaptchaVerifier}
         firebaseConfig={firebaseConfig}
@@ -77,6 +78,6 @@ export default function PhoneScreen() {
           By continuing, you agree to TEJJ's Terms of Service and Privacy Policy
         </Text>
       </View>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

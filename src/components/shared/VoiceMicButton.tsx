@@ -15,6 +15,7 @@ try {
 import api from '../../lib/api';
 import { useAuthStore } from '../../store/authStore';
 import { LANGUAGES } from '@/utils';
+import { LucideIcon } from './LucideIcon';
 
 interface VoiceMicButtonProps {
   onResult: (params: {
@@ -96,7 +97,7 @@ export function VoiceMicButton({ onResult, disabled }: VoiceMicButtonProps) {
   }, []);
 
   const icons = { idle: '🎤', listening: '🔴', processing: '⏳' };
-  const labels = { idle: 'Bolkar batao', listening: 'Sun raha hun...', processing: 'Samajh raha hun...' };
+  const labels = { idle: 'Speak now', listening: 'Listening...', processing: 'Processing...' };
 
   return (
     <TouchableOpacity
@@ -109,7 +110,11 @@ export function VoiceMicButton({ onResult, disabled }: VoiceMicButtonProps) {
       {voiceState === 'processing' ? (
         <ActivityIndicator size="small" color="#F59E0B" />
       ) : (
-        <Text className="text-lg">{icons[voiceState]}</Text>
+        <LucideIcon 
+          name={voiceState === 'listening' ? 'Mic' : 'Mic'} 
+          size={18} 
+          color={voiceState === 'listening' ? '#EF4444' : '#F59E0B'} 
+        />
       )}
       <Text className={`text-sm ${voiceState === 'listening' ? 'text-red-400' : 'text-amber-400'}`}>
         {labels[voiceState]}

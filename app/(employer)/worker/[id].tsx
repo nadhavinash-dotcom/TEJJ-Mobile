@@ -1,11 +1,13 @@
 import React from 'react';
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
+import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { SKILL_LIST } from '@/utils';
 import { AIScoreBar } from '../../../src/components/worker/AIScoreBar';
 import api from '../../../src/lib/api';
 import { auth } from '../../../src/lib/firebase';
+import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 
 export default function WorkerSkillCardScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -19,16 +21,17 @@ export default function WorkerSkillCardScreen() {
     },
   });
 
-  if (isLoading) return <SafeAreaView className="flex-1 bg-navy-900 items-center justify-center"><ActivityIndicator color="#3B82F6" size="large" /></SafeAreaView>;
+  if (isLoading) return <SafeScreen className="items-center justify-center"><ActivityIndicator color="#3B82F6" size="large" /></SafeScreen>;
 
   const skill = SKILL_LIST.find((s) => s.id === worker?.primary_skill);
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-4 pt-4 pb-2">
-          <TouchableOpacity onPress={() => router.back()}>
-            <Text className="text-amber-400 text-base">← Back</Text>
+          <TouchableOpacity onPress={() => router.back()} className="flex-row items-center gap-1">
+            <LucideIcon name="ChevronLeft" size={20} color="#F59E0B" />
+            <Text className="text-amber-400 text-base">Back</Text>
           </TouchableOpacity>
         </View>
 
@@ -39,17 +42,20 @@ export default function WorkerSkillCardScreen() {
                 <Image source={{ uri: worker.profile_photo_url }} className="w-16 h-16 rounded-full" />
               ) : (
                 <View className="w-16 h-16 rounded-full bg-navy-700 items-center justify-center">
-                  <Text className="text-3xl">{skill?.icon ?? '👤'}</Text>
+                  <LucideIcon name={skill?.icon || 'User'} size={32} color="#94A3B8" />
                 </View>
               )}
               <View className="flex-1">
                 <View className="flex-row items-center gap-2">
-                  <Text className="text-xl">{skill?.icon}</Text>
+                  {skill?.icon && <LucideIcon name={skill.icon} size={20} color="#F59E0B" />}
                   <Text className="text-white text-lg font-bold">{skill?.label}</Text>
                 </View>
                 <Text className="text-navy-300 text-sm">{worker?.years_experience} yrs experience</Text>
                 <View className="flex-row items-center gap-3 mt-1">
-                  <Text className="text-amber-400 text-sm">⭐ {(worker?.trust_score ?? 0).toFixed(1)}</Text>
+                  <View className="flex-row items-center gap-0.5">
+                    <LucideIcon name="Star" size={12} color="#F59E0B" fill="#F59E0B" />
+                    <Text className="text-amber-400 text-sm">{(worker?.trust_score ?? 0).toFixed(1)}</Text>
+                  </View>
                   <Text className="text-navy-400 text-xs">Trust</Text>
                 </View>
               </View>
@@ -77,6 +83,6 @@ export default function WorkerSkillCardScreen() {
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

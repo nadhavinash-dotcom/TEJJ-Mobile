@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, SafeAreaView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import { SafeScreen } from '../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useMutation } from '@tanstack/react-query';
 import api from '../../src/lib/api';
 import { auth } from '../../src/lib/firebase';
+import { LucideIcon } from '../../src/components/shared/LucideIcon';
 
 export default function QRScannerScreen() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -38,22 +40,25 @@ export default function QRScannerScreen() {
 
   if (!permission.granted) {
     return (
-      <SafeAreaView className="flex-1 bg-navy-900 px-6 justify-center items-center">
-        <Text className="text-4xl mb-4">📷</Text>
+      <SafeScreen className="px-6 justify-center items-center">
+        <View className="mb-4">
+          <LucideIcon name="Camera" size={64} color="#3B82F6" />
+        </View>
         <Text className="text-white text-lg font-bold mb-2">Camera Access Required</Text>
         <Text className="text-navy-300 text-sm text-center mb-6">Please allow camera access to scan worker QR codes</Text>
         <TouchableOpacity onPress={requestPermission} className="bg-blue-600 rounded-2xl py-4 px-8" activeOpacity={0.85}>
           <Text className="text-white font-bold">Allow Camera</Text>
         </TouchableOpacity>
-      </SafeAreaView>
+      </SafeScreen>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <View className="px-4 pt-4 pb-2">
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text className="text-amber-400 text-base">← Back</Text>
+        <TouchableOpacity onPress={() => router.back()} className="flex-row items-center gap-1">
+          <LucideIcon name="ChevronLeft" size={20} color="#F59E0B" />
+          <Text className="text-amber-400 text-base">Back</Text>
         </TouchableOpacity>
         <Text className="text-white text-xl font-bold mt-3 mb-1">Scan Worker QR</Text>
         <Text className="text-navy-300 text-sm">Point camera at worker's QR code to confirm arrival</Text>
@@ -73,6 +78,6 @@ export default function QRScannerScreen() {
           </View>
         </CameraView>
       </View>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

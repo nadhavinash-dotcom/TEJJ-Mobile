@@ -1,15 +1,19 @@
 import React from 'react';
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { VoiceMicButton } from '../../../src/components/shared/VoiceMicButton';
+import { StepIndicator } from '../../../src/components/shared/StepIndicator';
+import { OnboardingFooter } from '../../../src/components/shared/OnboardingFooter';
 import { useOnboardingStore } from '../../../src/store/onboardingStore';
+import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const SHIFTS = [
-  { id: 'morning', label: 'Morning', time: '6am–12pm', icon: '🌅' },
-  { id: 'afternoon', label: 'Afternoon', time: '12pm–5pm', icon: '☀️' },
-  { id: 'evening', label: 'Evening', time: '5pm–10pm', icon: '🌆' },
-  { id: 'night', label: 'Night', time: '10pm–6am', icon: '🌙' },
+  { id: 'morning', label: 'Morning', time: '6am–12pm', icon: 'Sunrise' },
+  { id: 'afternoon', label: 'Afternoon', time: '12pm–5pm', icon: 'Sun' },
+  { id: 'evening', label: 'Evening', time: '5pm–10pm', icon: 'Sunset' },
+  { id: 'night', label: 'Night', time: '10pm–6am', icon: 'Moon' },
 ];
 
 export default function AvailabilityScreen() {
@@ -30,11 +34,11 @@ export default function AvailabilityScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-6 pt-8">
-          <Text className="text-navy-400 text-sm mb-1">Step 6 of 10</Text>
-          <Text className="text-white text-2xl font-bold mb-1">Kab available hain aap?</Text>
+          <StepIndicator currentStep={6} totalSteps={10} />
+          <Text className="text-white text-2xl font-bold mb-1">When are you available?</Text>
           <Text className="text-navy-300 text-sm mb-4">Which days and shifts can you work?</Text>
           <VoiceMicButton onResult={handleVoiceResult} />
         </View>
@@ -73,28 +77,25 @@ export default function AvailabilityScreen() {
                   activeOpacity={0.75}
                 >
                   <View className="flex-row items-center gap-3">
-                    <Text className="text-xl">{s.icon}</Text>
+                    <LucideIcon name={s.icon} size={20} color={sel ? '#F59E0B' : '#94A3B8'} />
                     <View>
                       <Text className={`font-semibold ${sel ? 'text-amber-400' : 'text-white'}`}>{s.label}</Text>
                       <Text className="text-navy-400 text-xs">{s.time}</Text>
                     </View>
                   </View>
-                  {sel && <Text className="text-amber-400">✓</Text>}
+                  {sel && <LucideIcon name="Check" size={18} color="#F59E0B" />}
                 </TouchableOpacity>
               );
             })}
           </View>
 
-          <TouchableOpacity
-            onPress={() => router.push('/(worker)/onboarding/pay')}
-            disabled={days.length === 0 || shifts.length === 0}
-            className={`rounded-2xl py-4 items-center ${days.length > 0 && shifts.length > 0 ? 'bg-amber-500' : 'bg-navy-700'}`}
-            activeOpacity={0.85}
-          >
-            <Text className="text-white font-bold text-base">Aage Badhein →</Text>
-          </TouchableOpacity>
+          <OnboardingFooter 
+            onBack={() => router.back()}
+            onNext={() => router.push('/(worker)/onboarding/pay')}
+            nextDisabled={days.length === 0 || shifts.length === 0}
+          />
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

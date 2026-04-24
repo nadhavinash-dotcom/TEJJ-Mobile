@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useDispatchStore } from '../../store/dispatchStore';
 import api from '../../lib/api';
 import { auth } from '../../lib/firebase';
+import { LucideIcon } from '../shared/LucideIcon';
 
 interface FlashJob {
   _id: string;
@@ -50,10 +51,11 @@ export function FlashNotification({ job }: { job: FlashJob }) {
   return (
     <Animated.View style={{ transform: [{ scale: pulse }] }} className="mx-4 mb-2 bg-red-900/90 border border-red-500 rounded-2xl p-4">
       <View className="flex-row items-center gap-2 mb-2">
-        <Text className="text-red-400 font-bold text-sm">⚡ FLASH JOB — Act fast!</Text>
+        <LucideIcon name="Zap" size={14} color="#EF4444" />
+        <Text className="text-red-400 font-bold text-sm">FLASH JOB — Act fast!</Text>
         <View className="flex-1" />
         <TouchableOpacity onPress={clearFlash}>
-          <Text className="text-navy-400">✕</Text>
+          <LucideIcon name="X" size={18} color="#94A3B8" />
         </TouchableOpacity>
       </View>
       <Text className="text-white font-bold text-base mb-1">{job.job_title}</Text>
@@ -63,10 +65,11 @@ export function FlashNotification({ job }: { job: FlashJob }) {
         <TouchableOpacity
           onPress={() => acceptMutation.mutate()}
           disabled={acceptMutation.isPending}
-          className="bg-red-500 px-6 py-2 rounded-xl"
+          className="bg-red-500 px-6 py-2 rounded-xl flex-row items-center gap-1"
           activeOpacity={0.85}
         >
-          <Text className="text-white font-bold">{acceptMutation.isPending ? '...' : 'Accept ⚡'}</Text>
+          <Text className="text-white font-bold">{acceptMutation.isPending ? '...' : 'Accept'}</Text>
+          {!acceptMutation.isPending && <LucideIcon name="Zap" size={14} color="#FFFFFF" />}
         </TouchableOpacity>
       </View>
     </Animated.View>

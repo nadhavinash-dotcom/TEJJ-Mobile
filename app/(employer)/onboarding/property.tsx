@@ -1,9 +1,13 @@
 import React from 'react';
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { VoiceMicButton } from '../../../src/components/shared/VoiceMicButton';
+import { StepIndicator } from '../../../src/components/shared/StepIndicator';
+import { OnboardingFooter } from '../../../src/components/shared/OnboardingFooter';
 import { useOnboardingStore } from '../../../src/store/onboardingStore';
 import { PROPERTY_TYPES } from '@/utils';
+import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 
 export default function PropertyScreen() {
   const { employer, updateEmployer } = useOnboardingStore();
@@ -14,10 +18,10 @@ export default function PropertyScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-6 pt-8">
-          <Text className="text-navy-400 text-sm mb-1">Step 1 of 5</Text>
+          <StepIndicator currentStep={1} totalSteps={4} />
           <Text className="text-white text-2xl font-bold mb-1">Property Details</Text>
           <Text className="text-navy-300 text-sm mb-4">Tell us about your establishment</Text>
           <VoiceMicButton onResult={handleVoiceResult} />
@@ -31,10 +35,11 @@ export default function PropertyScreen() {
                 <TouchableOpacity
                   key={pt.id}
                   onPress={() => updateEmployer({ property_type: pt.id })}
-                  className={`px-4 py-2 rounded-xl border ${employer.property_type === pt.id ? 'bg-blue-500/20 border-blue-400' : 'bg-navy-800 border-navy-600'}`}
+                  className={`px-4 py-3 rounded-xl border flex-row items-center gap-2 ${employer.property_type === pt.id ? 'bg-blue-600 border-blue-500' : 'bg-navy-800 border-navy-600'}`}
                   activeOpacity={0.75}
                 >
-                  <Text className={`text-sm font-medium ${employer.property_type === pt.id ? 'text-blue-300' : 'text-navy-300'}`}>{pt.label}</Text>
+                  <LucideIcon name={pt.icon || 'Home'} size={16} color={employer.property_type === pt.id ? '#FFFFFF' : '#94A3B8'} />
+                  <Text className={`text-sm font-medium ${employer.property_type === pt.id ? 'text-white' : 'text-navy-300'}`}>{pt.label}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -51,16 +56,14 @@ export default function PropertyScreen() {
             />
           </View>
 
-          <TouchableOpacity
-            onPress={() => router.push('/(employer)/onboarding/location')}
-            disabled={!employer.property_type || !employer.property_name}
-            className={`rounded-2xl py-4 items-center mt-2 ${employer.property_type && employer.property_name ? 'bg-blue-600' : 'bg-navy-700'}`}
-            activeOpacity={0.85}
-          >
-            <Text className="text-white font-bold text-base">Next →</Text>
-          </TouchableOpacity>
+          <OnboardingFooter 
+            onBack={() => router.back()}
+            onNext={() => router.push('/(employer)/onboarding/location')}
+            nextDisabled={!employer.property_type || !employer.property_name}
+            color="bg-blue-600"
+          />
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

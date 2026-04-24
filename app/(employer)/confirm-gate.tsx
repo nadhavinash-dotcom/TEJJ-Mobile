@@ -1,9 +1,11 @@
 import React from 'react';
-import { View, Text, SafeAreaView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { SafeScreen } from '../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../src/lib/api';
 import { auth } from '../../src/lib/firebase';
+import { LucideIcon } from '../../src/components/shared/LucideIcon';
 
 export default function ConfirmGateScreen() {
   const { data, isLoading } = useQuery({
@@ -16,13 +18,15 @@ export default function ConfirmGateScreen() {
   });
 
   if (isLoading) {
-    return <SafeAreaView className="flex-1 bg-navy-900 items-center justify-center"><ActivityIndicator color="#3B82F6" size="large" /></SafeAreaView>;
+    return <SafeScreen className="items-center justify-center"><ActivityIndicator color="#3B82F6" size="large" /></SafeScreen>;
   }
 
   if (data?.blocked && data?.pending_match) {
     return (
-      <SafeAreaView className="flex-1 bg-navy-900 px-6 justify-center">
-        <Text className="text-4xl text-center mb-4">⚠️</Text>
+      <SafeScreen className="flex-1 bg-navy-900 px-6 justify-center">
+        <View className="items-center mb-4">
+          <LucideIcon name="AlertTriangle" size={48} color="#F59E0B" />
+        </View>
         <Text className="text-white text-2xl font-bold mb-2 text-center">Confirm Gate</Text>
         <Text className="text-navy-300 text-sm text-center mb-8">
           You have an unresolved match. Please confirm whether the worker arrived before posting new jobs.
@@ -51,7 +55,7 @@ export default function ConfirmGateScreen() {
             <Text className="text-red-400 font-bold">Worker did not arrive (No-show)</Text>
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
+      </SafeScreen>
     );
   }
 

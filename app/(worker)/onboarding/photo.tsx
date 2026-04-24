@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, SafeAreaView, TouchableOpacity, Image, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Image, ActivityIndicator, Alert } from 'react-native';
+import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../../../src/lib/firebase';
+import { StepIndicator } from '../../../src/components/shared/StepIndicator';
+import { OnboardingFooter } from '../../../src/components/shared/OnboardingFooter';
 import { useOnboardingStore } from '../../../src/store/onboardingStore';
 import { useAuthStore } from '../../../src/store/authStore';
+import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 
 export default function PhotoScreen() {
   const { worker, updateWorker } = useOnboardingStore();
@@ -42,10 +46,10 @@ export default function PhotoScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-navy-900">
+    <SafeScreen className="flex-1">
       <View className="flex-1 px-6 pt-8">
-        <Text className="text-navy-400 text-sm mb-1">Step 4 of 10</Text>
-        <Text className="text-white text-2xl font-bold mb-1">Apni photo daalo</Text>
+        <StepIndicator currentStep={4} totalSteps={10} />
+        <Text className="text-white text-2xl font-bold mb-1">Add your photo</Text>
         <Text className="text-navy-300 text-sm mb-8">Add a clear face photo. This builds trust with employers.</Text>
 
         <View className="items-center mb-8">
@@ -53,7 +57,7 @@ export default function PhotoScreen() {
             <Image source={{ uri: worker.profile_photo_url }} className="w-36 h-36 rounded-full border-4 border-amber-500" />
           ) : (
             <View className="w-36 h-36 rounded-full bg-navy-800 border-2 border-dashed border-navy-600 items-center justify-center">
-              <Text className="text-4xl">👤</Text>
+              <LucideIcon name="User" size={48} color="#475569" />
               <Text className="text-navy-400 text-xs mt-2">No photo</Text>
             </View>
           )}
@@ -71,8 +75,8 @@ export default function PhotoScreen() {
             className="bg-navy-800 border border-navy-600 rounded-2xl py-4 flex-row items-center justify-center gap-3"
             activeOpacity={0.8}
           >
-            <Text className="text-xl">📷</Text>
-            <Text className="text-white font-semibold">Camera se lo</Text>
+            <LucideIcon name="Camera" size={20} color="#F59E0B" />
+            <Text className="text-white font-semibold">Take from Camera</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => pickImage(false)}
@@ -80,22 +84,17 @@ export default function PhotoScreen() {
             className="bg-navy-800 border border-navy-600 rounded-2xl py-4 flex-row items-center justify-center gap-3"
             activeOpacity={0.8}
           >
-            <Text className="text-xl">🖼️</Text>
-            <Text className="text-white font-semibold">Gallery se chuniye</Text>
+            <LucideIcon name="Image" size={20} color="#F59E0B" />
+            <Text className="text-white font-semibold">Choose from Gallery</Text>
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity
-          onPress={() => router.push('/(worker)/onboarding/location')}
-          disabled={uploading}
-          className={`rounded-2xl py-4 items-center ${worker.profile_photo_url ? 'bg-amber-500' : 'bg-navy-700'}`}
-          activeOpacity={0.85}
-        >
-          <Text className="text-white font-bold text-base">
-            {worker.profile_photo_url ? 'Aage Badhein →' : 'Skip for now →'}
-          </Text>
-        </TouchableOpacity>
+        <OnboardingFooter 
+          onBack={() => router.back()}
+          onNext={() => router.push('/(worker)/onboarding/location')}
+          nextLabel={worker.profile_photo_url ? 'Next →' : 'Skip for now →'}
+        />
       </View>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }
