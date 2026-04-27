@@ -8,3 +8,6 @@ google-services.json
 ./.env
 # @end expo-cli
 node_modules
+
+.gitconfig-personal
+.gitconfig-work
