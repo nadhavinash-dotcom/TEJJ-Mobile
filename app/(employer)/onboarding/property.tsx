@@ -23,36 +23,36 @@ export default function PropertyScreen() {
         <View className="px-6 pt-8">
           <StepIndicator currentStep={1} totalSteps={4} />
           <Text className="text-white text-2xl font-bold mb-1">Property Details</Text>
-          <Text className="text-navy-300 text-sm mb-4">Tell us about your establishment</Text>
+          <Text className="text-zinc-300 text-sm mb-4">Tell us about your establishment</Text>
           <VoiceMicButton onResult={handleVoiceResult} />
         </View>
 
         <View className="px-6 py-4 gap-4">
           <View>
-            <Text className="text-navy-300 text-sm mb-2">Property type</Text>
+            <Text className="text-zinc-300 text-sm mb-2">Property type</Text>
             <View className="flex-row flex-wrap gap-2">
               {PROPERTY_TYPES.map((pt) => (
                 <TouchableOpacity
                   key={pt.id}
                   onPress={() => updateEmployer({ property_type: pt.id })}
-                  className={`px-4 py-3 rounded-xl border flex-row items-center gap-2 ${employer.property_type === pt.id ? 'bg-blue-600 border-blue-500' : 'bg-navy-800 border-navy-600'}`}
+                  className={`px-4 py-3 rounded-xl border flex-row items-center gap-2 ${employer.property_type === pt.id ? 'bg-blue-600 border-blue-500' : 'bg-zinc-800 border-zinc-600'}`}
                   activeOpacity={0.75}
                 >
                   <LucideIcon name={pt.icon || 'Home'} size={16} color={employer.property_type === pt.id ? '#FFFFFF' : '#94A3B8'} />
-                  <Text className={`text-sm font-medium ${employer.property_type === pt.id ? 'text-white' : 'text-navy-300'}`}>{pt.label}</Text>
+                  <Text className={`text-sm font-medium ${employer.property_type === pt.id ? 'text-white' : 'text-zinc-300'}`}>{pt.label}</Text>
                 </TouchableOpacity>
               ))}
             </View>
           </View>
 
           <View>
-            <Text className="text-navy-300 text-sm mb-2">Property name</Text>
+            <Text className="text-zinc-300 text-sm mb-2">Property name</Text>
             <TextInput
               value={employer.property_name ?? ''}
               onChangeText={(v) => updateEmployer({ property_name: v })}
               placeholder="E.g. The Grand Cafe, Hotel Sunrise"
               placeholderTextColor="#4B5563"
-              className="bg-navy-800 border border-navy-600 rounded-xl px-4 py-3 text-white text-sm"
+              className="bg-zinc-800 border border-zinc-600 rounded-xl px-4 py-3 text-white text-sm"
             />
           </View>
 

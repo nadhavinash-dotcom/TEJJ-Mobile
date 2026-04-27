@@ -2,9 +2,7 @@ import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
-import { signOut } from 'firebase/auth';
 import { useQuery } from '@tanstack/react-query';
-import { auth } from '../../../src/lib/firebase';
 import { useAuthStore } from '../../../src/store/authStore';
 import api from '../../../src/lib/api';
 
@@ -14,8 +12,7 @@ export default function EmployerProfileScreen() {
   const { data } = useQuery({
     queryKey: ['employer-profile'],
     queryFn: async () => {
-      const token = await auth.currentUser?.getIdToken();
-      const res = await api.get('/employers/me', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.get('/employers/me');
       return res.data.data;
     },
   });
@@ -23,7 +20,7 @@ export default function EmployerProfileScreen() {
   const handleSignOut = () => {
     Alert.alert('Sign Out', 'Are you sure?', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Sign Out', style: 'destructive', onPress: async () => { await signOut(auth); clear(); router.replace('/(auth)/language'); } },
+      { text: 'Sign Out', style: 'destructive', onPress: async () => { clear(); router.replace('/(auth)/language'); } },
     ]);
   };
 

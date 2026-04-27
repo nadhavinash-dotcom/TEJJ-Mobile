@@ -24,7 +24,7 @@ export function SkillGrid({ selected, onSelect, multiSelect, selectedList = [], 
   };
 
   return (
-    <View className="flex-row flex-wrap gap-2 px-4">
+    <View className="flex-row flex-wrap gap-2 px-4 pt-6">
       {SKILL_LIST.map((skill) => {
         const isSelected = multiSelect ? selectedList.includes(skill.id) : selected === skill.id;
         return (
@@ -33,7 +33,7 @@ export function SkillGrid({ selected, onSelect, multiSelect, selectedList = [], 
             onPress={() => handlePress(skill.id)}
             className={`items-center justify-center rounded-2xl border w-[22%] py-3 ${isSelected
               ? 'bg-amber-500 border-amber-500'
-              : 'bg-navy-800 border-navy-600'
+              : 'bg-zinc-800 border-zinc-600'
               }`}
             activeOpacity={0.7}
           >
@@ -44,7 +44,7 @@ export function SkillGrid({ selected, onSelect, multiSelect, selectedList = [], 
                 color={isSelected ? '#FFFFFF' : '#94A3B8'} 
               />
             </View>
-            <Text className={`text-[10px] text-center font-medium ${isSelected ? 'text-white' : 'text-navy-200'}`} numberOfLines={1}>
+            <Text className={`text-[10px] text-center font-medium ${isSelected ? 'text-white' : 'text-[#94A3B8]'}`} numberOfLines={1}>
               {skill.label}
             </Text>
             {isSelected && (

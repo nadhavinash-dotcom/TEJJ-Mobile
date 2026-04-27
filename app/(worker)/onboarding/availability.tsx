@@ -39,7 +39,7 @@ export default function AvailabilityScreen() {
         <View className="px-6 pt-8">
           <StepIndicator currentStep={6} totalSteps={10} />
           <Text className="text-white text-2xl font-bold mb-1">When are you available?</Text>
-          <Text className="text-navy-300 text-sm mb-4">Which days and shifts can you work?</Text>
+          <Text className="text-zinc-300 text-sm mb-4">Which days and shifts can you work?</Text>
           <VoiceMicButton onResult={handleVoiceResult} />
         </View>
 
@@ -52,10 +52,10 @@ export default function AvailabilityScreen() {
                 <TouchableOpacity
                   key={d}
                   onPress={() => toggleDay(d)}
-                  className={`px-4 py-2 rounded-xl border ${sel ? 'bg-amber-500 border-amber-500' : 'bg-navy-800 border-navy-600'}`}
+                  className={`px-4 py-2 rounded-xl border ${sel ? 'bg-amber-500 border-amber-500' : 'bg-zinc-800 border-zinc-600'}`}
                   activeOpacity={0.75}
                 >
-                  <Text className={`font-medium ${sel ? 'text-white' : 'text-navy-300'}`}>{d}</Text>
+                  <Text className={`font-medium ${sel ? 'text-white' : 'text-zinc-300'}`}>{d}</Text>
                 </TouchableOpacity>
               );
             })}
@@ -73,14 +73,14 @@ export default function AvailabilityScreen() {
                 <TouchableOpacity
                   key={s.id}
                   onPress={() => toggleShift(s.id)}
-                  className={`flex-row items-center justify-between px-4 py-3 rounded-xl border ${sel ? 'bg-amber-500/20 border-amber-500' : 'bg-navy-800 border-navy-600'}`}
+                  className={`flex-row items-center justify-between px-4 py-3 rounded-xl border ${sel ? 'bg-amber-500/20 border-amber-500' : 'bg-zinc-800 border-zinc-600'}`}
                   activeOpacity={0.75}
                 >
                   <View className="flex-row items-center gap-3">
                     <LucideIcon name={s.icon} size={20} color={sel ? '#F59E0B' : '#94A3B8'} />
                     <View>
                       <Text className={`font-semibold ${sel ? 'text-amber-400' : 'text-white'}`}>{s.label}</Text>
-                      <Text className="text-navy-400 text-xs">{s.time}</Text>
+                      <Text className="text-zinc-400 text-xs">{s.time}</Text>
                     </View>
                   </View>
                   {sel && <LucideIcon name="Check" size={18} color="#F59E0B" />}

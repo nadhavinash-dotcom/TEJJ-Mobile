@@ -1,36 +1,36 @@
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
-import { SafeScreen } from '../../../src/components/shared/SafeScreen';
+import { View, Text, ScrollView, TouchableOpacity, Image, Alert, SafeAreaView } from 'react-native';
 import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
-import { signOut } from 'firebase/auth';
-import { auth } from '../../../src/lib/firebase';
 import { useAuthStore } from '../../../src/store/authStore';
-import { SKILL_LIST, LANGUAGES } from '@/utils';
 import api from '../../../src/lib/api';
-import { LucideIcon } from '../../../src/components/shared/LucideIcon';
+import { 
+  StyledUserCircle, 
+  StyledChevronRight, 
+  StyledLogOut,
+  StyledClipboardCheck,
+  StyledStar,
+  StyledBell,
+  StyledSettings
+} from '../../../src/components/tell/Icons';
 
 export default function ProfileScreen() {
-  const { clear, language, setLanguage } = useAuthStore();
+  const { clear } = useAuthStore();
 
   const { data } = useQuery({
     queryKey: ['worker-profile'],
     queryFn: async () => {
-      const token = await auth.currentUser?.getIdToken();
-      const res = await api.get('/workers/me', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.get('/workers/me');
       return res.data.data;
     },
     staleTime: 120_000,
   });
-
-  const skill = SKILL_LIST.find((s) => s.id === data?.primary_skill);
 
   const handleSignOut = () => {
     Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Sign Out', style: 'destructive', onPress: async () => {
-          await signOut(auth);
           clear();
           router.replace('/(auth)/language');
         },
@@ -38,65 +38,60 @@ export default function ProfileScreen() {
     ]);
   };
 
-  const MenuItem = ({ icon, label, onPress }: { icon: string; label: string; onPress: () => void }) => (
-    <TouchableOpacity onPress={onPress} className="flex-row items-center justify-between px-4 py-4 border-b border-navy-700" activeOpacity={0.7}>
-      <View className="flex-row items-center gap-3">
-        <LucideIcon name={icon} size={20} color="#F59E0B" />
-        <Text className="text-white font-medium">{label}</Text>
+  const MenuItem = ({ Icon, label, onPress }: { Icon: any; label: string; onPress: () => void }) => (
+    <TouchableOpacity onPress={onPress} className="flex-row items-center justify-between px-6 py-5 border-b border-surface-container-highest/30" activeOpacity={0.7}>
+      <View className="flex-row items-center gap-4">
+        <Icon color="#000666" size={22} />
+        <Text className="text-on-surface font-bold text-base">{label}</Text>
       </View>
-      <LucideIcon name="ChevronRight" size={16} color="#475569" />
+      <StyledChevronRight color="#c6c5d4" size={18} />
     </TouchableOpacity>
   );
 
   return (
-    <SafeScreen className="flex-1">
+    <SafeAreaView className="flex-1 bg-surface">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        {/* Profile header */}
-        <View className="px-4 pt-6 pb-4 flex-row items-center gap-4">
-          {data?.profile_photo_url ? (
-            <Image source={{ uri: data.profile_photo_url }} className="w-16 h-16 rounded-full border-2 border-amber-500" />
-          ) : (
-            <View className="w-16 h-16 rounded-full bg-navy-700 items-center justify-center">
-              <LucideIcon name="User" size={32} color="#94A3B8" />
-            </View>
-          )}
-          <View className="flex-1">
-            <View className="flex-row items-center gap-2">
-              {skill?.icon && <LucideIcon name={skill.icon} size={20} color="#F59E0B" />}
-              <Text className="text-white text-lg font-bold">{skill?.label ?? 'Worker'}</Text>
-            </View>
-            <Text className="text-navy-300 text-sm">{data?.years_experience} yrs · {data?.home_city}</Text>
-            <View className="flex-row items-center gap-1 mt-1">
-              <Text className="text-amber-400 text-sm">⭐ {(data?.trust_score ?? 0).toFixed(1)}</Text>
-              <Text className="text-navy-500 text-xs">Trust Score</Text>
+        <View className="px-6 pt-10 pb-8 flex-row items-center gap-6">
+          <View className="relative">
+            {data?.profile_photo_url ? (
+              <Image source={{ uri: data.profile_photo_url }} className="w-24 h-24 rounded-3xl border-4 border-white shadow-sm" />
+            ) : (
+              <View className="w-24 h-24 rounded-3xl bg-primary-fixed items-center justify-center border-4 border-white shadow-sm">
+                <StyledUserCircle color="#000666" size={48} />
+              </View>
+            )}
+            <View className="absolute -bottom-2 -right-2 bg-secondary px-2 py-1 rounded-lg border-2 border-white">
+              <Text className="text-white text-[10px] font-black italic">PRO</Text>
             </View>
           </View>
-          <TouchableOpacity 
-            onPress={() => router.push('/(worker)/profile/edit')}
-            className="bg-navy-800 border border-amber-500/40 px-3 py-2 rounded-xl"
-            activeOpacity={0.7}
-          >
-            <Text className="text-amber-400 font-semibold text-sm">Edit</Text>
-          </TouchableOpacity>
+          
+          <View className="flex-1">
+            <Text className="text-primary text-2xl font-black">{data?.name || 'Worker Profile'}</Text>
+            <Text className="text-on-surface-variant font-bold text-sm uppercase tracking-wider">{data?.primary_role || 'Culinary Mission'}</Text>
+            <View className="flex-row items-center gap-3 mt-2">
+              <View className="bg-surface-container-high px-3 py-1 rounded-full border border-surface-container-highest/50">
+                <Text className="text-primary font-bold text-xs">⭐ {(data?.trust_score ?? 0).toFixed(1)}</Text>
+              </View>
+              <Text className="text-outline text-xs font-bold uppercase tracking-tighter">Elite Member</Text>
+            </View>
+          </View>
         </View>
 
-        <View className="mx-4 bg-navy-800 rounded-2xl border border-navy-700 mb-4 overflow-hidden">
-          <MenuItem icon="FileText" label="My Applications" onPress={() => router.push('/(worker)/(tabs)/applications')} />
-          <MenuItem icon="Star" label="Trust Dashboard" onPress={() => router.push('/(worker)/(tabs)/trust')} />
-          <MenuItem icon="Gift" label="TEJJ Benefits" onPress={() => router.push('/(worker)/benefits')} />
-          <MenuItem icon="Bot" label="Agent Mode" onPress={() => router.push('/(worker)/agent')} />
-          <MenuItem icon="Users" label="Refer a Friend" onPress={() => router.push('/(worker)/referral')} />
-          <MenuItem icon="EyeOff" label="Whisper Network" onPress={() => router.push('/(worker)/whisper')} />
-          <MenuItem icon="Bell" label="Notifications" onPress={() => router.push('/(shared)/notifications')} />
-          <MenuItem icon="Settings" label="Settings" onPress={() => router.push('/(shared)/settings')} />
+        <View className="mx-6 bg-surface-container-low rounded-3xl border border-surface-container-highest/30 mb-8 overflow-hidden">
+          <MenuItem Icon={StyledClipboardCheck} label="My Applications" onPress={() => router.push('/(worker)/(tabs)/applications')} />
+          {/* <MenuItem Icon={StyledStar} label="Trust Dashboard" onPress={() => router.push('/(worker)/(tabs)/trust')} /> */}
+          <MenuItem Icon={StyledBell} label="Notifications" onPress={() => router.push('/(shared)/notifications')} />
+          <MenuItem Icon={StyledSettings} label="Settings" onPress={() => router.push('/(shared)/settings')} />
         </View>
 
-        <View className="mx-4 mb-8">
-          <TouchableOpacity onPress={handleSignOut} className="bg-red-500/10 border border-red-500/30 rounded-2xl py-4 items-center" activeOpacity={0.8}>
-            <Text className="text-red-400 font-semibold">Sign Out</Text>
+        <View className="mx-6 mb-12">
+          <TouchableOpacity onPress={handleSignOut} className="flex-row items-center justify-center gap-3 py-4 bg-error-container/20 border border-error/10 rounded-2xl active:opacity-80">
+            <StyledLogOut color="#ba1a1a" size={20} />
+            <Text className="text-error font-bold text-base">Sign Out</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeScreen>
+    </SafeAreaView>
   );
 }
+

@@ -11,15 +11,15 @@ export default function EmployerTabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#0F1F3D',
-          borderTopColor: '#1E3A5F',
+          backgroundColor: '#ffffff',
+          borderTopColor: '#f0edf2',
           borderTopWidth: 1,
-          height: 60,
-          paddingBottom: 8,
+          height: 65,
+          paddingBottom: 10,
         },
-        tabBarActiveTintColor: '#3B82F6',
-        tabBarInactiveTintColor: '#4B6280',
-        tabBarLabelStyle: { fontSize: 10, fontWeight: '600' },
+        tabBarActiveTintColor: '#000666',
+        tabBarInactiveTintColor: '#454652',
+        tabBarLabelStyle: { fontSize: 11, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5 },
       }}
     >
       <Tabs.Screen name="dashboard" options={{ title: 'Dashboard', tabBarIcon: ({ focused }) => <TabIcon icon="📊" focused={focused} /> }} />

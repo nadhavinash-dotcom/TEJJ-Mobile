@@ -26,14 +26,14 @@ export default function PayScreen() {
         <View className="px-6 pt-8">
           <StepIndicator currentStep={7} totalSteps={10} />
           <Text className="text-white text-2xl font-bold mb-1">What is your minimum pay?</Text>
-          <Text className="text-navy-300 text-sm mb-4">What is your minimum pay per shift?</Text>
+          <Text className="text-zinc-300 text-sm mb-4">What is your minimum pay per shift?</Text>
           <VoiceMicButton onResult={handleVoiceResult} />
         </View>
 
         <View className="px-6 py-6 items-center">
-          <Text className="text-navy-400 text-sm mb-1">Minimum per shift</Text>
+          <Text className="text-zinc-400 text-sm mb-1">Minimum per shift</Text>
           <Text className="text-amber-400 text-5xl font-bold mb-1">₹{pay.toLocaleString('en-IN')}</Text>
-          <Text className="text-navy-400 text-sm mb-8">≈ ₹{(pay * 26).toLocaleString('en-IN')} / month (26 shifts)</Text>
+          <Text className="text-zinc-400 text-sm mb-8">≈ ₹{(pay * 26).toLocaleString('en-IN')} / month (26 shifts)</Text>
 
           <Slider
             style={{ width: '100%', height: 40 }}
@@ -47,20 +47,20 @@ export default function PayScreen() {
             thumbTintColor="#F59E0B"
           />
           <View className="flex-row justify-between w-full mt-1 mb-6">
-            <Text className="text-navy-400 text-xs">₹200</Text>
-            <Text className="text-navy-400 text-xs">₹2,000</Text>
+            <Text className="text-zinc-400 text-xs">₹200</Text>
+            <Text className="text-zinc-400 text-xs">₹2,000</Text>
           </View>
 
-          <Text className="text-navy-300 text-sm mb-3 self-start">Quick select</Text>
+          <Text className="text-zinc-300 text-sm mb-3 self-start">Quick select</Text>
           <View className="flex-row flex-wrap gap-2 w-full">
             {QUICK_PICKS.map((p) => (
               <TouchableOpacity
                 key={p}
                 onPress={() => updateWorker({ min_pay_per_shift: p })}
-                className={`px-4 py-2 rounded-xl border ${pay === p ? 'bg-amber-500 border-amber-500' : 'bg-navy-800 border-navy-600'}`}
+                className={`px-4 py-2 rounded-xl border ${pay === p ? 'bg-amber-500 border-amber-500' : 'bg-zinc-800 border-zinc-600'}`}
                 activeOpacity={0.75}
               >
-                <Text className={`font-medium text-sm ${pay === p ? 'text-white' : 'text-navy-300'}`}>₹{p}</Text>
+                <Text className={`font-medium text-sm ${pay === p ? 'text-white' : 'text-zinc-300'}`}>₹{p}</Text>
               </TouchableOpacity>
             ))}
           </View>

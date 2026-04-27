@@ -5,6 +5,7 @@ interface WorkerOnboarding {
   sub_skills?: string[];
   years_experience?: number;
   profile_photo_url?: string;
+  profile_photo_uri?: string; // Local device URI
   home_lat?: number;
   home_lng?: number;
   home_city?: string;
@@ -13,6 +14,7 @@ interface WorkerOnboarding {
   preferred_shifts?: string[];
   min_pay_per_shift?: number;
   skill_video_url?: string;
+  skill_video_uri?: string; // Local device URI
   ai_score?: { technique: number; speed: number; hygiene: number; warmth: number };
   fcm_token?: string;
 }

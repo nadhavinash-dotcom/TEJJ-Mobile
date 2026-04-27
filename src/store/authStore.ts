@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface AuthState {
   userId: string | null;
+  token: string | null;
   firebaseUid: string | null;
   language: Language;
   activeRole: 'worker' | 'employer' | null;
@@ -19,7 +20,8 @@ interface AuthState {
 
   setUser: (params: {
     userId: string;
-    firebaseUid: string;
+    token: string;
+    firebaseUid?: string;
     hasWorker: boolean;
     hasEmployer: boolean;
     workerId?: string;
@@ -38,6 +40,7 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       userId: null,
+      token: null,
       firebaseUid: null,
       language: 'hi',
       activeRole: null,
@@ -52,7 +55,8 @@ export const useAuthStore = create<AuthState>()(
 
       setUser: (params) => set({
         userId: params.userId,
-        firebaseUid: params.firebaseUid,
+        token: params.token,
+        firebaseUid: params.firebaseUid ?? null,
         hasWorker: params.hasWorker,
         hasEmployer: params.hasEmployer,
         workerId: params.workerId ?? null,
@@ -70,6 +74,7 @@ export const useAuthStore = create<AuthState>()(
 
       clear: () => set({
         userId: null,
+        token: null,
         firebaseUid: null,
         activeRole: null,
         hasWorker: false,
@@ -86,6 +91,7 @@ export const useAuthStore = create<AuthState>()(
       // Don't persist transient state
       partialize: (state) => ({
         userId: state.userId,
+        token: state.token,
         firebaseUid: state.firebaseUid,
         language: state.language,
         activeRole: state.activeRole,

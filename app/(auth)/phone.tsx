@@ -1,19 +1,22 @@
-import React, { useState, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
-import { SafeScreen } from '../../src/components/shared/SafeScreen';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  Alert,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { FirebaseRecaptchaVerifierModal } from 'expo-firebase-recaptcha';
-import { signInWithPhoneNumber, PhoneAuthProvider } from 'firebase/auth';
-import { auth, firebaseConfig } from '../../src/lib/firebase';
-import { useAuthStore } from '../../src/store/authStore';
+import api from '../../src/lib/api';
+import PhoneForm from '../../src/components/tell/auth/PhoneForm';
 
 export default function PhoneScreen() {
-  const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
-  const recaptchaVerifier = useRef<FirebaseRecaptchaVerifierModal>(null);
-  const setVerificationId = useAuthStore((s) => s.setVerificationId);
 
-  const handleSendOTP = async () => {
+  const handleSendOTP = async (phone: string) => {
     const cleaned = phone.replace(/\D/g, '');
     if (cleaned.length !== 10) {
       Alert.alert('Invalid Number', 'Please enter a valid 10-digit mobile number.');
@@ -22,9 +25,13 @@ export default function PhoneScreen() {
     setLoading(true);
     try {
       const phoneNumber = `+91${cleaned}`;
-      const confirmation = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier.current!);
-      setVerificationId(confirmation.verificationId);
-      router.push({ pathname: '/(auth)/otp', params: { phone: phoneNumber } });
+      const response = await api.post('/auth/otp/send', { phone_number: phoneNumber });
+      
+      if (response.data.success) {
+        router.push({ pathname: '/(auth)/otp', params: { phone: phoneNumber } });
+      } else {
+        throw new Error(response.data.error || 'Failed to send OTP');
+      }
     } catch (e: any) {
       Alert.alert('Error', e.message ?? 'Could not send OTP. Try again.');
     } finally {
@@ -33,51 +40,56 @@ export default function PhoneScreen() {
   };
 
   return (
-    <SafeScreen className="flex-1">
-      <FirebaseRecaptchaVerifierModal
-        ref={recaptchaVerifier}
-        firebaseConfig={firebaseConfig}
-        attemptInvisibleVerification={false}
-      />
-      <View className="flex-1 px-6 pt-12">
-        <TouchableOpacity onPress={() => router.back()} className="mb-8">
-          <Text className="text-amber-400 text-base">← Back</Text>
-        </TouchableOpacity>
+    <SafeAreaView className="flex-1 bg-surface">
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
+          <View className="flex-1 items-center justify-center px-4 py-12">
+            <View className="w-full max-w-md">
+              <View className="mb-2 items-center">
+                <Text
+                  className="text-5xl font-black text-primary tracking-tighter italic"
+                  style={{ includeFontPadding: false }}
+                >
+                  TEJJ
+                </Text>
+              </View>
 
-        <Text className="text-white text-2xl font-bold mb-2">Mobile Number</Text>
-        <Text className="text-navy-300 text-sm mb-8">We'll send an OTP to verify your number</Text>
+              <View className="space-y-2 mb-8">
+                <Text className="text-lg text-center text-on-surface-variant leading-relaxed">
+                  Enter your phone number to access the Resilient Concierge dashboard.
+                </Text>
+              </View>
 
-        <View className="flex-row items-center bg-navy-800 border border-navy-600 rounded-2xl px-4 mb-6">
-          <Text className="text-white text-base mr-2">🇮🇳 +91</Text>
-          <View className="w-px h-6 bg-navy-600 mr-3" />
-          <TextInput
-            value={phone}
-            onChangeText={setPhone}
-            placeholder="Enter 10-digit number"
-            placeholderTextColor="#4B5563"
-            keyboardType="phone-pad"
-            maxLength={10}
-            className="flex-1 text-white text-base py-4"
-          />
-        </View>
+              <PhoneForm
+                handleSendOtp={handleSendOTP}
+                isLoading={loading}
+                setIsLoading={setLoading}
+              />
 
-        <TouchableOpacity
-          onPress={handleSendOTP}
-          disabled={loading || phone.length < 10}
-          className={`rounded-2xl py-4 items-center ${loading || phone.length < 10 ? 'bg-navy-700' : 'bg-amber-500'}`}
-          activeOpacity={0.8}
-        >
-          {loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text className="text-white font-bold text-base">Send OTP →</Text>
-          )}
-        </TouchableOpacity>
-
-        <Text className="text-navy-400 text-xs text-center mt-6">
-          By continuing, you agree to TEJJ's Terms of Service and Privacy Policy
-        </Text>
-      </View>
-    </SafeScreen>
+              <View className="mt-8 p-6 rounded-3xl bg-surface-container-low flex-row items-center gap-6 overflow-hidden relative mb-12">
+                <View className="flex-1 space-y-1 z-10">
+                  <Text className="font-bold text-primary text-lg">Hospitality Ready</Text>
+                  <Text className="text-sm text-on-surface-variant leading-tight">
+                    TEJJ connects elite staff with India's premium hospitality venues.
+                  </Text>
+                </View>
+                <View className="w-20 h-20 rounded-2xl overflow-hidden bg-primary rotate-12 flex-shrink-0 z-10 border border-primary/20">
+                  <Image
+                    source={{ uri: 'https://images.unsplash.com/photo-1562790351-d273a961e0e9?auto=format&fit=crop&q=80&w=200' }}
+                    className="w-full h-full"
+                    resizeMode="cover"
+                  />
+                </View>
+                <View className="absolute -right-10 -bottom-10 w-40 h-40 bg-secondary-container opacity-20 rounded-full" />
+              </View>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
+
