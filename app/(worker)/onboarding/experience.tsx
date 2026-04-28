@@ -46,7 +46,7 @@ export default function ExperienceScreen() {
             value={years}
             onValueChange={(v) => updateWorker({ years_experience: v })}
             minimumTrackTintColor="#F59E0B"
-            maximumTrackTintColor="#374151"
+            maximumTrackTintColor="#f5f5f5"
             thumbTintColor="#F59E0B"
           />
           <View className="flex-row justify-between w-full mt-1">
@@ -60,10 +60,10 @@ export default function ExperienceScreen() {
             <TouchableOpacity
               key={n}
               onPress={() => updateWorker({ years_experience: n })}
-              className={`px-3 py-2 rounded-xl border ${years === n ? 'bg-amber-500 border-amber-500' : 'bg-navy-800 border-navy-600'}`}
+              className={`px-3 py-2 rounded-xl border ${years === n ? 'bg-amber-500 border-amber-500' : 'bg-zinc-800 border-zinc-600'}`}
               activeOpacity={0.75}
             >
-              <Text className={`text-sm ${years === n ? 'text-white font-bold' : 'text-navy-300'}`}>{n}yr</Text>
+              <Text className={`text-sm ${years === n ? 'text-white font-bold' : 'text-zinc-400'}`}>{n}yr</Text>
             </TouchableOpacity>
           ))}
         </View>

@@ -34,7 +34,7 @@ export default function SubSkillScreen() {
         <View className="px-6 pt-8 pb-4">
           <StepIndicator currentStep={2} totalSteps={10} />
           <Text className="text-white text-2xl font-bold mb-1">What is your speciality?</Text>
-          <Text className="text-navy-300 text-sm mb-4">
+          <Text className="text-zinc-300 text-sm mb-4">
             {skillDef ? `${skillDef.label} — ` : ''}Select your specialisation
           </Text>
           <VoiceMicButton onResult={handleVoiceResult} />
@@ -42,7 +42,7 @@ export default function SubSkillScreen() {
 
         {cuisines.length > 0 && (
           <View className="px-6">
-            <Text className="text-navy-300 text-sm mb-3">Cuisine speciality</Text>
+            <Text className="text-zinc-300 text-sm mb-3">Cuisine speciality</Text>
             <View className="flex-row flex-wrap gap-2">
               {cuisines.map((c) => {
                 const sel = (worker.sub_skills ?? []).includes(c.id);
@@ -50,10 +50,10 @@ export default function SubSkillScreen() {
                   <TouchableOpacity
                     key={c.id}
                     onPress={() => toggleCuisine(c.id)}
-                    className={`px-4 py-2 rounded-xl border ${sel ? 'bg-amber-500 border-amber-500' : 'bg-navy-800 border-navy-600'}`}
+                    className={`px-4 py-2 rounded-xl border ${sel ? 'bg-amber-500 border-amber-500' : 'bg-zinc-800 border-zinc-600'}`}
                     activeOpacity={0.75}
                   >
-                    <Text className={`text-sm font-medium ${sel ? 'text-white' : 'text-navy-300'}`}>{c.label}</Text>
+                    <Text className={`text-sm font-medium ${sel ? 'text-white' : 'text-zinc-400'}`}>{c.label}</Text>
                   </TouchableOpacity>
                 );
               })}
@@ -63,7 +63,7 @@ export default function SubSkillScreen() {
 
         {cuisines.length === 0 && (
           <View className="px-6 py-4">
-            <Text className="text-navy-400 text-sm">No sub-skills available for this role. Continue to next step.</Text>
+            <Text className="text-zinc-400 text-sm">No sub-skills available for this role. Continue to next step.</Text>
           </View>
         )}
 

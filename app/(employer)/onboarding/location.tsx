@@ -37,24 +37,24 @@ export default function EmployerLocationScreen() {
       <View className="flex-1 px-6 pt-8">
         <StepIndicator currentStep={2} totalSteps={4} />
         <Text className="text-white text-2xl font-bold mb-1">Property Location</Text>
-        <Text className="text-navy-300 text-sm mb-4">Pin your property on the map</Text>
+        <Text className="text-zinc-300 text-sm mb-4">Pin your property on the map</Text>
 
-        <View className="h-48 rounded-2xl overflow-hidden mb-4 bg-navy-800 items-center justify-center">
+        <View className="h-48 rounded-2xl overflow-hidden mb-4 bg-zinc-800 items-center justify-center">
           {employer.lat ? (
             <MapPicker latitude={employer.lat} longitude={employer.lng!} onLocationChange={(lat, lng) => updateEmployer({ lat, lng })} />
           ) : (
-            <Text className="text-navy-400">Tap below to detect your location</Text>
+            <Text className="text-zinc-400">Tap below to detect your location</Text>
           )}
         </View>
 
         {employer.address && (
-          <View className="bg-navy-800 border border-navy-600 rounded-xl px-4 py-3 mb-4 flex-row items-center gap-2">
+          <View className="bg-zinc-800 border border-zinc-600 rounded-xl px-4 py-3 mb-4 flex-row items-center gap-2">
             <LucideIcon name="MapPin" size={16} color="#3B82F6" />
             <Text className="text-white font-medium flex-1">{employer.address}</Text>
           </View>
         )}
 
-        <TouchableOpacity onPress={detectLocation} disabled={detecting} className="bg-navy-800 border border-blue-500/40 rounded-2xl py-3 flex-row items-center justify-center gap-2 mb-6" activeOpacity={0.8}>
+        <TouchableOpacity onPress={detectLocation} disabled={detecting} className="bg-zinc-800 border border-blue-500/40 rounded-2xl py-3 flex-row items-center justify-center gap-2 mb-6" activeOpacity={0.8}>
           {detecting ? <ActivityIndicator color="#3B82F6" size="small" /> : <LucideIcon name="Locate" size={18} color="#3B82F6" />}
           <Text className="text-blue-400 font-semibold">{detecting ? 'Detecting...' : 'Detect my location'}</Text>
         </TouchableOpacity>

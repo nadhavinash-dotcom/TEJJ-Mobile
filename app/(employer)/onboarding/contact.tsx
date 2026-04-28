@@ -16,22 +16,22 @@ export default function EmployerContactScreen() {
           <StepIndicator currentStep={3} totalSteps={4} />
           <View>
             <Text className="text-white text-2xl font-bold mb-1">Contact Details</Text>
-            <Text className="text-navy-300 text-sm mb-6">Who should workers contact on arrival?</Text>
+            <Text className="text-zinc-300 text-sm mb-6">Who should workers contact on arrival?</Text>
           </View>
 
           <View>
-            <Text className="text-navy-300 text-sm mb-2">Contact person name</Text>
+            <Text className="text-zinc-300 text-sm mb-2">Contact person name</Text>
             <TextInput
               value={employer.contact_name ?? ''}
               onChangeText={(v) => updateEmployer({ contact_name: v })}
               placeholder="E.g. Ravi Kumar"
               placeholderTextColor="#4B5563"
-              className="bg-navy-800 border border-navy-600 rounded-xl px-4 py-3 text-white text-sm"
+              className="bg-zinc-800 border border-zinc-600 rounded-xl px-4 py-3 text-white text-sm"
             />
           </View>
 
           <View>
-            <Text className="text-navy-300 text-sm mb-2">Contact phone</Text>
+            <Text className="text-zinc-300 text-sm mb-2">Contact phone</Text>
             <TextInput
               value={employer.contact_phone ?? ''}
               onChangeText={(v) => updateEmployer({ contact_phone: v })}
@@ -39,12 +39,12 @@ export default function EmployerContactScreen() {
               placeholderTextColor="#4B5563"
               keyboardType="phone-pad"
               maxLength={10}
-              className="bg-navy-800 border border-navy-600 rounded-xl px-4 py-3 text-white text-sm"
+              className="bg-zinc-800 border border-zinc-600 rounded-xl px-4 py-3 text-white text-sm"
             />
           </View>
 
           <View>
-            <Text className="text-navy-300 text-sm mb-2">Email (optional)</Text>
+            <Text className="text-zinc-300 text-sm mb-2">Email (optional)</Text>
             <TextInput
               value={employer.email ?? ''}
               onChangeText={(v) => updateEmployer({ email: v })}
@@ -52,7 +52,7 @@ export default function EmployerContactScreen() {
               placeholderTextColor="#4B5563"
               keyboardType="email-address"
               autoCapitalize="none"
-              className="bg-navy-800 border border-navy-600 rounded-xl px-4 py-3 text-white text-sm"
+              className="bg-zinc-800 border border-zinc-600 rounded-xl px-4 py-3 text-white text-sm"
             />
           </View>
 

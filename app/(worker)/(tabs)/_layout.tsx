@@ -1,8 +1,29 @@
 import { Tabs } from 'expo-router';
-import { Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import { Briefcase, CircleCheck, BookCheck, User } from 'lucide-react-native';
 
-function TabIcon({ icon, focused }: { icon: string; focused: boolean }) {
-  return <Text style={{ fontSize: 22, opacity: focused ? 1 : 0.5 }}>{icon}</Text>;
+// Custom component to handle the pill background and icon
+function TabIcon({ 
+  IconComponent, 
+  focused, 
+  color 
+}: { 
+  IconComponent: any; 
+  focused: boolean; 
+  color: string 
+}) {
+  return (
+    <View style={[
+      styles.iconContainer, 
+      focused && styles.activePill // Applies the light purple background
+    ]}>
+      <IconComponent 
+        size={22} 
+        color={color} 
+        strokeWidth={focused ? 2.5 : 2} 
+      />
+    </View>
+  );
 }
 
 export default function WorkerTabsLayout() {
@@ -10,46 +31,79 @@ export default function WorkerTabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarStyle: {
-          backgroundColor: '#0F1F3D',
-          borderTopColor: '#1E3A5F',
-          borderTopWidth: 1,
-          height: 60,
-          paddingBottom: 8,
-        },
-        tabBarActiveTintColor: '#F59E0B',
-        tabBarInactiveTintColor: '#4B6280',
-        tabBarLabelStyle: { fontSize: 10, fontWeight: '600' },
+        tabBarStyle: styles.tabBar,
+        tabBarActiveTintColor: '#2D2D70', // Deep indigo/navy
+        tabBarInactiveTintColor: '#6B7280', // Soft gray
+        tabBarLabelStyle: styles.tabBarLabel,
       }}
     >
       <Tabs.Screen
         name="feed"
         options={{
           title: 'Jobs',
-          tabBarIcon: ({ focused }) => <TabIcon icon="🔍" focused={focused} />,
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon IconComponent={Briefcase} color={color} focused={focused} />
+          ),
         }}
       />
       <Tabs.Screen
         name="applications"
         options={{
           title: 'Applied',
-          tabBarIcon: ({ focused }) => <TabIcon icon="📋" focused={focused} />,
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon IconComponent={CircleCheck} color={color} focused={focused} />
+          ),
         }}
       />
       <Tabs.Screen
         name="trust"
         options={{
           title: 'Trust',
-          tabBarIcon: ({ focused }) => <TabIcon icon="⭐" focused={focused} />,
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon IconComponent={BookCheck} color={color} focused={focused} />
+          ),
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ focused }) => <TabIcon icon="👤" focused={focused} />,
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon IconComponent={User} color={color} focused={focused} />
+          ),
         }}
       />
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  tabBar: {
+    backgroundColor: '#ffffff',
+    borderTopWidth: 0, // Image shows a clean seamless look or very light shadow
+    height: 80,
+    paddingBottom: 15,
+    paddingTop: 10,
+    elevation: 10, // For Android shadow
+    shadowColor: '#000', // For iOS shadow
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+  },
+  iconContainer: {
+    width: 60,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  activePill: {
+    backgroundColor: '#E8EAF6', // Very light lavender/blue background
+  },
+  tabBarLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    textTransform: 'capitalize', // "Activity", "Jobs", etc.
+  },
+});

@@ -23,31 +23,59 @@ export default function PreviewScreen() {
     setLoading(true);
     try {
       const token = await auth.currentUser?.getIdToken();
-      const payload = {
-        primary_skill: worker.primary_skill,
-        sub_skills: worker.sub_skills,
-        years_experience: worker.years_experience,
-        profile_photo_url: worker.profile_photo_url,
-        home_lat: worker.home_lat,
-        home_lng: worker.home_lng,
-        home_city: worker.home_city,
-        home_area: worker.home_area,
-        available_days: worker.available_days,
-        preferred_shifts: worker.preferred_shifts,
-        min_pay_per_shift: worker.min_pay_per_shift,
-        skill_video_url: worker.skill_video_url,
-        ai_score: worker.ai_score,
-        fcm_token: worker.fcm_token,
-      };
-      const res = await api.post('/workers/', payload, {
-        headers: { Authorization: `Bearer ${token}` },
+      
+      const formData = new FormData();
+      
+      // Append text fields
+      formData.append('primary_skill', worker.primary_skill || '');
+      formData.append('years_experience', String(worker.years_experience || 0));
+      formData.append('home_lat', String(worker.home_lat || 0));
+      formData.append('home_lng', String(worker.home_lng || 0));
+      formData.append('home_city', worker.home_city || '');
+      formData.append('home_area', worker.home_area || '');
+      formData.append('min_pay_per_shift', String(worker.min_pay_per_shift || 0));
+      formData.append('fcm_token', worker.fcm_token || '');
+
+      // Append JSON fields
+      formData.append('sub_skills', JSON.stringify(worker.sub_skills || []));
+      formData.append('available_days', JSON.stringify(worker.available_days || []));
+      formData.append('preferred_shifts', JSON.stringify(worker.preferred_shifts || []));
+      if (worker.ai_score) formData.append('ai_score', JSON.stringify(worker.ai_score));
+
+      // Append files
+      if (worker.profile_photo_uri) {
+        const uri = worker.profile_photo_uri;
+        const name = uri.split('/').pop() || 'photo.jpg';
+        const type = 'image/jpeg'; // Assume jpeg for photos
+        formData.append('profile_photo', { uri, name, type } as any);
+      }
+
+      if (worker.skill_video_uri) {
+        const uri = worker.skill_video_uri;
+        const name = uri.split('/').pop() || 'video.mp4';
+        const type = 'video/mp4';
+        formData.append('skill_video', { uri, name, type } as any);
+      }
+
+      const res = await api.post('/workers/create', formData, {
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
       });
-      const user = res.data.data;
+      const response = res.data;
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to create profile');
+      }
+
+      const user = response.data;
       setUser({
         userId: user._id,
-        firebaseUid: auth.currentUser!.uid,
+        token: token!,
+        // firebaseUid: auth.currentUser?.uid || '',
         hasWorker: true,
         hasEmployer: false,
+        workerId: user.worker_id,
         activeRole: 'worker',
       });
       resetWorker();
@@ -65,16 +93,16 @@ export default function PreviewScreen() {
         <View className="px-6 pt-8">
           <StepIndicator currentStep={10} totalSteps={10} />
           <Text className="text-white text-2xl font-bold mb-1">Your Skill Card</Text>
-          <Text className="text-navy-300 text-sm mb-6">This is how employers will see your profile</Text>
+          <Text className="text-zinc-300 text-sm mb-6">This is how employers will see your profile</Text>
         </View>
 
         {/* Skill Card Preview */}
-        <View className="mx-6 bg-navy-800 rounded-3xl p-5 border border-navy-700 mb-6">
+        <View className="mx-6 bg-zinc-800 rounded-3xl p-5 border border-zinc-700 mb-6">
           <View className="flex-row items-center gap-4 mb-4">
-            {worker.profile_photo_url ? (
-              <Image source={{ uri: worker.profile_photo_url }} className="w-16 h-16 rounded-full" />
+            {(worker.profile_photo_uri || worker.profile_photo_url) ? (
+              <Image source={{ uri: worker.profile_photo_uri || worker.profile_photo_url }} className="w-16 h-16 rounded-full" />
             ) : (
-              <View className="w-16 h-16 rounded-full bg-navy-700 items-center justify-center">
+              <View className="w-16 h-16 rounded-full bg-zinc-700 items-center justify-center">
                 <LucideIcon name="User" size={24} color="#94A3B8" />
               </View>
             )}
@@ -83,11 +111,11 @@ export default function PreviewScreen() {
                 {skill?.icon && <LucideIcon name={skill.icon} size={22} color="#F59E0B" />}
                 <Text className="text-white text-lg font-bold">{skill?.label ?? 'Worker'}</Text>
               </View>
-              <Text className="text-navy-300 text-sm">{worker.years_experience} yrs experience</Text>
+              <Text className="text-zinc-300 text-sm">{worker.years_experience} yrs experience</Text>
               {worker.home_city && (
                 <View className="flex-row items-center gap-1 mt-1">
                   <LucideIcon name="MapPin" size={12} color="#94A3B8" />
-                  <Text className="text-navy-400 text-xs">{worker.home_city}</Text>
+                  <Text className="text-zinc-400 text-xs">{worker.home_city}</Text>
                 </View>
               )}
             </View>
@@ -95,23 +123,23 @@ export default function PreviewScreen() {
 
           <View className="flex-row gap-2 mb-4 flex-wrap">
             {(worker.sub_skills ?? []).map((s) => (
-              <View key={s} className="bg-navy-700 px-3 py-1 rounded-full">
-                <Text className="text-navy-200 text-xs">{s}</Text>
+              <View key={s} className="bg-zinc-700 px-3 py-1 rounded-full">
+                <Text className="text-zinc-200 text-xs">{s}</Text>
               </View>
             ))}
             {(worker.available_days ?? []).slice(0, 3).map((d) => (
-              <View key={d} className="bg-navy-700 px-3 py-1 rounded-full">
-                <Text className="text-navy-200 text-xs">{d}</Text>
+              <View key={d} className="bg-zinc-700 px-3 py-1 rounded-full">
+                <Text className="text-zinc-200 text-xs">{d}</Text>
               </View>
             ))}
           </View>
 
-          <View className="flex-row items-center justify-between bg-navy-700 rounded-xl px-4 py-3">
-            <Text className="text-navy-300 text-sm">Min per shift</Text>
+          <View className="flex-row items-center justify-between bg-zinc-700 rounded-xl px-4 py-3">
+            <Text className="text-zinc-300 text-sm">Min per shift</Text>
             <Text className="text-amber-400 font-bold text-lg">₹{worker.min_pay_per_shift?.toLocaleString('en-IN')}</Text>
           </View>
 
-          {worker.skill_video_url && (
+          {(worker.skill_video_uri || worker.skill_video_url) && (
             <View className="mt-3 bg-green-500/10 border border-green-500/20 rounded-xl px-4 py-2 flex-row items-center gap-2">
               <LucideIcon name="Video" size={14} color="#22C55E" />
               <Text className="text-green-400 text-xs">Skill video uploaded</Text>

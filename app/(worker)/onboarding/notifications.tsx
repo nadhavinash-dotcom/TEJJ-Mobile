@@ -44,14 +44,14 @@ export default function NotificationsScreen() {
         <View>
           <StepIndicator currentStep={9} totalSteps={10} />
           <Text className="text-white text-2xl font-bold mb-1">Turn ON job alerts</Text>
-          <Text className="text-navy-300 text-sm mb-8">Get instant notifications for flash jobs near you. Don't miss out!</Text>
+          <Text className="text-zinc-300 text-sm mb-8">Get instant notifications for flash jobs near you. Don't miss out!</Text>
 
           <View className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-6 mb-6">
             <View className="items-center mb-4">
               <LucideIcon name="Bell" size={48} color="#F59E0B" />
             </View>
             <Text className="text-white font-semibold text-center text-lg mb-2">Flash Job Alerts</Text>
-            <Text className="text-navy-300 text-sm text-center">
+            <Text className="text-zinc-300 text-sm text-center">
               L1 Flash jobs fill in minutes. Push notifications ensure you never miss a high-paying same-day gig near you.
             </Text>
           </View>

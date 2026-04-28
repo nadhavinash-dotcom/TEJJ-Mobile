@@ -18,8 +18,8 @@ export default function ComplianceScreen() {
   const handleComplete = async () => {
     setSubmitting(true);
     try {
-      const token = await auth.currentUser?.getIdToken();
-      const res = await api.post('/employers/', {
+      // const token = await auth.currentUser?.getIdToken();
+      const res = await api.post('/employers/create', {
         property_type: employer.property_type,
         property_name: employer.property_name,
         lat: employer.lat,
@@ -31,9 +31,9 @@ export default function ComplianceScreen() {
         contact_phone: employer.contact_phone,
         email: employer.email,
         gstin: employer.gstin,
-      }, { headers: { Authorization: `Bearer ${token}` } });
+      });
       const user = res.data.data;
-      setUser({ userId: user._id, firebaseUid: auth.currentUser!.uid, hasWorker: false, hasEmployer: true, activeRole: 'employer' });
+      setUser({ userId: user._id, hasWorker: false, hasEmployer: true, activeRole: 'employer' });
       resetEmployer();
       router.replace('/(employer)/onboarding/welcome');
     } catch (e: any) {
@@ -50,11 +50,11 @@ export default function ComplianceScreen() {
           <StepIndicator currentStep={4} totalSteps={4} />
           <View>
             <Text className="text-white text-2xl font-bold mb-1">Business Compliance</Text>
-            <Text className="text-navy-300 text-sm mb-6">GSTIN verification builds trust with workers</Text>
+            <Text className="text-zinc-300 text-sm mb-6">GSTIN verification builds trust with workers</Text>
           </View>
 
           <View>
-            <Text className="text-navy-300 text-sm mb-2">GSTIN (optional)</Text>
+            <Text className="text-zinc-300 text-sm mb-2">GSTIN (optional)</Text>
             <TextInput
               value={employer.gstin ?? ''}
               onChangeText={(v) => updateEmployer({ gstin: v.toUpperCase() })}
@@ -62,7 +62,7 @@ export default function ComplianceScreen() {
               placeholderTextColor="#4B5563"
               autoCapitalize="characters"
               maxLength={15}
-              className="bg-navy-800 border border-navy-600 rounded-xl px-4 py-3 text-white text-sm font-mono"
+              className="bg-zinc-800 border border-zinc-600 rounded-xl px-4 py-3 text-white text-sm font-mono"
             />
             {employer.gstin && employer.gstin.length === 15 && (
               <View className="flex-row items-center gap-1 mt-1">
@@ -72,9 +72,9 @@ export default function ComplianceScreen() {
             )}
           </View>
 
-          <View className="bg-navy-800 border border-navy-700 rounded-xl p-4">
+          <View className="bg-zinc-800 border border-zinc-700 rounded-xl p-4">
             <Text className="text-white font-medium mb-1">Why add GSTIN?</Text>
-            <Text className="text-navy-300 text-sm">Verified employers get a GST badge on job cards, which increases worker applications by 40%.</Text>
+            <Text className="text-zinc-300 text-sm">Verified employers get a GST badge on job cards, which increases worker applications by 40%.</Text>
           </View>
 
           <OnboardingFooter 
