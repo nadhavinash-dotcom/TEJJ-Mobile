@@ -11,3 +11,6 @@ node_modules
 
 .gitconfig-personal
 .gitconfig-work
+
+.env.old
+gogle-services.json
