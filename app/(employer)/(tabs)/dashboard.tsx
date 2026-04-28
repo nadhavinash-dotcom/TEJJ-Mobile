@@ -29,7 +29,7 @@ import api from '../../../src/lib/api';
 import { useAuthStore } from '../../../src/store/authStore';
 
 export default function EmployerDashboardScreen() {
-  const { clear, user } = useAuthStore();
+  const { clear } = useAuthStore();
   const [jobs, setJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -41,7 +41,7 @@ export default function EmployerDashboardScreen() {
   const fetchJobs = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/employers/jobs');
+      const response = await api.get('/jobs/mine');
       setJobs(response.data.data || response.data);
     } catch (error) {
       console.error('Error fetching jobs:', error);
@@ -167,7 +167,7 @@ export default function EmployerDashboardScreen() {
         ) : jobs.length === 0 ? (
           <View className="items-center py-10">
              <TouchableOpacity 
-                onPress={() => router.push('/(employer)/post')}
+                onPress={() => router.push('/(employer)/post/lane')}
                 className="border-2 border-dashed border-outline-variant bg-surface-container-low/30 rounded-3xl flex-col items-center justify-center p-12 w-full"
              >
                 <View className="w-20 h-20 rounded-full bg-surface-container-high flex items-center justify-center mb-6">
@@ -219,7 +219,7 @@ export default function EmployerDashboardScreen() {
             ))}
 
             <TouchableOpacity 
-               onPress={() => router.push('/(employer)/post')}
+               onPress={() => router.push('/(employer)/post/lane')}
                className="border-2 border-dashed border-outline-variant bg-surface-container-low/30 rounded-3xl flex-col items-center justify-center p-8 active:bg-primary-fixed/20"
             >
               <View className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center mb-4">

@@ -45,7 +45,7 @@ export default function ApplicantsScreen() {
           <Text className="text-amber-400 text-base">Back</Text>
         </TouchableOpacity>
         <Text className="text-white text-xl font-bold mb-1">Applicants</Text>
-        <Text className="text-navy-300 text-sm">{data?.length ?? 0} applications received</Text>
+        <Text className="text-zinc-300 text-sm">{data?.length ?? 0} applications received</Text>
       </View>
 
       {isLoading ? (
@@ -57,12 +57,12 @@ export default function ApplicantsScreen() {
           renderItem={({ item }) => {
             const skill = SKILL_LIST.find((s) => s.id === item.worker_primary_skill);
             return (
-              <View className="mx-4 mb-3 bg-navy-800 border border-navy-700 rounded-2xl p-4">
+              <View className="mx-4 mb-3 bg-zinc-800 border border-zinc-700 rounded-2xl p-4">
                 <View className="flex-row items-center gap-3 mb-3">
                   {item.worker_photo ? (
                     <Image source={{ uri: item.worker_photo }} className="w-12 h-12 rounded-full" />
                   ) : (
-                    <View className="w-12 h-12 rounded-full bg-navy-700 items-center justify-center">
+                    <View className="w-12 h-12 rounded-full bg-zinc-700 items-center justify-center">
                       <LucideIcon name={skill?.icon || 'User'} size={24} color="#94A3B8" />
                     </View>
                   )}
@@ -74,10 +74,10 @@ export default function ApplicantsScreen() {
                         <Text className="text-amber-400 text-xs">{(item.worker_trust_score ?? 0).toFixed(1)}</Text>
                       </View>
                     </View>
-                    <Text className="text-navy-300 text-xs">{item.worker_years_experience} yrs · {item.worker_sups_score ?? 70} SUPS</Text>
+                    <Text className="text-zinc-300 text-xs">{item.worker_years_experience} yrs · {item.worker_sups_score ?? 70} SUPS</Text>
                   </View>
-                  <TouchableOpacity onPress={() => router.push({ pathname: '/(employer)/worker/[id]', params: { id: item.worker_id } })} className="bg-navy-700 px-3 py-1 rounded-xl">
-                    <Text className="text-navy-300 text-xs">View</Text>
+                  <TouchableOpacity onPress={() => router.push({ pathname: '/(employer)/worker/[id]', params: { id: item.worker_id } })} className="bg-zinc-700 px-3 py-1 rounded-xl">
+                    <Text className="text-zinc-300 text-xs">View</Text>
                   </TouchableOpacity>
                 </View>
 

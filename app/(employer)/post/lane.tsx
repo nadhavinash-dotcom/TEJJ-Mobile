@@ -29,14 +29,14 @@ export default function LaneScreen() {
           <Text className="text-amber-400 text-base">Back</Text>
         </TouchableOpacity>
         <Text className="text-white text-2xl font-bold mb-1">Select Hiring Lane</Text>
-        <Text className="text-navy-300 text-sm mb-6">What type of job are you posting?</Text>
+        <Text className="text-zinc-300 text-sm mb-6">What type of job are you posting?</Text>
 
         <View className="gap-3">
           {LANES.map((lane) => (
             <TouchableOpacity
               key={lane.key}
               onPress={() => handleSelect(parseInt(lane.key.replace('L', '')))}
-              className="bg-navy-800 border border-navy-700 rounded-2xl p-5"
+              className="bg-zinc-800 border border-zinc-700 rounded-2xl p-5"
               activeOpacity={0.85}
             >
               <View className="flex-row items-center gap-3 mb-2">
@@ -45,7 +45,7 @@ export default function LaneScreen() {
                   <Text className="text-white font-bold">{lane.label}</Text>
                 </View>
               </View>
-              <Text className="text-navy-300 text-sm">{lane.description}</Text>
+              <Text className="text-zinc-300 text-sm">{lane.description}</Text>
             </TouchableOpacity>
           ))}
         </View>

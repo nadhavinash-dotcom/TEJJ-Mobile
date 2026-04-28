@@ -18,10 +18,10 @@ export default function AnalyticsScreen() {
   });
 
   const Stat = ({ label, value, sub }: { label: string; value: string | number; sub?: string }) => (
-    <View className="flex-1 bg-navy-800 border border-navy-700 rounded-2xl p-4 items-center">
+    <View className="flex-1 bg-zinc-800 border border-zinc-700 rounded-2xl p-4 items-center">
       <Text className="text-white text-2xl font-bold">{value}</Text>
-      {sub && <Text className="text-navy-400 text-xs">{sub}</Text>}
-      <Text className="text-navy-300 text-xs text-center mt-1">{label}</Text>
+      {sub && <Text className="text-zinc-400 text-xs">{sub}</Text>}
+      <Text className="text-zinc-300 text-xs text-center mt-1">{label}</Text>
     </View>
   );
 
@@ -34,7 +34,7 @@ export default function AnalyticsScreen() {
             <Text className="text-amber-400 text-base">Back</Text>
           </TouchableOpacity>
           <Text className="text-white text-xl font-bold mb-1">Analytics</Text>
-          <Text className="text-navy-300 text-sm mb-4">Last 30 days</Text>
+          <Text className="text-zinc-300 text-sm mb-4">Last 30 days</Text>
         </View>
 
         {isLoading ? (
@@ -52,15 +52,15 @@ export default function AnalyticsScreen() {
               <Stat label="Repeat Workers" value={data?.repeat_workers ?? 0} />
             </View>
 
-            <View className="bg-navy-800 border border-navy-700 rounded-2xl p-5">
+            <View className="bg-zinc-800 border border-zinc-700 rounded-2xl p-5">
               <Text className="text-white font-semibold mb-3">Top Performing Skills</Text>
               {(data?.top_skills ?? []).map((s: any, i: number) => (
                 <View key={i} className="flex-row items-center justify-between mb-2">
-                  <Text className="text-navy-300 text-sm">{s.skill}</Text>
+                  <Text className="text-zinc-300 text-sm">{s.skill}</Text>
                   <Text className="text-white font-medium">{s.matches} matches</Text>
                 </View>
               ))}
-              {(!data?.top_skills?.length) && <Text className="text-navy-400 text-sm">No data yet</Text>}
+              {(!data?.top_skills?.length) && <Text className="text-zinc-400 text-sm">No data yet</Text>}
             </View>
           </View>
         )}

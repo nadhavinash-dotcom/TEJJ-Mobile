@@ -1,18 +1,79 @@
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image, Alert, SafeAreaView } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
+import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { useAuthStore } from '../../../src/store/authStore';
 import api from '../../../src/lib/api';
-import { 
-  StyledUserCircle, 
-  StyledChevronRight, 
-  StyledLogOut,
-  StyledClipboardCheck,
-  StyledStar,
-  StyledBell,
-  StyledSettings
-} from '../../../src/components/tell/Icons';
+import {
+  UserCircle,
+  ChevronRight,
+  LogOut,
+  ClipboardCheck,
+  Bell,
+  Settings,
+  Star,
+  BadgeCheck,
+  HardHat,
+} from 'lucide-react-native';
+
+const C = {
+  primary: '#000666',
+  onPrimary: '#ffffff',
+  primaryFixed: '#e0e0ff',
+  background: '#fbf8fe',
+  surface: '#fbf8fe',
+  surfaceContainerLow: '#f6f2f8',
+  surfaceContainerLowest: '#ffffff',
+  surfaceContainer: '#f0edf2',
+  surfaceContainerHigh: '#eae7ed',
+  onSurface: '#1b1b1f',
+  onSurfaceVariant: '#454652',
+  outline: '#767683',
+  outlineVariant: '#c6c5d4',
+  secondary: '#006b5e',
+  secondaryContainer: '#94f0df',
+  onSecondaryContainer: '#006f62',
+  error: '#ba1a1a',
+  errorContainer: '#ffdad6',
+  amber: '#F59E0B',
+};
+
+type MenuItemProps = {
+  icon: React.ReactNode;
+  label: string;
+  description?: string;
+  onPress: () => void;
+  accent?: string;
+  isLast?: boolean;
+};
+
+function MenuItem({ icon, label, description, onPress, accent, isLast }: MenuItemProps) {
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.7}
+      className="flex-row items-center justify-between px-4 py-3.5"
+      style={{ borderBottomWidth: isLast ? 0 : 1, borderBottomColor: C.surfaceContainer }}
+    >
+      <View className="flex-row items-center gap-3 flex-1">
+        <View
+          className="w-9 h-9 rounded-xl items-center justify-center"
+          style={{ backgroundColor: accent ?? C.surfaceContainerHigh }}
+        >
+          {icon}
+        </View>
+        <View className="flex-1">
+          <Text className="font-semibold text-[15px]" style={{ color: C.onSurface }}>{label}</Text>
+          {description && (
+            <Text className="text-xs mt-0.5" style={{ color: C.outline }}>{description}</Text>
+          )}
+        </View>
+      </View>
+      <ChevronRight size={16} color={C.outline} />
+    </TouchableOpacity>
+  );
+}
 
 export default function ProfileScreen() {
   const { clear } = useAuthStore();
@@ -30,7 +91,9 @@ export default function ProfileScreen() {
     Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
       { text: 'Cancel', style: 'cancel' },
       {
-        text: 'Sign Out', style: 'destructive', onPress: async () => {
+        text: 'Sign Out',
+        style: 'destructive',
+        onPress: async () => {
           clear();
           router.replace('/(auth)/language');
         },
@@ -38,60 +101,138 @@ export default function ProfileScreen() {
     ]);
   };
 
-  const MenuItem = ({ Icon, label, onPress }: { Icon: any; label: string; onPress: () => void }) => (
-    <TouchableOpacity onPress={onPress} className="flex-row items-center justify-between px-6 py-5 border-b border-surface-container-highest/30" activeOpacity={0.7}>
-      <View className="flex-row items-center gap-4">
-        <Icon color="#000666" size={22} />
-        <Text className="text-on-surface font-bold text-base">{label}</Text>
-      </View>
-      <StyledChevronRight color="#c6c5d4" size={18} />
-    </TouchableOpacity>
-  );
+  const trustScore = (data?.trust_score ?? 0).toFixed(1);
 
   return (
-    <SafeAreaView className="flex-1 bg-surface">
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <View className="px-6 pt-10 pb-8 flex-row items-center gap-6">
-          <View className="relative">
-            {data?.profile_photo_url ? (
-              <Image source={{ uri: data.profile_photo_url }} className="w-24 h-24 rounded-3xl border-4 border-white shadow-sm" />
-            ) : (
-              <View className="w-24 h-24 rounded-3xl bg-primary-fixed items-center justify-center border-4 border-white shadow-sm">
-                <StyledUserCircle color="#000666" size={48} />
+    <SafeScreen style={{ flex: 1, backgroundColor: C.background }}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+
+        {/* Header Card */}
+        <View
+          className="mx-4 mt-5 mb-4 rounded-2xl overflow-hidden"
+          style={{ backgroundColor: C.primary }}
+        >
+          <View className="px-5 pt-5 pb-4">
+            <View className="flex-row items-start justify-between mb-4">
+              {/* Avatar */}
+              <View className="relative">
+                {data?.profile_photo_url ? (
+                  <Image
+                    source={{ uri: data.profile_photo_url }}
+                    className="w-16 h-16 rounded-2xl"
+                    style={{ borderWidth: 2, borderColor: 'rgba(255,255,255,0.2)' }}
+                  />
+                ) : (
+                  <View
+                    className="w-16 h-16 rounded-2xl items-center justify-center"
+                    style={{ backgroundColor: 'rgba(255,255,255,0.12)' }}
+                  >
+                    <UserCircle size={32} color={C.onPrimary} />
+                  </View>
+                )}
+              </View>
+
+              {/* Trust score chip */}
+              <View
+                className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-full"
+                style={{ backgroundColor: 'rgba(255,255,255,0.12)' }}
+              >
+                <Star size={13} color={C.amber} fill={C.amber} />
+                <Text className="text-sm font-bold" style={{ color: C.onPrimary }}>{trustScore}</Text>
+                <Text className="text-xs" style={{ color: 'rgba(255,255,255,0.6)' }}>Trust</Text>
+              </View>
+            </View>
+
+            <Text className="text-xl font-bold mb-0.5" style={{ color: C.onPrimary }}>
+              {data?.name ?? 'Worker Profile'}
+            </Text>
+            <View className="flex-row items-center gap-1.5 mb-3">
+              <HardHat size={12} color="rgba(255,255,255,0.6)" />
+              <Text style={{ color: 'rgba(255,255,255,0.65)', fontSize: 13 }}>
+                {data?.primary_role ?? 'Hospitality Worker'}
+              </Text>
+            </View>
+
+            {data?.is_verified && (
+              <View
+                className="self-start flex-row items-center gap-1.5 px-2.5 py-1 rounded-full"
+                style={{ backgroundColor: C.secondaryContainer }}
+              >
+                <BadgeCheck size={12} color={C.onSecondaryContainer} />
+                <Text className="text-xs font-bold" style={{ color: C.onSecondaryContainer }}>
+                  Verified Worker
+                </Text>
               </View>
             )}
-            <View className="absolute -bottom-2 -right-2 bg-secondary px-2 py-1 rounded-lg border-2 border-white">
-              <Text className="text-white text-[10px] font-black italic">PRO</Text>
-            </View>
-          </View>
-          
-          <View className="flex-1">
-            <Text className="text-primary text-2xl font-black">{data?.name || 'Worker Profile'}</Text>
-            <Text className="text-on-surface-variant font-bold text-sm uppercase tracking-wider">{data?.primary_role || 'Culinary Mission'}</Text>
-            <View className="flex-row items-center gap-3 mt-2">
-              <View className="bg-surface-container-high px-3 py-1 rounded-full border border-surface-container-highest/50">
-                <Text className="text-primary font-bold text-xs">⭐ {(data?.trust_score ?? 0).toFixed(1)}</Text>
-              </View>
-              <Text className="text-outline text-xs font-bold uppercase tracking-tighter">Elite Member</Text>
-            </View>
           </View>
         </View>
 
-        <View className="mx-6 bg-surface-container-low rounded-3xl border border-surface-container-highest/30 mb-8 overflow-hidden">
-          <MenuItem Icon={StyledClipboardCheck} label="My Applications" onPress={() => router.push('/(worker)/(tabs)/applications')} />
-          {/* <MenuItem Icon={StyledStar} label="Trust Dashboard" onPress={() => router.push('/(worker)/(tabs)/trust')} /> */}
-          <MenuItem Icon={StyledBell} label="Notifications" onPress={() => router.push('/(shared)/notifications')} />
-          <MenuItem Icon={StyledSettings} label="Settings" onPress={() => router.push('/(shared)/settings')} />
+        {/* Activity Section */}
+        <View
+          className="mx-4 rounded-2xl overflow-hidden mb-4"
+          style={{ backgroundColor: C.surfaceContainerLowest }}
+        >
+          <Text
+            className="text-xs font-bold uppercase tracking-widest px-4 pt-3 pb-2"
+            style={{ color: C.outline, letterSpacing: 1 }}
+          >
+            Activity
+          </Text>
+          <MenuItem
+            icon={<ClipboardCheck size={18} color={C.primary} />}
+            label="My Applications"
+            description="Track your job applications"
+            accent={C.primaryFixed}
+            onPress={() => router.push('/(worker)/(tabs)/applications')}
+          />
+          <MenuItem
+            icon={<Bell size={18} color="#723600" />}
+            label="Notifications"
+            description="Alerts & job updates"
+            accent="#ffdcc6"
+            onPress={() => router.push('/(shared)/notifications')}
+            isLast
+          />
         </View>
 
-        <View className="mx-6 mb-12">
-          <TouchableOpacity onPress={handleSignOut} className="flex-row items-center justify-center gap-3 py-4 bg-error-container/20 border border-error/10 rounded-2xl active:opacity-80">
-            <StyledLogOut color="#ba1a1a" size={20} />
-            <Text className="text-error font-bold text-base">Sign Out</Text>
+        {/* Account Section */}
+        <View
+          className="mx-4 rounded-2xl overflow-hidden mb-4"
+          style={{ backgroundColor: C.surfaceContainerLowest }}
+        >
+          <Text
+            className="text-xs font-bold uppercase tracking-widest px-4 pt-3 pb-2"
+            style={{ color: C.outline, letterSpacing: 1 }}
+          >
+            Account
+          </Text>
+          <MenuItem
+            icon={<Settings size={18} color={C.onSurfaceVariant} />}
+            label="Settings"
+            description="App & account preferences"
+            accent={C.surfaceContainerHigh}
+            onPress={() => router.push('/(shared)/settings')}
+            isLast
+          />
+        </View>
+
+        {/* Sign Out */}
+        <View className="mx-4 mb-10">
+          <TouchableOpacity
+            onPress={handleSignOut}
+            activeOpacity={0.75}
+            className="flex-row items-center justify-center gap-2 rounded-2xl py-4"
+            style={{
+              backgroundColor: C.errorContainer,
+              borderWidth: 1,
+              borderColor: '#fecdd3',
+            }}
+          >
+            <LogOut size={17} color={C.error} />
+            <Text className="font-bold text-[15px]" style={{ color: C.error }}>Sign Out</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }
-

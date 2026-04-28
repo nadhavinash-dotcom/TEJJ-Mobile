@@ -5,7 +5,22 @@ import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../src/lib/api';
 import { auth } from '../../src/lib/firebase';
-import { LucideIcon } from '../../src/components/shared/LucideIcon';
+import { AlertTriangle, QrCode, UserX } from 'lucide-react-native';
+
+const C = {
+  primary: '#000666',
+  background: '#fbf8fe',
+  surfaceContainerLowest: '#ffffff',
+  onSurface: '#1b1b1f',
+  onSurfaceVariant: '#454652',
+  outline: '#767683',
+  outlineVariant: '#c6c5d4',
+  secondary: '#006b5e',
+  tertiaryFixed: '#ffdcc6',
+  onTertiaryContainer: '#ec7700',
+  error: '#ba1a1a',
+  errorContainer: '#ffdad6',
+};
 
 export default function ConfirmGateScreen() {
   const { data, isLoading } = useQuery({
@@ -18,48 +33,101 @@ export default function ConfirmGateScreen() {
   });
 
   if (isLoading) {
-    return <SafeScreen className="items-center justify-center"><ActivityIndicator color="#3B82F6" size="large" /></SafeScreen>;
+    return (
+      <SafeScreen
+        style={{ flex: 1, backgroundColor: C.background, alignItems: 'center', justifyContent: 'center' }}
+      >
+        <ActivityIndicator color={C.primary} size="large" />
+      </SafeScreen>
+    );
   }
 
   if (data?.blocked && data?.pending_match) {
     return (
-      <SafeScreen className="flex-1 bg-navy-900 px-6 justify-center">
-        <View className="items-center mb-4">
-          <LucideIcon name="AlertTriangle" size={48} color="#F59E0B" />
+      <SafeScreen
+        style={{
+          flex: 1,
+          backgroundColor: C.background,
+          paddingHorizontal: 24,
+          justifyContent: 'center',
+        }}
+      >
+        <View className="items-center mb-6">
+          <View
+            className="w-20 h-20 rounded-full items-center justify-center"
+            style={{ backgroundColor: C.tertiaryFixed }}
+          >
+            <AlertTriangle size={36} color={C.onTertiaryContainer} />
+          </View>
         </View>
-        <Text className="text-white text-2xl font-bold mb-2 text-center">Confirm Gate</Text>
-        <Text className="text-navy-300 text-sm text-center mb-8">
+
+        <Text className="text-2xl font-bold text-center mb-2" style={{ color: C.onSurface }}>
+          Confirm Gate
+        </Text>
+        <Text className="text-sm text-center mb-8" style={{ color: C.onSurfaceVariant }}>
           You have an unresolved match. Please confirm whether the worker arrived before posting new jobs.
         </Text>
-        <View className="bg-navy-800 border border-amber-500/30 rounded-2xl p-5 mb-6">
-          <Text className="text-white font-bold mb-1">{data.pending_match.job_title}</Text>
-          <Text className="text-navy-300 text-sm">{data.pending_match.worker_name}</Text>
+
+        <View
+          className="rounded-2xl p-5 mb-8"
+          style={{
+            backgroundColor: C.surfaceContainerLowest,
+            borderWidth: 1,
+            borderColor: C.outlineVariant,
+          }}
+        >
+          <Text
+            className="text-xs font-bold uppercase tracking-widest mb-3"
+            style={{ color: C.outline }}
+          >
+            Pending Match
+          </Text>
+          <Text className="font-bold text-base mb-1" style={{ color: C.onSurface }}>
+            {data.pending_match.job_title}
+          </Text>
+          <Text className="text-sm" style={{ color: C.onSurfaceVariant }}>
+            {data.pending_match.worker_name}
+          </Text>
         </View>
+
         <View className="gap-3">
           <TouchableOpacity
             onPress={() => router.push({ pathname: '/(employer)/qr-scanner' })}
-            className="bg-green-600 rounded-2xl py-4 items-center"
+            className="rounded-2xl py-4 flex-row items-center justify-center gap-2"
+            style={{ backgroundColor: C.secondary }}
             activeOpacity={0.85}
           >
-            <Text className="text-white font-bold">Worker arrived — Scan QR</Text>
+            <QrCode size={18} color="#ffffff" />
+            <Text className="text-white font-bold text-base">Worker arrived — Scan QR</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={async () => {
               const token = await auth.currentUser?.getIdToken();
-              await api.post(`/matches/${data.pending_match._id}/no-show`, {}, { headers: { Authorization: `Bearer ${token}` } });
+              await api.post(
+                `/matches/${data.pending_match._id}/no-show`,
+                {},
+                { headers: { Authorization: `Bearer ${token}` } }
+              );
               router.replace('/(employer)/post/lane');
             }}
-            className="bg-red-500/20 border border-red-500/30 rounded-2xl py-4 items-center"
+            className="rounded-2xl py-4 flex-row items-center justify-center gap-2"
+            style={{
+              backgroundColor: C.errorContainer,
+              borderWidth: 1,
+              borderColor: '#fecdd3',
+            }}
             activeOpacity={0.85}
           >
-            <Text className="text-red-400 font-bold">Worker did not arrive (No-show)</Text>
+            <UserX size={18} color={C.error} />
+            <Text className="font-bold text-base" style={{ color: C.error }}>
+              Worker did not arrive (No-show)
+            </Text>
           </TouchableOpacity>
         </View>
       </SafeScreen>
     );
   }
 
-  // Not blocked — proceed to post job
   router.replace('/(employer)/post/lane');
   return null;
 }

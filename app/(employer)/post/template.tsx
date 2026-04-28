@@ -40,7 +40,7 @@ export default function TemplateScreen() {
           <Text className="text-amber-400 text-base">Back</Text>
         </TouchableOpacity>
         <Text className="text-white text-xl font-bold mb-1">Use a Template</Text>
-        <Text className="text-navy-300 text-sm mb-4">Save time with your previous job templates</Text>
+        <Text className="text-zinc-300 text-sm mb-4">Save time with your previous job templates</Text>
       </View>
 
       {isLoading ? (
@@ -50,9 +50,9 @@ export default function TemplateScreen() {
           data={data ?? []}
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => handleSelect(item)} className="mx-4 mb-3 bg-navy-800 border border-navy-700 rounded-2xl p-4" activeOpacity={0.85}>
+            <TouchableOpacity onPress={() => handleSelect(item)} className="mx-4 mb-3 bg-zinc-800 border border-zinc-700 rounded-2xl p-4" activeOpacity={0.85}>
               <Text className="text-white font-bold mb-1">{item.job_title}</Text>
-              <Text className="text-navy-300 text-sm">₹{item.pay_rate?.toLocaleString('en-IN')}/shift · {item.shift_duration_hours}hrs</Text>
+              <Text className="text-zinc-300 text-sm">₹{item.pay_rate?.toLocaleString('en-IN')}/shift · {item.shift_duration_hours}hrs</Text>
             </TouchableOpacity>
           )}
           ListHeaderComponent={
@@ -60,7 +60,7 @@ export default function TemplateScreen() {
               <LucideIcon name="Pencil" size={24} color="#3B82F6" />
               <View>
                 <Text className="text-blue-300 font-bold">Start from scratch</Text>
-                <Text className="text-navy-400 text-sm">Create a new job posting</Text>
+                <Text className="text-zinc-400 text-sm">Create a new job posting</Text>
               </View>
             </TouchableOpacity>
           }
