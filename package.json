@@ -9,7 +9,8 @@
     "ios": "expo start --ios",
     "build": "expo export",
     "type-check": "tsc --noEmit",
-    "clean": "rm -rf .expo dist"
+    "clean": "rm -rf .expo dist",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@expo/metro-config": "~55.0.17",
@@ -72,6 +73,7 @@
     "@types/react": "~19.2.14",
     "@types/react-native": "^0.73.0",
     "babel-plugin-module-resolver": "^5.0.3",
+    "patch-package": "^8.0.1",
     "typescript": "^5.9.3"
   }
 }

@@ -21,66 +21,97 @@ export default function WorkerSkillCardScreen() {
     },
   });
 
-  if (isLoading) return <SafeScreen className="items-center justify-center"><ActivityIndicator color="#3B82F6" size="large" /></SafeScreen>;
+  if (isLoading) {
+    return (
+      <SafeScreen className="flex-1 bg-background items-center justify-center">
+        <ActivityIndicator color="#000666" size="large" />
+      </SafeScreen>
+    );
+  }
 
   const skill = SKILL_LIST.find((s) => s.id === worker?.primary_skill);
 
   return (
-    <SafeScreen className="flex-1">
+    <SafeScreen className="flex-1 bg-background">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <View className="px-4 pt-4 pb-2">
-          <TouchableOpacity onPress={() => router.back()} className="flex-row items-center gap-1">
-            <LucideIcon name="ChevronLeft" size={20} color="#F59E0B" />
-            <Text className="text-amber-400 text-base">Back</Text>
+        {/* Header */}
+        <View className="px-4 pt-4 pb-3 bg-surface border-b border-outline-variant">
+          <TouchableOpacity onPress={() => router.back()} className="flex-row items-center gap-1 self-start mb-2">
+            <LucideIcon name="ChevronLeft" size={20} color="#000666" />
+            <Text className="text-primary text-sm font-medium">Back</Text>
           </TouchableOpacity>
+          <Text className="text-on-background text-xl font-bold">Worker Profile</Text>
         </View>
 
-        <View className="px-4">
-          <View className="bg-navy-800 border border-navy-700 rounded-2xl p-5 mb-4">
-            <View className="flex-row items-center gap-4 mb-4">
+        <View className="px-4 pt-4 pb-8 gap-3">
+          {/* Profile card */}
+          <View className="bg-surface border border-outline-variant rounded-2xl p-5">
+            <View className="flex-row items-start gap-4">
               {worker?.profile_photo_url ? (
-                <Image source={{ uri: worker.profile_photo_url }} className="w-16 h-16 rounded-full" />
+                <Image source={{ uri: worker.profile_photo_url }} className="w-20 h-20 rounded-full" />
               ) : (
-                <View className="w-16 h-16 rounded-full bg-navy-700 items-center justify-center">
-                  <LucideIcon name={skill?.icon || 'User'} size={32} color="#94A3B8" />
+                <View className="w-20 h-20 rounded-full bg-surface-container-highest items-center justify-center">
+                  <LucideIcon name={skill?.icon || 'User'} size={36} color="#767683" />
                 </View>
               )}
+
               <View className="flex-1">
-                <View className="flex-row items-center gap-2">
-                  {skill?.icon && <LucideIcon name={skill.icon} size={20} color="#F59E0B" />}
-                  <Text className="text-white text-lg font-bold">{skill?.label}</Text>
+                <View className="flex-row items-center gap-2 flex-wrap">
+                  {skill?.icon && (
+                    <View className="w-7 h-7 bg-primary-container rounded-full items-center justify-center">
+                      <LucideIcon name={skill.icon} size={15} color="#8690ee" />
+                    </View>
+                  )}
+                  <Text className="text-on-surface text-lg font-bold">{skill?.label ?? 'Worker'}</Text>
                 </View>
-                <Text className="text-navy-300 text-sm">{worker?.years_experience} yrs experience</Text>
-                <View className="flex-row items-center gap-3 mt-1">
-                  <View className="flex-row items-center gap-0.5">
-                    <LucideIcon name="Star" size={12} color="#F59E0B" fill="#F59E0B" />
-                    <Text className="text-amber-400 text-sm">{(worker?.trust_score ?? 0).toFixed(1)}</Text>
-                  </View>
-                  <Text className="text-navy-400 text-xs">Trust</Text>
+                <Text className="text-on-surface-variant text-sm mt-0.5">{worker?.years_experience} yrs experience</Text>
+
+                <View className="flex-row items-center gap-1.5 mt-2">
+                  <LucideIcon name="Star" size={14} color="#F59E0B" fill="#F59E0B" />
+                  <Text className="text-same-day font-bold text-sm">{(worker?.trust_score ?? 0).toFixed(1)}</Text>
+                  <Text className="text-outline text-xs">Trust Score</Text>
                 </View>
               </View>
             </View>
 
-            <View className="flex-row flex-wrap gap-2">
-              {(worker?.sub_skills ?? []).map((s: string) => (
-                <View key={s} className="bg-navy-700 px-3 py-1 rounded-full">
-                  <Text className="text-navy-200 text-xs">{s}</Text>
+            {/* Sub-skills */}
+            {(worker?.sub_skills ?? []).length > 0 && (
+              <View className="mt-4 pt-4 border-t border-outline-variant">
+                <Text className="text-on-surface-variant text-xs font-semibold uppercase tracking-widest mb-2">Skills</Text>
+                <View className="flex-row flex-wrap gap-2">
+                  {(worker?.sub_skills ?? []).map((s: string) => (
+                    <View key={s} className="bg-surface-container-high border border-outline-variant px-3 py-1 rounded-full">
+                      <Text className="text-on-surface-variant text-xs">{s}</Text>
+                    </View>
+                  ))}
                 </View>
-              ))}
-            </View>
+              </View>
+            )}
           </View>
 
-          {worker?.ai_score && (
-            <View className="mb-4">
-              <Text className="text-white font-semibold mb-3">AI Video Score</Text>
-              <AIScoreBar scores={worker.ai_score} />
+          {/* Availability */}
+          <View className="bg-surface border border-outline-variant rounded-2xl p-4">
+            <View className="flex-row items-center gap-2 mb-3">
+              <View className="w-7 h-7 bg-secondary-container rounded-full items-center justify-center">
+                <LucideIcon name="Clock" size={15} color="#006f62" />
+              </View>
+              <Text className="text-on-surface font-semibold">Availability</Text>
             </View>
-          )}
-
-          <View className="bg-navy-800 border border-navy-700 rounded-2xl p-4 mb-8">
-            <Text className="text-navy-300 text-sm mb-1">Available shifts</Text>
-            <Text className="text-white">{(worker?.preferred_shifts ?? []).join(', ')}</Text>
+            {(worker?.preferred_shifts ?? []).length > 0 ? (
+              <View className="flex-row flex-wrap gap-2">
+                {(worker?.preferred_shifts ?? []).map((shift: string) => (
+                  <View key={shift} className="bg-secondary-container px-3 py-1.5 rounded-full">
+                    <Text className="text-on-secondary-container text-sm font-medium">{shift}</Text>
+                  </View>
+                ))}
+              </View>
+            ) : (
+              <Text className="text-on-surface-variant text-sm">No shifts specified</Text>
+            )}
           </View>
+
+          {/* AI Score */}
+          {worker?.ai_score && <AIScoreBar scores={worker.ai_score} />}
         </View>
       </ScrollView>
     </SafeScreen>

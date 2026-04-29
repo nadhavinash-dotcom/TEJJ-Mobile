@@ -45,9 +45,7 @@ const C = {
 
 function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <View className="flex-row items-center justify-between py-3"
-      style={{ borderBottomWidth: 1, borderBottomColor: C.outlineVariant }}
-    >
+    <View className="flex-row items-center justify-between py-3">
       <View className="flex-row items-center gap-2.5">
         {icon}
         <Text className="text-sm" style={{ color: C.onSurfaceVariant }}>{label}</Text>

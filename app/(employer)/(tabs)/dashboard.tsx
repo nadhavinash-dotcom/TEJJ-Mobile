@@ -1,25 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  TouchableOpacity, 
-  Image, 
-  ScrollView, 
-  SafeAreaView, 
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+  SafeAreaView,
   ActivityIndicator,
   Modal,
 } from 'react-native';
 import { router } from 'expo-router';
 import Animated, { SlideInLeft, SlideOutLeft } from 'react-native-reanimated';
-import { 
-  StyledMenu, 
-  StyledTrendingUp, 
-  StyledChefHat, 
-  StyledArrowRight, 
-  StyledPlus, 
-  StyledBriefcase, 
-  StyledClipboardCheck, 
-  StyledUserCircle, 
+import {
+  StyledMenu,
+  StyledTrendingUp,
+  StyledChefHat,
+  StyledArrowRight,
+  StyledPlus,
+  StyledBriefcase,
+  StyledClipboardCheck,
+  StyledUserCircle,
   StyledFilePlus,
   StyledLogOut,
   StyledX,
@@ -58,15 +58,15 @@ export default function EmployerDashboardScreen() {
       onRequestClose={() => setIsSidebarOpen(false)}
     >
       <View className="flex-1 flex-row">
-        <TouchableOpacity 
-          activeOpacity={1} 
+        <TouchableOpacity
+          activeOpacity={1}
           onPress={() => setIsSidebarOpen(false)}
           className="absolute inset-0 bg-black/40"
         >
           <View className="flex-1" />
         </TouchableOpacity>
-        
-        <Animated.View 
+
+        <Animated.View
           entering={SlideInLeft.duration(300)}
           exiting={SlideOutLeft.duration(300)}
           className="w-4/5 bg-white h-full shadow-2xl relative"
@@ -82,8 +82,8 @@ export default function EmployerDashboardScreen() {
 
               <View className="items-center mb-10 bg-indigo-50 p-6 rounded-3xl">
                 <View className="w-20 h-20 rounded-full overflow-hidden mb-4 border-4 border-white shadow-sm">
-                  <Image 
-                    source={{ uri: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=200' }} 
+                  <Image
+                    source={{ uri: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=200' }}
                     className="w-full h-full"
                     resizeMode="cover"
                   />
@@ -97,14 +97,14 @@ export default function EmployerDashboardScreen() {
               </View>
 
               <View className="gap-2">
-                <TouchableOpacity 
-                   onPress={() => setIsSidebarOpen(false)}
-                   className="flex-row items-center gap-4 p-4 rounded-2xl bg-primary/5"
+                <TouchableOpacity
+                  onPress={() => setIsSidebarOpen(false)}
+                  className="flex-row items-center gap-4 p-4 rounded-2xl bg-primary/5"
                 >
                   <StyledBriefcase color="#312e81" size={22} />
                   <Text className="text-primary font-bold text-lg">My Jobs</Text>
                 </TouchableOpacity>
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={() => {
                     setIsSidebarOpen(false);
                     router.push('/(employer)/analytics');
@@ -116,7 +116,7 @@ export default function EmployerDashboardScreen() {
                 </TouchableOpacity>
               </View>
 
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={() => clear()}
                 className="mt-auto flex-row items-center gap-4 p-6 border-t border-slate-100"
               >
@@ -133,10 +133,10 @@ export default function EmployerDashboardScreen() {
   return (
     <SafeAreaView className="flex-1 bg-surface">
       <Sidebar />
-      
+
       <View className="bg-[#fbf8fe]/90 flex-row justify-between items-center px-6 py-4 z-50 border-b border-surface-container-highest/30">
         <View className="flex-row items-center gap-4">
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => setIsSidebarOpen(true)}
             className="p-2 rounded-full"
           >
@@ -146,8 +146,8 @@ export default function EmployerDashboardScreen() {
         </View>
       </View>
 
-      <ScrollView 
-        className="flex-1" 
+      <ScrollView
+        className="flex-1"
         contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 32, paddingBottom: 120 }}
         showsVerticalScrollIndicator={false}
       >
@@ -166,23 +166,23 @@ export default function EmployerDashboardScreen() {
           </View>
         ) : jobs.length === 0 ? (
           <View className="items-center py-10">
-             <TouchableOpacity 
-                onPress={() => router.push('/(employer)/post/lane')}
-                className="border-2 border-dashed border-outline-variant bg-surface-container-low/30 rounded-3xl flex-col items-center justify-center p-12 w-full"
-             >
-                <View className="w-20 h-20 rounded-full bg-surface-container-high flex items-center justify-center mb-6">
-                  <StyledPlus color="#767683" size={40} />
-                </View>
-                <Text className="text-2xl font-bold text-primary mb-3">Create First Posting</Text>
-                <Text className="text-on-surface-variant text-base text-center max-w-[280px]">
-                  Ready to staff up? Post an urgent shift in seconds.
-                </Text>
-              </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => router.push('/(employer)/post/lane')}
+              className="border-2 border-dashed border-outline-variant bg-surface-container-low/30 rounded-3xl flex-col items-center justify-center p-12 w-full"
+            >
+              <View className="w-20 h-20 rounded-full bg-surface-container-high flex items-center justify-center mb-6">
+                <StyledPlus color="#767683" size={40} />
+              </View>
+              <Text className="text-2xl font-bold text-primary mb-3">Create First Posting</Text>
+              <Text className="text-on-surface-variant text-base text-center max-w-[280px]">
+                Ready to staff up? Post an urgent shift in seconds.
+              </Text>
+            </TouchableOpacity>
           </View>
         ) : (
           <View className="flex-col gap-8">
             {jobs.map((job) => (
-              <View key={job._id} className="bg-surface-container-lowest rounded-3xl overflow-hidden shadow-sm border border-surface-container-highest/50 p-6">
+              <View key={job._id} className="bg-surface-container-lowest rounded-3xl overflow-hidden shadow-sm border border-surface-container-highest/50 p-4">
                 <View className="flex-row justify-between items-start mb-6">
                   <View className="flex-row gap-4 items-center flex-1 pr-2">
                     <View className="w-14 h-14 bg-primary-fixed rounded-2xl flex items-center justify-center">
@@ -190,11 +190,16 @@ export default function EmployerDashboardScreen() {
                     </View>
                     <View className="flex-1">
                       <Text className="text-xl font-bold text-primary">{job.job_title}</Text>
-                      <Text className="text-on-surface-variant text-sm font-medium">₹{job.pay_rate} • {job.lane}</Text>
+                      <View className="flex-row items-center justify-start gap-2 px-3 py-1 rounded-full">
+                        <Text className="text-on-surface-variant text-sm font-medium">₹{job.pay_rate}</Text>
+                        <Text className="text-on-surface-variant text-sm font-medium">•</Text>
+                        <Text className="text-on-surface-variant text-sm font-medium">{job.lane}</Text>
+                        <View className="px-3 py-1 bg-secondary-container rounded-full">
+
+                        <Text className="text-on-secondary-container text-[10px] font-bold uppercase tracking-wider">{job.status}</Text>
+                        </View>
+                      </View>
                     </View>
-                  </View>
-                  <View className="px-3 py-1 bg-secondary-container rounded-full">
-                    <Text className="text-on-secondary-container text-[10px] font-bold uppercase tracking-wider">{job.status}</Text>
                   </View>
                 </View>
 
@@ -208,9 +213,9 @@ export default function EmployerDashboardScreen() {
                   </View>
                 </View>
 
-                <TouchableOpacity 
-                   onPress={() => router.push({ pathname: '/(employer)/applicants/[id]', params: { id: job._id } })}
-                   className="w-full bg-primary h-14 rounded-2xl flex-row items-center justify-center gap-2 active:opacity-90 shadow-lg shadow-primary/20"
+                <TouchableOpacity
+                  onPress={() => router.push({ pathname: '/(employer)/applicants/[jobId]', params: { jobId: job._id } })}
+                  className="w-full bg-primary h-12 rounded-2xl flex-row items-center justify-center gap-2 active:opacity-90 shadow-lg shadow-primary/20"
                 >
                   <Text className="text-white font-bold">View Pipeline</Text>
                   <StyledArrowRight color="#ffffff" size={20} />
@@ -218,9 +223,9 @@ export default function EmployerDashboardScreen() {
               </View>
             ))}
 
-            <TouchableOpacity 
-               onPress={() => router.push('/(employer)/post/lane')}
-               className="border-2 border-dashed border-outline-variant bg-surface-container-low/30 rounded-3xl flex-col items-center justify-center p-8 active:bg-primary-fixed/20"
+            <TouchableOpacity
+              onPress={() => router.push('/(employer)/post/lane')}
+              className="border-2 border-dashed border-outline-variant bg-surface-container-low/30 rounded-3xl flex-col items-center justify-center p-8 active:bg-primary-fixed/20"
             >
               <View className="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center mb-4">
                 <StyledPlus color="#767683" size={24} />
@@ -231,7 +236,7 @@ export default function EmployerDashboardScreen() {
         )}
       </ScrollView>
 
-      <TouchableOpacity 
+      <TouchableOpacity
         onPress={() => router.push('/(employer)/post')}
         className="absolute bottom-10 right-8 bg-primary w-16 h-16 rounded-full items-center justify-center shadow-2xl shadow-primary/30 active:scale-95"
       >

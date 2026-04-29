@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import {
   View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView,
-  ActivityIndicator, Alert
+  ActivityIndicator, Alert, RefreshControl
 } from 'react-native';
 import {
-  Navigation, MapPin, Wallet, Clock, ArrowRight, BellRing
+  Navigation, MapPin, Wallet, Clock, ArrowRight, BellRing, Briefcase, TrendingUp, Star
 } from 'lucide-react-native';
 import { router } from 'expo-router';
 import * as Location from 'expo-location';
@@ -24,14 +24,15 @@ export default function WorkerFeedScreen() {
   const [relocation, setRelocation] = useState(false);
   const [jobs, setJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [userCoords, setUserCoords] = useState<{ lat: number, lng: number } | null>(null);
 
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission Denied', 'Allow location access to find jobs near you.');
-        setLoading(false);
+        Alert.alert('Location Access', 'Enable location access to find jobs near you.');
+        fetchJobs(); // Fetch without coordinates
         return;
       }
 
@@ -43,29 +44,36 @@ export default function WorkerFeedScreen() {
         });
       } catch (error) {
         console.warn("Could not fetch location", error);
+        fetchJobs(); // Fetch without coordinates on error
       }
     })();
   }, []);
 
   useEffect(() => {
-    fetchJobs();
+    if (userCoords !== null || !loading) {
+      fetchJobs();
+    }
   }, [activeRadius, relocation, userCoords]);
 
   const fetchJobs = async () => {
-    setLoading(true);
     try {
       const radiusKm = RADIUS_MAP[activeRadius];
       let queryParams = new URLSearchParams();
-      if (userCoords && radiusKm) {
+      
+      if (userCoords) {
         queryParams.append('lat', userCoords.lat.toString());
         queryParams.append('lng', userCoords.lng.toString());
-        queryParams.append('radiusInKm', radiusKm.toString());
       }
-      if (relocation || !radiusKm) {
-        queryParams.append('includeRelocation', 'true');
+
+      // If relocation is enabled or national is selected, use a massive distance to cover everything
+      if (relocation || radiusKm === null) {
+        queryParams.append('max_distance_km', '20000');
+      } else if (radiusKm) {
+        queryParams.append('max_distance_km', radiusKm.toString());
       }
 
       const response = await api.get(`/jobs/feed?${queryParams.toString()}`);
+      // console.log('jobs' ,response.data);
       if (response.data.success) {
         setJobs(response.data.data);
       }
@@ -73,30 +81,134 @@ export default function WorkerFeedScreen() {
       console.error("Error fetching jobs:", error);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchJobs();
+  };
+
+  const renderJobCard = (job: any) => {
+    const isAboveMarket = job.market_rate_delta && job.market_rate_delta > 0;
+
+    return (
+      <TouchableOpacity
+        key={job._id}
+        onPress={() => router.push(`/(worker)/job/${job._id}`)}
+        className="bg-white rounded-2xl overflow-hidden shadow-sm active:opacity-95 border border-slate-200 mb-6"
+      >
+        <View className="relative h-44 w-full bg-slate-100">
+          <Image
+            source={{ uri: job.image_url || 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=800&auto=format&fit=crop' }}
+            className="w-full h-full"
+            resizeMode="cover"
+          />
+          <View className="absolute inset-0 bg-slate-900/40" />
+
+          {/* Top Tags */}
+          <View className="absolute top-4 left-4 flex-row gap-2">
+            {job.lane === 1 && (
+              <View className="bg-emerald-500 px-3 py-1.5 rounded-lg shadow-sm">
+                <Text className="text-white text-xs font-bold uppercase tracking-wider">Fast Track</Text>
+              </View>
+            )}
+            {job.sups_score && job.sups_score > 80 && (
+              <View className="bg-amber-500 flex-row items-center gap-1 px-3 py-1.5 rounded-lg shadow-sm">
+                <Star color="#ffffff" size={12} fill="#ffffff" />
+                <Text className="text-white text-xs font-bold uppercase tracking-wider">High Match</Text>
+              </View>
+            )}
+          </View>
+
+          <View className="absolute bottom-4 left-4 right-4 flex-row justify-between items-end">
+            <View className="flex-1">
+               <Text className="text-white/90 font-medium text-xs mb-1 uppercase tracking-wider">
+                 {job.employer_property_type || 'Hospitality'}
+               </Text>
+               <Text className="text-white font-bold text-xl leading-tight drop-shadow-md">
+                 {job.job_title || job.primary_skill || 'Position Available'}
+               </Text>
+            </View>
+            {job.distance_km !== undefined && (
+              <View className="bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full flex-row items-center gap-1.5 shadow-sm">
+                <MapPin color="#0f172a" size={12} />
+                <Text className="font-bold text-[11px] text-slate-900">
+                  {job.distance_km} km
+                </Text>
+              </View>
+            )}
+          </View>
+        </View>
+
+        <View className="p-5">
+          <View className="flex-row items-center gap-2 mb-4">
+            <MapPin color="#64748b" size={16} />
+            <Text className="text-slate-600 font-medium text-sm">
+              {job.employer_area_locality || 'Location Pending'}
+            </Text>
+            {job.employer_gstin_verified && (
+              <View className="bg-emerald-50 px-2 py-0.5 rounded ml-auto">
+                <Text className="text-emerald-700 text-[10px] font-bold">VERIFIED</Text>
+              </View>
+            )}
+          </View>
+
+          <View className="flex-row flex-wrap gap-2 mb-6">
+            <View className={`flex-row items-center gap-1.5 px-3 py-2 rounded-xl ${isAboveMarket ? 'bg-emerald-50 border border-emerald-100' : 'bg-slate-50'}`}>
+              <Wallet color={isAboveMarket ? "#059669" : "#475569"} size={16} />
+              <Text className={`text-sm font-bold ${isAboveMarket ? 'text-emerald-700' : 'text-slate-700'}`}>
+                ₹{job.pay_rate} <Text className="font-medium text-xs">/ {job.pay_type === 'PER_SHIFT' ? 'Shift' : 'Month'}</Text>
+              </Text>
+            </View>
+
+            <View className="bg-slate-50 flex-row items-center gap-1.5 px-3 py-2 rounded-xl">
+              <Clock color="#475569" size={16} />
+              <Text className="text-sm font-medium text-slate-700">
+                {job.shift_duration_hours ? `${job.shift_duration_hours}h Shift` : 'Full-time'}
+              </Text>
+            </View>
+
+            <View className="bg-slate-50 flex-row items-center gap-1.5 px-3 py-2 rounded-xl">
+              <Briefcase color="#475569" size={16} />
+              <Text className="text-sm font-medium text-slate-700">
+                {job.number_of_openings ? `${job.number_of_openings} Openings` : 'Hiring'}
+              </Text>
+            </View>
+          </View>
+
+          <View className="w-full bg-primary active:bg-slate-800 h-14 rounded-xl flex-row items-center justify-center gap-2 shadow-sm">
+            <Text className="text-white font-bold text-[15px] tracking-wide">View Details</Text>
+            <ArrowRight color="#ffffff" size={18} />
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
   return (
-    <SafeAreaView className="flex-1 bg-surface">
+    <SafeAreaView className="flex-1 bg-slate-50">
       <ScrollView
         className="flex-1"
         contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 20, paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#0f172a" />}
       >
         <View className="mb-8 px-2">
-          <Text className="font-bold text-secondary uppercase tracking-widest text-[10px] mb-2">
+          <Text className="font-bold text-slate-500 uppercase tracking-widest text-[11px] mb-2">
             Opportunities Near You
           </Text>
-          <Text className="font-extrabold text-4xl text-primary leading-tight">
-            Find your next <Text className="text-secondary">Culinary</Text> mission.
+          <Text className="font-extrabold text-3xl text-slate-900 leading-tight">
+            Find your next <Text className="text-primary">Culinary</Text> mission.
           </Text>
         </View>
 
-        <View className="bg-surface-container-low p-5 rounded-2xl mb-8 space-y-6">
+        <View className="bg-white p-5 rounded-2xl mb-8 shadow-sm border border-slate-100 space-y-5">
           <View>
             <View className="flex-row items-center gap-2 mb-4">
-              <Navigation color="#000666" size={20} />
-              <Text className="font-bold text-lg text-primary">Search Radius</Text>
+              <Navigation color="#0f172a" size={18} />
+              <Text className="font-bold text-base text-slate-900">Search Radius</Text>
             </View>
 
             <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
@@ -105,13 +217,15 @@ export default function WorkerFeedScreen() {
                   <TouchableOpacity
                     key={option}
                     onPress={() => setActiveRadius(option)}
-                    className={`px-5 py-2.5 rounded-lg ${activeRadius === option
-                      ? 'bg-primary shadow-sm shadow-primary/30'
-                      : 'bg-surface-container-lowest'
-                      }`}
+                    className={`px-5 py-2.5 rounded-xl border ${
+                      activeRadius === option
+                        ? 'bg-primary border-primary'
+                        : 'bg-white border-slate-200'
+                    }`}
                   >
-                    <Text className={`font-semibold text-sm ${activeRadius === option ? 'text-white' : 'text-on-surface-variant'
-                      }`}>
+                    <Text className={`font-semibold text-[13px] ${
+                      activeRadius === option ? 'text-white' : 'text-slate-600'
+                    }`}>
                       {option}
                     </Text>
                   </TouchableOpacity>
@@ -120,99 +234,54 @@ export default function WorkerFeedScreen() {
             </ScrollView>
           </View>
 
-          <View className="h-px w-full bg-outline-variant/30" />
+          <View className="h-px w-full bg-slate-100" />
 
-          <View className="flex-row items-center justify-between bg-surface-container-highest/50 p-4 rounded-xl border border-outline-variant/20">
+          <View className="mt-4 flex-row items-center justify-between bg-slate-50 p-4 rounded-xl border border-slate-100">
             <View className="flex-1 pr-4">
-              <Text className="font-bold text-on-surface">Open to Relocation</Text>
-              <Text className="text-xs text-on-surface-variant mt-0.5">Include nationwide matches</Text>
+              <Text className="font-bold text-slate-900">Open to Relocation</Text>
+              <Text className="text-xs text-slate-500 mt-1">Include nationwide matches</Text>
             </View>
             <TouchableOpacity
               onPress={() => setRelocation(!relocation)}
-              className={`w-12 h-6 rounded-full justify-center px-1 ${relocation ? 'bg-primary-container' : 'bg-outline-variant'
-                }`}
+              className={`w-12 h-6 rounded-full justify-center px-1 transition-colors ${
+                relocation ? 'bg-primary' : 'bg-slate-300'
+              }`}
             >
-              <View className={`w-4 h-4 bg-white rounded-full ${relocation ? 'translate-x-6' : 'translate-x-0'
-                }`} />
+              <View className={`w-4 h-4 bg-white rounded-full transition-transform ${
+                relocation ? 'translate-x-6' : 'translate-x-0'
+              }`} />
             </TouchableOpacity>
           </View>
         </View>
 
         <View className="space-y-6">
-          {loading ? (
-            <ActivityIndicator size="large" color="#1A237E" className="mt-10" />
+          {loading && !refreshing ? (
+            <ActivityIndicator size="large" color="#0f172a" className="mt-10" />
           ) : jobs.length === 0 ? (
-            <View className="items-center py-10">
-              <Text className="text-on-surface-variant font-medium text-lg">No jobs found in this area.</Text>
+            <View className="items-center py-16 bg-white rounded-2xl border border-slate-100 shadow-sm">
+              <View className="w-16 h-16 bg-slate-50 rounded-full items-center justify-center mb-4">
+                <Briefcase color="#94a3b8" size={32} />
+              </View>
+              <Text className="text-slate-900 font-bold text-lg mb-2">No jobs found</Text>
+              <Text className="text-slate-500 font-medium text-sm text-center px-8">
+                Try expanding your search radius or turning on relocation to see more opportunities.
+              </Text>
             </View>
           ) : (
-            jobs.map((job) => (
-              <TouchableOpacity
-                key={job._id}
-                onPress={() => router.push(`/(worker)/job/${job._id}`)}
-                className="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm active:opacity-95 border border-surface-container-highest/50 mb-6"
-              >
-                <View className="relative h-48 w-full bg-surface-container-high">
-                  <Image
-                    source={{ uri: job.image_url || 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=800&auto=format&fit=crop' }}
-                    className="w-full h-full"
-                    resizeMode="cover"
-                  />
-                  <View className="absolute inset-0 bg-black/10" />
-
-                  {job.status === 'BROADCASTING' && (
-                    <View className="absolute top-4 left-4 bg-tertiary-container px-3 py-1.5 rounded-lg shadow-sm">
-                      <Text className="text-tertiary-fixed text-xs font-bold uppercase tracking-wider">Hiring Now</Text>
-                    </View>
-                  )}
-
-                  <View className="absolute bottom-4 right-4 bg-surface/95 px-3 py-1.5 rounded-full flex-row items-center gap-1.5 shadow-sm">
-                    <MapPin color="#006b5e" size={14} />
-                    <Text className="font-bold text-[11px] text-on-surface">
-                      {job.employer_id?.city || 'Local Area'}
-                    </Text>
-                  </View>
-                </View>
-
-                <View className="p-6">
-                  <View className="mb-4">
-                    <Text className="font-bold text-xl text-primary mb-1">{job.job_title || 'Position Available'}</Text>
-                    <Text className="text-on-surface-variant font-medium">{job.employer_id?.property_name || 'Confidential Employer'}</Text>
-                  </View>
-                  <View className="flex-row flex-wrap gap-2 mb-6">
-                    <View className="bg-surface-container-high flex-row items-center gap-1.5 px-3 py-1.5 rounded-lg">
-                      <Wallet color="#454652" size={14} />
-                      <Text className="text-xs font-semibold text-on-surface-variant">
-                        ₹{job.pay_rate} {job.pay_type === 'PER_SHIFT' ? '/ Shift' : '/ Month'}
-                      </Text>
-                    </View>
-                    <View className="bg-surface-container-high flex-row items-center gap-1.5 px-3 py-1.5 rounded-lg">
-                      <Clock color="#454652" size={14} />
-                      <Text className="text-xs font-semibold text-on-surface-variant">
-                        {job.shift_duration_hours ? `${job.shift_duration_hours}h Shift` : 'Full-time'}
-                      </Text>
-                    </View>
-                  </View>
-                  <View className="w-full bg-primary h-14 rounded-xl flex-row items-center justify-center gap-2">
-                    <Text className="text-white font-bold text-sm tracking-wide">View Details</Text>
-                    <ArrowRight color="#ffffff" size={18} />
-                  </View>
-                </View>
-              </TouchableOpacity>
-            ))
+            jobs.map(renderJobCard)
           )}
 
-          <View className="bg-primary-container rounded-2xl p-8 relative overflow-hidden mt-2">
-            <View className="absolute -right-12 -bottom-12 w-48 h-48 bg-primary/30 rounded-full" />
-            <Text className="font-extrabold text-2xl text-on-primary-container mb-4 z-10">
+          <View className="bg-primary rounded-2xl p-8 relative overflow-hidden mt-4">
+            <View className="absolute -right-16 -top-16 w-48 h-48 bg-on-primary-fixed-variant rounded-full blur-2xl" />
+            <Text className="font-bold text-2xl text-white mb-3 z-10">
               Can't find the right fit?
             </Text>
-            <Text className="text-on-primary-container/80 text-sm leading-relaxed mb-8 z-10">
+            <Text className="text-slate-300 text-sm leading-relaxed mb-8 z-10 font-medium">
               Set up custom job alerts and be the first to know when luxury hospitality roles match your distance preferences.
             </Text>
-            <TouchableOpacity className="bg-white h-14 px-6 rounded-xl flex-row items-center justify-center gap-2 active:opacity-90 self-start z-10">
-              <Text className="text-primary font-bold text-sm">Create Job Alert</Text>
-              <BellRing color="#000666" size={18} />
+            <TouchableOpacity className="bg-white h-12 px-6 rounded-xl flex-row items-center justify-center gap-2 active:opacity-90 self-start z-10">
+              <Text className="text-slate-900 font-bold text-sm">Create Job Alert</Text>
+              <BellRing color="#0f172a" size={16} />
             </TouchableOpacity>
           </View>
         </View>
