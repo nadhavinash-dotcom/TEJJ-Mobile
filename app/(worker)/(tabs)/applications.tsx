@@ -7,61 +7,43 @@ import api from '../../../src/lib/api';
 import { auth } from '../../../src/lib/firebase';
 import { Clock, ClipboardList, CheckCircle, XCircle, MinusCircle, ChevronRight, MapPin, Banknote } from 'lucide-react-native';
 
-const C = {
-  primary: '#000666',
-  primaryFixed: '#e0e0ff',
-  background: '#fbf8fe',
-  surfaceContainerLowest: '#ffffff',
-  surfaceContainerHigh: '#eae7ed',
-  onSurface: '#1b1b1f',
-  onSurfaceVariant: '#454652',
-  outline: '#767683',
-  outlineVariant: '#c6c5d4',
-  secondary: '#006b5e',
-  secondaryContainer: '#94f0df',
-  onSecondaryContainer: '#006f62',
-  error: '#ba1a1a',
-  errorContainer: '#ffdad6',
-  amber: '#F59E0B',
-};
-
 type StatusConfig = {
   label: string;
   icon: React.ReactNode;
-  bg: string;
-  text: string;
+  bgClass: string;
+  textClass: string;
 };
 
 const STATUS_CONFIG: Record<string, StatusConfig> = {
   PENDING: {
     label: 'Pending',
-    icon: <Clock size={11} color="#92400e" />,
-    bg: '#fef3c7',
-    text: '#92400e',
+    icon: <Clock size={12} color="#92400e" />,
+    bgClass: 'bg-amber-100',
+    textClass: 'text-amber-800',
   },
   SHORTLISTED: {
     label: 'Shortlisted',
-    icon: <ClipboardList size={11} color={C.primary} />,
-    bg: C.primaryFixed,
-    text: C.primary,
+    icon: <ClipboardList size={12} color="#000666" />, // primary
+    bgClass: 'bg-primary-fixed',
+    textClass: 'text-primary',
   },
   MATCHED: {
     label: 'Matched',
-    icon: <CheckCircle size={11} color={C.secondary} />,
-    bg: C.secondaryContainer,
-    text: C.onSecondaryContainer,
+    icon: <CheckCircle size={12} color="#006b5e" />, // secondary
+    bgClass: 'bg-secondary-container',
+    textClass: 'text-on-secondary-container',
   },
   REJECTED: {
     label: 'Rejected',
-    icon: <XCircle size={11} color={C.error} />,
-    bg: C.errorContainer,
-    text: C.error,
+    icon: <XCircle size={12} color="#ba1a1a" />, // error
+    bgClass: 'bg-error-container',
+    textClass: 'text-error',
   },
   WITHDRAWN: {
     label: 'Withdrawn',
-    icon: <MinusCircle size={11} color={C.outline} />,
-    bg: C.surfaceContainerHigh,
-    text: C.outline,
+    icon: <MinusCircle size={12} color="#767683" />, // outline
+    bgClass: 'bg-surface-container-high',
+    textClass: 'text-outline',
   },
 };
 
@@ -77,87 +59,76 @@ export default function ApplicationsScreen() {
   });
 
   return (
-    <SafeScreen style={{ flex: 1, backgroundColor: C.background }}>
+    <SafeScreen className="flex-1 bg-background">
       <View className="px-5 pt-8 pb-4">
-        <Text className="text-2xl font-bold" style={{ color: C.primary }}>My Applications</Text>
-        <Text className="text-xs uppercase tracking-widest mt-0.5" style={{ color: C.outline }}>
+        <Text className="text-3xl font-black text-primary tracking-tight">My Applications</Text>
+        <Text className="text-xs uppercase tracking-widest mt-1 text-outline font-semibold">
           Your job pipeline
         </Text>
       </View>
 
       {isLoading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator color={C.primary} size="large" />
+          <ActivityIndicator color="#000666" size="large" />
         </View>
       ) : (
         <FlatList
           data={data ?? []}
           keyExtractor={(item) => item._id}
+          showsVerticalScrollIndicator={false}
           renderItem={({ item }) => {
             const status = STATUS_CONFIG[item.status] ?? STATUS_CONFIG.WITHDRAWN;
             return (
               <TouchableOpacity
                 onPress={() => {
-                  if (item.status === 'MATCHED') {
+                  if (item.status === 'MATCHED' && item.match_id) {
                     router.push({ pathname: '/(worker)/match/[id]', params: { id: item.match_id } });
                   } else {
                     router.push({ pathname: '/(worker)/applied/[id]', params: { id: item._id } });
                   }
                 }}
-                className="mx-4 mb-3 rounded-2xl"
-                style={{
-                  backgroundColor: C.surfaceContainerLowest,
-                  borderWidth: 1,
-                  borderColor: C.outlineVariant,
-                }}
+                className="mx-4 mb-4 rounded-3xl bg-surface-container-lowest border border-outline-variant overflow-hidden shadow-sm"
                 activeOpacity={0.85}
               >
-                <View className="p-4">
+                <View className="p-5">
                   {/* Title row */}
-                  <View className="flex-row items-start justify-between mb-2">
+                  <View className="flex-row items-start justify-between mb-3">
                     <Text
-                      className="font-bold text-base flex-1 mr-2"
+                      className="font-bold text-lg flex-1 mr-3 text-on-surface leading-tight"
                       numberOfLines={1}
-                      style={{ color: C.onSurface }}
                     >
                       {item.job_title}
                     </Text>
-                    <View
-                      className="flex-row items-center gap-1 px-2 py-1 rounded-lg"
-                      style={{ backgroundColor: status.bg }}
-                    >
+                    <View className={`flex-row items-center gap-1.5 px-2.5 py-1 rounded-lg ${status.bgClass}`}>
                       {status.icon}
-                      <Text className="text-[11px] font-bold" style={{ color: status.text }}>
+                      <Text className={`text-[11px] font-bold uppercase tracking-wider ${status.textClass}`}>
                         {status.label}
                       </Text>
                     </View>
                   </View>
 
                   {/* Location */}
-                  <View className="flex-row items-center gap-1.5 mb-2">
-                    <MapPin size={13} color={C.onSurfaceVariant} />
-                    <Text className="text-sm" style={{ color: C.onSurfaceVariant }} numberOfLines={1}>
+                  <View className="flex-row items-center gap-2 mb-4">
+                    <MapPin size={14} color="#454652" />
+                    <Text className="text-sm font-medium text-on-surface-variant flex-1" numberOfLines={1}>
                       {item.employer_property_type}
                       {item.employer_area_locality ? ` · ${item.employer_area_locality}` : ''}
                     </Text>
                   </View>
 
                   {/* Footer */}
-                  <View
-                    className="flex-row items-center justify-between pt-2.5"
-                    style={{ borderTopWidth: 1, borderTopColor: C.outlineVariant }}
-                  >
-                    <View className="flex-row items-center gap-1.5">
-                      <Banknote size={14} color={C.primary} />
-                      <Text className="font-bold text-sm" style={{ color: C.primary }}>
+                  <View className="flex-row items-center justify-between pt-4 border-t border-outline-variant/50">
+                    <View className="flex-row items-center gap-2">
+                      <Banknote size={16} color="#000666" />
+                      <Text className="font-bold text-base text-primary">
                         ₹{item.pay_rate?.toLocaleString('en-IN')}/shift
                       </Text>
                     </View>
-                    <View className="flex-row items-center gap-1">
-                      <Text className="text-xs" style={{ color: C.outline }}>
+                    <View className="flex-row items-center gap-1 bg-surface-container-low px-2 py-1 rounded-md">
+                      <Text className="text-xs font-semibold text-outline">
                         {new Date(item.applied_at).toLocaleDateString('en-IN')}
                       </Text>
-                      <ChevronRight size={14} color={C.outline} />
+                      <ChevronRight size={14} color="#767683" />
                     </View>
                   </View>
                 </View>
@@ -166,18 +137,22 @@ export default function ApplicationsScreen() {
           }}
           ListEmptyComponent={
             <View className="flex-1 items-center justify-center py-24 px-10">
-              <View
-                className="w-20 h-20 rounded-full items-center justify-center mb-6"
-                style={{ backgroundColor: C.primaryFixed }}
-              >
-                <ClipboardList size={32} color={C.primary} />
+              <View className="w-24 h-24 rounded-full items-center justify-center mb-6 bg-primary-fixed shadow-sm">
+                <ClipboardList size={40} color="#000666" />
               </View>
-              <Text className="text-xl font-bold mb-2" style={{ color: C.onSurface }}>
+              <Text className="text-2xl font-black mb-2 text-on-surface tracking-tight">
                 No applications yet
               </Text>
-              <Text className="text-sm text-center leading-relaxed" style={{ color: C.onSurfaceVariant }}>
-                Browse the feed and apply to jobs to see them here.
+              <Text className="text-base text-center leading-relaxed text-on-surface-variant px-4">
+                Browse the feed and apply to jobs to start building your pipeline.
               </Text>
+              
+              <TouchableOpacity 
+                onPress={() => router.replace('/(worker)/(tabs)/feed')}
+                className="mt-8 bg-primary px-8 py-3.5 rounded-full shadow-md flex-row items-center gap-2 active:opacity-90"
+              >
+                <Text className="text-on-primary font-bold text-base tracking-wide">Find Jobs</Text>
+              </TouchableOpacity>
             </View>
           }
           contentContainerStyle={{ paddingBottom: 100, flexGrow: 1 }}

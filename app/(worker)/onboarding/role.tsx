@@ -13,7 +13,7 @@ export default function RoleScreen() {
   const { worker, updateWorker } = useOnboardingStore();
 
   const handleVoiceResult = ({ keywords }: { keywords: string[]; englishText: string; originalText: string; structured: Record<string, unknown> }) => {
-    const match = SKILL_LIST.find((s) => keywords.some((k) => s.keywords.includes(k.toLowerCase())));
+    const match = SKILL_LIST.find((s:any) => keywords.some((k:string) => s.keywords.includes(k.toLowerCase())));
     if (match) updateWorker({ primary_skill: match.id });
   };
 
@@ -32,10 +32,11 @@ export default function RoleScreen() {
           onSelect={(id) => updateWorker({ primary_skill: id })}
         />
 
-        <OnboardingFooter 
+        <OnboardingFooter
           onBack={() => router.back()}
           onNext={() => router.push('/(worker)/onboarding/sub-skill')}
           nextDisabled={!worker.primary_skill}
+          backDisabled={true}
         />
       </ScrollView>
     </SafeScreen>

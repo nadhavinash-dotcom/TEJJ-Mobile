@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import MapView, { Marker, MapPressEvent } from 'react-native-maps';
+import MapView, { Marker, MapPressEvent, PROVIDER_GOOGLE } from 'react-native-maps';
 
 interface MapPickerProps {
   latitude: number;
@@ -18,6 +18,7 @@ export function MapPicker({ latitude, longitude, onLocationChange, readonly }: M
 
   return (
     <MapView
+      provider={PROVIDER_GOOGLE}
       style={{ flex: 1, width: '100%' }}
       region={{ latitude, longitude, latitudeDelta: 0.01, longitudeDelta: 0.01 }}
       onPress={handlePress}

@@ -3,11 +3,14 @@ import {
   View,
   Text,
   TouchableOpacity,
-  ScrollView
+  ScrollView,
+  Alert
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { StyledMenu, StyledArrowRight } from '../../src/components/tell/Icons';
+import { useAuthStore } from '@/src/store/authStore';
+import api from '@/src/lib/api';
 
 const languages = [
   { id: 'en', label: 'English' },
@@ -23,10 +26,61 @@ const languages = [
 
 export default function LanguageScreen() {
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
+  const {setLanguage, activeRole, hasEmployer, hasWorker} = useAuthStore();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleContinue = () => {
-    if (selectedLanguage) {
-      router.push({ pathname: '/(auth)/phone', params: { lang: selectedLanguage } });
+  // const handleContinue = () => {
+  //   if (selectedLanguage) {
+  //     router.push({ pathname: '/(auth)/phone', params: { lang: selectedLanguage } });
+  //   }
+  // };
+
+
+    const handleContinue = async () => {
+    if (!selectedLanguage) return;
+
+    setIsLoading(true);
+    try {
+      const response = await api.patch('/auth/update-user', {
+        language: selectedLanguage,
+      });
+
+      if (response.data.success) {
+        const { language } = response.data;
+
+        // const prevUser = useAuthStore.getState();
+        // console.log('Previous User State:', prevUser);
+
+        setLanguage(language);
+        if (!activeRole) {
+          router.replace('/(auth)/role');
+          return;
+        }
+        if (activeRole === 'employer') {
+          if (hasEmployer) {
+            router.replace('/(employer)/(tabs)/dashboard');
+            return;
+          } else {
+            router.replace('/(employer)/onboarding/property');
+            return;
+          }
+        } else {
+          if (hasWorker) {
+            router.replace('/(worker)/(tabs)/feed');
+          } else {
+            router.replace('/(worker)/onboarding/role');
+            return;
+          }
+        }
+      }
+    } catch (error: any) {
+      console.error("Language Selection Error:", error);
+      Alert.alert(
+        'Error',
+        error.response?.data?.message || 'Failed to set language. Please try again.'
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -39,7 +93,7 @@ export default function LanguageScreen() {
           </TouchableOpacity> */}
           <Text className="font-bold text-2xl tracking-tight text-primary">TEJJ</Text>
         </View>
-        <Text className="text-sm font-bold text-[#44464f]">v1.0</Text>
+        {/* <Text className="text-sm font-bold text-[#44464f]">v1.0</Text> */}
       </View>
 
       <ScrollView

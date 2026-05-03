@@ -15,7 +15,7 @@ const SplashScreen: React.FC = () => {
   useEffect(() => {
     Animated.timing(progress, {
       toValue: 100,
-      duration: 2500, // 2.5 seconds loading simulation
+      duration: 1000, // 2.5 seconds loading simulation
       useNativeDriver: false, // width interpolation doesn't support native driver
     }).start();
   }, []);

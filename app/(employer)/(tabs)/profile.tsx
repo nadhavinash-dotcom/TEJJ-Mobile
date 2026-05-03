@@ -102,7 +102,7 @@ export default function EmployerProfileScreen() {
         style: 'destructive',
         onPress: async () => {
           clear();
-          router.replace('/(auth)/language');
+          router.replace('/(auth)/phone');
         },
       },
     ]);
