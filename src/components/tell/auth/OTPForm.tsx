@@ -1,13 +1,23 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
     View,
     Text,
     TextInput,
     TouchableOpacity,
     ActivityIndicator,
-    Keyboard
+    Platform,
 } from 'react-native';
 import { StyledTimer } from '../Icons';
+
+// Lazily import so we don't crash on iOS where the native module won't exist
+let OtpVerify: any = null;
+if (Platform.OS === 'android') {
+    try {
+        OtpVerify = require('react-native-otp-verify').default;
+    } catch (e) {
+        console.warn('[OTPForm] react-native-otp-verify not available:', e);
+    }
+}
 
 interface OtpFormProps {
     phone: string;
@@ -21,6 +31,7 @@ interface OtpFormProps {
 const OtpForm = ({ phone, onChangePhone, isLoading, setIsLoading, onResendOTP, onVerifyOtp }: OtpFormProps) => {
     const [otp, setOtp] = useState<string[]>(['', '', '', '', '', '']);
     const inputRefs = useRef<Array<TextInput | null>>([]);
+    const hasAutoFilled = useRef(false);
 
     // Timer State
     const [timeLeft, setTimeLeft] = useState(60);
@@ -33,7 +44,71 @@ const OtpForm = ({ phone, onChangePhone, isLoading, setIsLoading, onResendOTP, o
         return () => clearInterval(timerId);
     }, [timeLeft]);
 
-    // --- 2. HANDLE RESEND ---
+    // --- 2. SMS RETRIEVER (Android only) ---
+    const autoFillOtp = useCallback(
+        (code: string) => {
+            console.log('[OTPForm] autoFillOtp triggered with code:', code);
+            if (hasAutoFilled.current) {
+                console.log('[OTPForm] Code already auto-filled, skipping');
+                return;
+            }
+            hasAutoFilled.current = true;
+
+            const digits = code.split('').slice(0, 6);
+            console.log('[OTPForm] Setting OTP digits:', digits);
+            setOtp(digits);
+            // Focus last box so keyboard goes away
+            inputRefs.current[5]?.focus();
+            console.log('[OTPForm] Auto-submitting OTP verify...');
+            onVerifyOtp(digits.join(''));
+        },
+        [onVerifyOtp]
+    );
+
+    useEffect(() => {
+        console.log('[OTPForm] SMS Retriever useEffect. Platform:', Platform.OS);
+        if (Platform.OS !== 'android' || !OtpVerify) {
+            console.log('[OTPForm] Skipping SMS Listener (not Android or no OtpVerify module)');
+            return;
+        }
+
+        const startSmsListener = async () => {
+            try {
+                console.log('[OTPForm] Calling OtpVerify.startListener()...');
+                await OtpVerify.startListener();
+                console.log('[OTPForm] SMS Listener started successfully');
+            } catch (e) {
+                console.warn('[OTPForm] Failed to start SMS listener:', e);
+            }
+        };
+
+        startSmsListener();
+
+        const handleMessage = (message: string | null) => {
+            console.log('[OTPForm] Received SMS message event:', message);
+            if (!message) return;
+            // Extract 6-digit OTP from the SMS body
+            const match = message.match(/\b(\d{6})\b/);
+            if (match) {
+                console.log('[OTPForm] Found 6 digits in message:', match[1]);
+                autoFillOtp(match[1]);
+            } else {
+                console.log('[OTPForm] No 6-digit code found in message.');
+            }
+        };
+
+        console.log('[OTPForm] Adding OtpVerify listener');
+        OtpVerify.addListener(handleMessage);
+
+        return () => {
+            try {
+                console.log('[OTPForm] Removing OtpVerify listener on cleanup');
+                OtpVerify.removeListener(handleMessage);
+            } catch (_) {}
+        };
+    }, [autoFillOtp]);
+
+    // --- 3. HANDLE RESEND ---
     const handleResendClick = async () => {
         if (timeLeft > 0) return;
 
@@ -42,7 +117,17 @@ const OtpForm = ({ phone, onChangePhone, isLoading, setIsLoading, onResendOTP, o
             await onResendOTP(phone);
             setTimeLeft(60);
             setOtp(['', '', '', '', '', '']);
+            hasAutoFilled.current = false;
             inputRefs.current[0]?.focus();
+
+            // Restart SMS listener after resend
+            if (Platform.OS === 'android' && OtpVerify) {
+                try {
+                    await OtpVerify.startListener();
+                } catch (e) {
+                    console.warn('[OTPForm] Failed to restart SMS listener:', e);
+                }
+            }
         } catch (error) {
             console.error(error);
         } finally {
@@ -112,6 +197,7 @@ const OtpForm = ({ phone, onChangePhone, isLoading, setIsLoading, onResendOTP, o
                         editable={!isLoading && !isResending}
                         placeholder="·"
                         placeholderTextColor="#000666"
+                        textAlign='center'
                     />
                 ))}
             </View>

@@ -8,6 +8,7 @@ interface OnboardingFooterProps {
   nextDisabled?: boolean;
   nextLabel?: string;
   color?: string; // e.g. 'bg-amber-500' or 'bg-blue-600'
+  backDisabled?: boolean;
 }
 
 export function OnboardingFooter({ 
@@ -15,14 +16,16 @@ export function OnboardingFooter({
   onNext, 
   nextDisabled, 
   nextLabel = 'Next',
-  color = 'bg-amber-500'
+  color = 'bg-amber-500',
+  backDisabled = false
 }: OnboardingFooterProps) {
   return (
     <View className="px-6 py-6 flex-row gap-4">
       <TouchableOpacity
         onPress={onBack}
-        className="flex-1 bg-navy-500 border border-zinc-400 rounded-2xl py-4 flex-row items-center justify-center gap-1"
+        className={`flex-1  border border-zinc-400 rounded-2xl py-4 flex-row items-center justify-center gap-1 ${backDisabled ? 'bg-navy-700 opacity-50' : 'bg-navy-500'}`}
         activeOpacity={0.7}
+        disabled={backDisabled}
       >
         <LucideIcon name="ChevronLeft" size={18} color="white" />
         <Text className="text-white font-bold text-base">Back</Text>

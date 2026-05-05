@@ -11,6 +11,7 @@ import { OnboardingFooter } from '../../../src/components/shared/OnboardingFoote
 import api from '../../../src/lib/api';
 import { auth } from '../../../src/lib/firebase';
 import { LucideIcon } from '../../../src/components/shared/LucideIcon';
+import { refreshUser } from '@/utils/referesh-user';
 
 export default function PreviewScreen() {
   const { worker, resetWorker } = useOnboardingStore();
@@ -68,16 +69,17 @@ export default function PreviewScreen() {
         throw new Error(response.error || 'Failed to create profile');
       }
 
-      const user = response.data;
-      setUser({
-        userId: user._id,
-        token: token!,
-        // firebaseUid: auth.currentUser?.uid || '',
-        hasWorker: true,
-        hasEmployer: false,
-        workerId: user.worker_id,
-        activeRole: 'worker',
-      });
+      // const user = response.data;
+      // setUser({
+      //   userId: user._id,
+      //   token: token!,
+      //   // firebaseUid: auth.currentUser?.uid || '',
+      //   hasWorker: true,
+      //   hasEmployer: false,
+      //   workerId: user.worker_id,
+      //   activeRole: 'worker',
+      // });
+      await refreshUser(setLoading, token)
       resetWorker();
       router.replace('/(worker)/(tabs)/feed');
     } catch (e: any) {

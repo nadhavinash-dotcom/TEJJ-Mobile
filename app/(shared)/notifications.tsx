@@ -36,17 +36,17 @@ export default function NotificationsScreen() {
   };
 
   return (
-    <SafeScreen className="flex-1">
+    <SafeScreen className="flex-1 bg-background">
       <View className="px-4 pt-4 pb-2">
         <TouchableOpacity onPress={() => router.back()} className="mb-4 flex-row items-center gap-1">
-          <LucideIcon name="ChevronLeft" size={20} color="#F59E0B" />
-          <Text className="text-amber-400 text-base">Back</Text>
+          <LucideIcon name="ChevronLeft" size={20} color="#000666" />
+          <Text className="text-primary text-base font-medium">Back</Text>
         </TouchableOpacity>
-        <Text className="text-white text-xl font-bold">Notifications</Text>
+        <Text className="text-on-background text-2xl font-bold">Notifications</Text>
       </View>
 
       {isLoading ? (
-        <View className="flex-1 items-center justify-center"><ActivityIndicator color="#F59E0B" size="large" /></View>
+        <View className="flex-1 items-center justify-center"><ActivityIndicator color="#000666" size="large" /></View>
       ) : (
         <FlatList
           data={data ?? []}
@@ -54,28 +54,28 @@ export default function NotificationsScreen() {
           renderItem={({ item }) => (
             <TouchableOpacity
               onPress={() => markReadMutation.mutate(item._id)}
-              className={`mx-4 mb-2 rounded-2xl p-4 border ${item.read ? 'bg-navy-800 border-navy-700' : 'bg-navy-700 border-amber-500/20'}`}
+              className={`mx-4 mb-3 rounded-2xl p-4 border ${item.read ? 'bg-surface-container border-outline-variant' : 'bg-primary-container border-primary'}`}
               activeOpacity={0.85}
             >
               <View className="flex-row items-start gap-3">
                 <View className="mt-0.5">
-                  <LucideIcon name={ICONS[item.type] || 'Bell'} size={20} color="#F59E0B" />
+                  <LucideIcon name={ICONS[item.type] || 'Bell'} size={20} color={item.read ? '#454652' : '#ffffffff'} />
                 </View>
                 <View className="flex-1">
-                  <Text className={`font-semibold ${item.read ? 'text-navy-300' : 'text-white'}`}>{item.title}</Text>
-                  <Text className="text-navy-400 text-sm mt-1">{item.body}</Text>
-                  <Text className="text-navy-500 text-xs mt-1">{new Date(item.created_at).toLocaleDateString('en-IN')}</Text>
+                  <Text className={`font-semibold ${item.read ? 'text-on-surface' : 'text-on-primary-container'}`}>{item.title}</Text>
+                  <Text className={`text-sm mt-1 ${item.read ? 'text-on-surface-variant' : 'text-on-primary-container opacity-80'}`}>{item.body}</Text>
+                  <Text className={`text-xs mt-1 ${item.read ? 'text-outline' : 'text-on-primary-container opacity-60'}`}>{new Date(item.created_at).toLocaleDateString('en-IN')}</Text>
                 </View>
-                {!item.read && <View className="w-2 h-2 rounded-full bg-amber-400 mt-1" />}
+                {!item.read && <View className="w-2.5 h-2.5 rounded-full bg-zinc-500 mt-1" />}
               </View>
             </TouchableOpacity>
           )}
           ListEmptyComponent={
             <View className="flex-1 items-center justify-center py-20">
               <View className="mb-4">
-                <LucideIcon name="Bell" size={48} color="#475569" />
+                <LucideIcon name="Bell" size={48} color="#767683" />
               </View>
-              <Text className="text-white font-semibold mb-2">No notifications yet</Text>
+              <Text className="text-on-surface-variant font-semibold mb-2">No notifications yet</Text>
             </View>
           }
           contentContainerStyle={{ paddingBottom: 20, flexGrow: 1 }}

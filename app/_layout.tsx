@@ -1,18 +1,19 @@
 import '../global.css';
 import React, { useEffect, useState } from 'react';
 import { View, ActivityIndicator } from 'react-native';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import { queryClient } from '../src/lib/queryClient';
 import { useAuthStore } from '../src/store/authStore';
-import api from '../src/lib/api';
 import SplashScreen from './(shared)/SplashScreen';
+import { refreshUser } from '@/utils/referesh-user';
 
-let Notifications: any = null;
+// ── Notifications (optional) ─────────────────────────────────────────────────
+
 try {
-  Notifications = require('expo-notifications');
+  const Notifications = require('expo-notifications');
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
@@ -20,62 +21,77 @@ try {
       shouldSetBadge: true,
     }),
   });
-} catch (e) {
-  console.warn("Push notifications disabled in Expo Go");
+} catch {
+  console.warn('Push notifications unavailable (Expo Go)');
 }
 
+// ── App state machine ─────────────────────────────────────────────────────────
+//
+//  splash ──► verifying ──► ready
+//               │
+//               └── no token → ready (skips fetch)
+//
+type AppPhase = 'splash' | 'verifying' | 'ready';
+
+const SPLASH_MS = 1000;
+
+// ── Root layout ───────────────────────────────────────────────────────────────
 
 export default function RootLayout() {
-  const { setUser, setLoading, clear, _hasHydrated, isLoading } = useAuthStore();
+  const { setLoading, _hasHydrated, token, activeRole } = useAuthStore();
+  const router = useRouter();
 
-  const [showSplash, setShowSplash] = useState(true);
+  const [phase, setPhase] = useState<AppPhase>('splash');
 
+  // 1️⃣  Splash timer — runs once
   useEffect(() => {
-    if (!_hasHydrated) return;
-    
-    const verifySession = async () => {
-      const token = useAuthStore.getState().token;
-      if (token) {
-        try {
-          const res = await api.get('/auth/me');
-          const user = res.data.data;
-          setUser({
-            userId: user._id,
-            token: token,
-            hasWorker: user.has_worker,
-            hasEmployer: user.has_employer,
-            activeRole: user.active_role,
-          });
-        } catch (e) {
-          console.error("Session verification failed", e);
-          clear();
-        }
-      } else {
-        setLoading(false);
-      }
-    };
-
-    verifySession();
-  }, [_hasHydrated]);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setShowSplash(false);
-    }, 2500);
+    const id = setTimeout(() => setPhase('verifying'), SPLASH_MS);
+    return () => clearTimeout(id);
   }, []);
 
-  // Show loading screen while store rehydrates from AsyncStorage
-  // if (!_hasHydrated) {
-  //   return (
-  //     <View style={{ flex: 1, backgroundColor: '#fbf8fe', alignItems: 'center', justifyContent: 'center' }}>
-  //       <ActivityIndicator color="#000666" size="large" />
-  //     </View>
-  //   );
-  // }
-  if (!_hasHydrated || isLoading || showSplash) {
+  // 2️⃣  Auth check — runs once the splash is done AND the store has hydrated
+  useEffect(() => {
+    if (phase !== 'verifying' || !_hasHydrated) return;
+
+    if (!token) {
+      setPhase('ready');
+      return;
+    }
+
+    refreshUser(setLoading, token).then(() => setPhase('ready'));
+  }, [phase, _hasHydrated]);
+
+  // 3️⃣  Navigate once everything is ready
+  useEffect(() => {
+    if (phase !== 'ready') return;
+
+    if (!token) {
+      router.replace('/(auth)/phone');
+      return;
+    }
+
+    if (activeRole === 'employer') {
+      router.replace('/(employer)/(tabs)/dashboard');
+    } else {
+      router.replace('/(worker)/(tabs)/feed');
+    }
+  }, [phase]);
+
+  // ── Loading UI ──────────────────────────────────────────────────────────────
+
+  if (phase === 'splash') {
     return <SplashScreen />;
   }
 
+  if (phase === 'verifying') {
+    return (
+      <View style={{ flex: 1, backgroundColor: '#fbf8fe', alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator color="#000666" size="large" />
+      </View>
+    );
+  }
+
+  // phase === 'ready' — render the shell; navigation fires in the effect above
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
@@ -91,4 +107,3 @@ export default function RootLayout() {
     </GestureHandlerRootView>
   );
 }
-

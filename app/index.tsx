@@ -4,12 +4,19 @@ import { router } from 'expo-router';
 import { useAuthStore } from '../src/store/authStore';
 
 export default function Index() {
-  const { userId, hasWorker, hasEmployer, activeRole, _hasHydrated } = useAuthStore();
+  const { token, hasWorker, hasEmployer, activeRole, _hasHydrated, language } = useAuthStore();
 
   useEffect(() => {
     if (!_hasHydrated) return;
 
-    if (!userId) {
+    console.log({ token, hasWorker, hasEmployer, activeRole, _hasHydrated, language })
+
+    if (!token) {
+      router.replace('/(auth)/phone');
+      return;
+    }
+
+    if(!language){
       router.replace('/(auth)/language');
       return;
     }
@@ -18,7 +25,7 @@ export default function Index() {
       router.replace('/(auth)/role');
       return;
     }
-    
+
     if (activeRole === 'employer') {
       if (hasEmployer) {
         router.replace('/(employer)/(tabs)/dashboard');
@@ -37,8 +44,9 @@ export default function Index() {
       return;
     }
 
-    router.replace('/(auth)/role');
-  }, [userId, activeRole, hasWorker, hasEmployer, _hasHydrated]);
+    router.replace('/(auth)/phone');
+  }, [token, activeRole, hasWorker, hasEmployer, _hasHydrated]);
+
 
   return (
     <View style={{ flex: 1, backgroundColor: '#0A1628', alignItems: 'center', justifyContent: 'center' }}>

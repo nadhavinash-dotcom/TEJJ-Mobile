@@ -300,3 +300,60 @@ export interface Employer {
   created_at: Date;
   updated_at: Date;
 }
+
+
+// types/profile.ts  — add this file
+export interface WorkerProfile {
+  id: string;
+  full_name: string | null;
+  profile_photo_url: string | null;
+  primary_skill: string | null;
+  secondary_skills: string[];
+  years_experience: number;
+  location: { city: string | null; area_locality: string | null };
+  status: string;
+  scores: {
+    trust: number;
+    show_up: number;
+    ai: number | null;
+    ai_status: string;
+  };
+  verified: { aadhaar: boolean };
+  availability: {
+    days: string[];
+    from: string | null;
+    to: string | null;
+    shifts: string[];
+  };
+  preferences: {
+    min_pay_per_shift: number | null;
+    min_monthly_salary: number | null;
+  };
+}
+
+export interface EmployerProfile {
+  id: string;
+  property_name: string;
+  property_type: string;
+  property_segment: string | null;
+  property_logo_url: string | null;
+  location: { city: string | null; area_locality: string | null };
+  contact: { name: string; phone: string };
+  plan: string;
+  badges: { verified_employer: boolean };
+  reputation: {
+    dignity_score: number;
+    dignity_state: string;
+    confirmation_rate: number;
+  };
+  limits: { posts_this_month: number; monthly_post_limit: number };
+  gate: { blocked: boolean };
+  suspended: boolean;
+  features: {
+    cream_pool: boolean;
+    database_search: boolean;
+    analytics: boolean;
+    interview_scheduler: boolean;
+    multi_property: boolean;
+  };
+}

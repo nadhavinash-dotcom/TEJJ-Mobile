@@ -33,32 +33,20 @@ const userTypes = [
 export default function RoleScreen() {
   const [selectedUserType, setSelectedUserType] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { setUser, token } = useAuthStore();
+  const {  setActiveRole } = useAuthStore();
 
   const handleContinue = async () => {
     if (!selectedUserType) return;
 
     setIsLoading(true);
     try {
-      const response = await api.patch('/auth/set-role', {
-        role: selectedUserType,
+      const response = await api.patch('/auth/update-user', {
+        active_role: selectedUserType,
       });
 
       if (response.data.success) {
         const { role } = response.data;
-
-        // Refresh user data from backend
-        const meRes = await api.get<{ data: User }>('/auth/me');
-        const user = meRes.data.data;
-
-        setUser({
-          userId: user._id,
-          token: token!,
-          hasWorker: user.has_worker,
-          hasEmployer: user.has_employer,
-          activeRole: user.active_role,
-        });
-        console.log(role)
+        setActiveRole(role);
         if (role === 'employer') {
           router.replace('/(employer)/onboarding/property');
         } else {
@@ -82,9 +70,9 @@ export default function RoleScreen() {
     <SafeAreaView className="flex-1 bg-surface">
       <View className="bg-[#fbf8fe]/90 flex-row justify-between items-center px-6 py-4 z-50 border-b border-surface-container-highest/20">
         <View className="flex-row items-center gap-4">
-          <TouchableOpacity className="active:opacity-70 p-1">
+          {/* <TouchableOpacity className="active:opacity-70 p-1">
             <StyledMenu color="#000666" size={24} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <Text className="font-bold text-xl tracking-tight text-primary">TEJJ</Text>
         </View>
         <Text className="text-sm font-bold text-[#44464f]">v1.0</Text>

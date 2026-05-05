@@ -38,6 +38,122 @@ export const CUISINE_LIST = [
   { id: 'pizza_fast_food', label: 'Pizza / Fast Food', labelEn: 'Pizza / Fast Food', keywords: ['pizza', 'fast food', 'burger', 'sandwich'] },
 ] as const;
 
+export const SUB_SKILLS_MAP: Record<string, readonly { id: string, label: string, labelEn?: string, keywords?: string[] }[]> = {
+  cook: CUISINE_LIST,
+  prep_cook: [
+    { id: 'cutting', label: 'Cutting & Chopping' },
+    { id: 'marination', label: 'Marination & Prep' },
+    { id: 'peeling', label: 'Peeling & Cleaning' },
+  ],
+  tandoor: [
+    { id: 'roti_naan', label: 'Roti & Naan' },
+    { id: 'kebab_tikka', label: 'Kebabs & Tikka' },
+    { id: 'shawarma', label: 'Shawarma' },
+  ],
+  biryani: [
+    { id: 'hyderabadi', label: 'Hyderabadi' },
+    { id: 'lucknowi', label: 'Lucknowi / Awadhi' },
+    { id: 'kolkata', label: 'Kolkata Style' },
+  ],
+  baker: [
+    { id: 'breads', label: 'Breads & Buns' },
+    { id: 'cakes', label: 'Cakes & Pastries' },
+    { id: 'decorator', label: 'Cake Decorating' },
+    { id: 'cookies', label: 'Cookies & Biscuits' },
+  ],
+  continental: [
+    { id: 'pasta', label: 'Pasta & Italian' },
+    { id: 'pizza', label: 'Pizza Making' },
+    { id: 'burger_salad', label: 'Burgers & Salads' },
+  ],
+  waiter: [
+    { id: 'fine_dining', label: 'Fine Dining' },
+    { id: 'casual_dining', label: 'Casual Dining' },
+    { id: 'cafe_service', label: 'Cafe / QSR' },
+    { id: 'room_service', label: 'Room Service' },
+  ],
+  steward: [
+    { id: 'kitchen_steward', label: 'Kitchen Stewarding' },
+    { id: 'dishwashing', label: 'Dishwashing' },
+    { id: 'garbage', label: 'Garbage Disposal' },
+  ],
+  runner: [
+    { id: 'food_runner', label: 'Food Runner' },
+    { id: 'drink_runner', label: 'Drink / Bar Runner' },
+  ],
+  cashier: [
+    { id: 'pos_billing', label: 'POS & Billing' },
+    { id: 'cash_handling', label: 'Cash Handling' },
+  ],
+  housekeeper: [
+    { id: 'room_cleaning', label: 'Room Cleaning' },
+    { id: 'public_area', label: 'Public Areas' },
+    { id: 'laundry_support', label: 'Laundry Support' },
+  ],
+  laundry: [
+    { id: 'washing', label: 'Washing' },
+    { id: 'ironing', label: 'Ironing / Pressing' },
+    { id: 'dry_cleaning', label: 'Dry Cleaning' },
+  ],
+  cleaner: [
+    { id: 'floor_cleaning', label: 'Floor Cleaning' },
+    { id: 'deep_cleaning', label: 'Deep Cleaning' },
+    { id: 'washrooms', label: 'Washrooms' },
+  ],
+  bellboy: [
+    { id: 'luggage', label: 'Luggage Handling' },
+    { id: 'guest_escort', label: 'Guest Escort' },
+  ],
+  valet: [
+    { id: 'manual_cars', label: 'Manual Cars' },
+    { id: 'automatic_cars', label: 'Automatic Cars' },
+    { id: 'luxury_cars', label: 'Luxury Cars' },
+  ],
+  security: [
+    { id: 'gate_guard', label: 'Gate / Entry Guard' },
+    { id: 'cctv', label: 'CCTV Monitoring' },
+    { id: 'bouncer', label: 'Bouncer' },
+  ],
+  barista: [
+    { id: 'espresso', label: 'Espresso Maker' },
+    { id: 'latte_art', label: 'Latte Art' },
+    { id: 'cold_brews', label: 'Cold Brews' },
+  ],
+  bartender: [
+    { id: 'cocktails', label: 'Cocktails' },
+    { id: 'mocktails', label: 'Mocktails' },
+    { id: 'inventory', label: 'Bar Inventory' },
+  ],
+  banquet: [
+    { id: 'setup', label: 'Hall Setup' },
+    { id: 'serving', label: 'Food Serving' },
+    { id: 'teardown', label: 'Teardown / Cleanup' },
+  ],
+  maintenance: [
+    { id: 'electrician', label: 'Electrician' },
+    { id: 'plumber', label: 'Plumbing' },
+    { id: 'ac_repair', label: 'AC & HVAC Repair' },
+    { id: 'carpenter', label: 'Carpentry' },
+  ],
+  spa: [
+    { id: 'swedish_massage', label: 'Swedish Massage' },
+    { id: 'thai_massage', label: 'Thai Massage' },
+    { id: 'facial', label: 'Facials & Skin' },
+    { id: 'ayurvedic', label: 'Ayurvedic' },
+  ],
+  helper: [
+    { id: 'kitchen_helper', label: 'Kitchen Helper' },
+    { id: 'service_helper', label: 'Service Helper' },
+    { id: 'general_helper', label: 'General / All-rounder' },
+  ],
+  nurse: [
+    { id: 'first_aid', label: 'First Aid' },
+    { id: 'elderly_care', label: 'Elderly Care' },
+    { id: 'child_care', label: 'Child Care' },
+  ],
+  other: [],
+};
+
 export const LANGUAGES = [
   { code: 'hi', label: 'हिंदी', labelEn: 'Hindi', flag: 'Languages' },
   { code: 'te', label: 'తెలుగు', labelEn: 'Telugu', flag: 'Languages' },
@@ -64,8 +180,9 @@ export const EMPLOYER_PLANS = {
 } as const;
 
 export const SHIFT_PRESETS = [
-  { id: 'morning', label: 'Morning', labelEn: 'Morning', from: '06:00', to: '14:00', icon: 'Sun' },
-  { id: 'evening', label: 'Evening', labelEn: 'Evening', from: '14:00', to: '22:00', icon: 'Sunset' },
+  { id: 'morning', label: 'Morning', labelEn: 'Morning', from: '06:00', to: '12:00', icon: 'Sunrise' },
+  { id: 'afternoon', label: 'Afternoon', labelEn: 'Afternoon', from: '12:00', to: '17:00', icon: 'Sun' },
+  { id: 'evening', label: 'Evening', labelEn: 'Evening', from: '17:00', to: '22:00', icon: 'Sunset' },
   { id: 'night', label: 'Night', labelEn: 'Night', from: '22:00', to: '06:00', icon: 'Moon' },
   { id: 'any', label: 'Any Time', labelEn: 'Any Time', from: '06:00', to: '23:59', icon: 'Infinity' },
 ] as const;

@@ -17,9 +17,6 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.tejj.app",
-      "config": {
-        "googleMapsApiKey": "$(EXPO_PUBLIC_GOOGLE_MAPS_API_KEY)"
-      },
       "infoPlist": {
         "NSCameraUsageDescription": "TEJJ needs camera access to record your skill video and take a profile photo.",
         "NSMicrophoneUsageDescription": "TEJJ needs microphone access for skill video recording and voice input.",
