@@ -59,7 +59,7 @@ export default function WorkerFeedScreen() {
     try {
       const radiusKm = RADIUS_MAP[activeRadius];
       let queryParams = new URLSearchParams();
-      
+
       if (userCoords) {
         queryParams.append('lat', userCoords.lat.toString());
         queryParams.append('lng', userCoords.lng.toString());
@@ -96,8 +96,9 @@ export default function WorkerFeedScreen() {
     return (
       <TouchableOpacity
         key={job._id}
+        activeOpacity={0.9}
         onPress={() => router.push(`/(worker)/job/${job._id}`)}
-        className="bg-white rounded-2xl overflow-hidden shadow-sm active:opacity-95 border border-slate-200 mb-6"
+        className="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200 mb-6"
       >
         <View className="relative h-44 w-full bg-slate-100">
           <Image
@@ -124,12 +125,12 @@ export default function WorkerFeedScreen() {
 
           <View className="absolute bottom-4 left-4 right-4 flex-row justify-between items-end">
             <View className="flex-1">
-               <Text className="text-white/90 font-medium text-xs mb-1 uppercase tracking-wider">
-                 {job.employer_property_type || 'Hospitality'}
-               </Text>
-               <Text className="text-white font-bold text-xl leading-tight drop-shadow-md">
-                 {job.job_title || job.primary_skill || 'Position Available'}
-               </Text>
+              <Text className="text-white/90 font-medium text-xs mb-1 uppercase tracking-wider">
+                {job.employer_property_type || 'Hospitality'}
+              </Text>
+              <Text className="text-white font-bold text-xl leading-tight drop-shadow-md">
+                {job.job_title || job.primary_skill || 'Position Available'}
+              </Text>
             </View>
             {job.distance_km !== undefined && (
               <View className="bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full flex-row items-center gap-1.5 shadow-sm">
@@ -156,29 +157,29 @@ export default function WorkerFeedScreen() {
           </View>
 
           <View className="flex-row flex-wrap gap-2 mb-6">
-            <View className={`flex-row items-center gap-1.5 px-3 py-2 rounded-xl ${isAboveMarket ? 'bg-emerald-50 border border-emerald-100' : 'bg-slate-50'}`}>
+            {job.pay_rate && <View className={`flex-row items-center gap-1.5 px-3 py-2 rounded-xl ${isAboveMarket ? 'bg-emerald-50 border border-emerald-100' : 'bg-slate-50'}`}>
               <Wallet color={isAboveMarket ? "#059669" : "#475569"} size={16} />
               <Text className={`text-sm font-bold ${isAboveMarket ? 'text-emerald-700' : 'text-slate-700'}`}>
                 ₹{job.pay_rate} <Text className="font-medium text-xs">/ {job.pay_type === 'PER_SHIFT' ? 'Shift' : 'Month'}</Text>
               </Text>
-            </View>
+            </View>}
 
-            <View className="bg-slate-50 flex-row items-center gap-1.5 px-3 py-2 rounded-xl">
+            {job.shift_duration_hours && <View className="bg-slate-50 flex-row items-center gap-1.5 px-3 py-2 rounded-xl">
               <Clock color="#475569" size={16} />
               <Text className="text-sm font-medium text-slate-700">
                 {job.shift_duration_hours ? `${job.shift_duration_hours}h Shift` : 'Full-time'}
               </Text>
-            </View>
+            </View>}
 
-            <View className="bg-slate-50 flex-row items-center gap-1.5 px-3 py-2 rounded-xl">
+            {job.number_of_openings && <View className="bg-slate-50 flex-row items-center gap-1.5 px-3 py-2 rounded-xl">
               <Briefcase color="#475569" size={16} />
               <Text className="text-sm font-medium text-slate-700">
                 {job.number_of_openings ? `${job.number_of_openings} Openings` : 'Hiring'}
               </Text>
-            </View>
+            </View>}
           </View>
 
-          <View className="w-full bg-primary active:bg-slate-800 h-14 rounded-xl flex-row items-center justify-center gap-2 shadow-sm">
+          <View className="w-full bg-primary h-14 rounded-xl flex-row items-center justify-center gap-2 shadow-sm">
             <Text className="text-white font-bold text-[15px] tracking-wide">View Details</Text>
             <ArrowRight color="#ffffff" size={18} />
           </View>
@@ -217,15 +218,13 @@ export default function WorkerFeedScreen() {
                   <TouchableOpacity
                     key={option}
                     onPress={() => setActiveRadius(option)}
-                    className={`px-5 py-2.5 rounded-xl border ${
-                      activeRadius === option
-                        ? 'bg-primary border-primary'
-                        : 'bg-white border-slate-200'
-                    }`}
+                    className={`px-5 py-2.5 rounded-xl border ${activeRadius === option
+                      ? 'bg-primary border-primary'
+                      : 'bg-white border-slate-200'
+                      }`}
                   >
-                    <Text className={`font-semibold text-[13px] ${
-                      activeRadius === option ? 'text-white' : 'text-slate-600'
-                    }`}>
+                    <Text className={`font-semibold text-[13px] ${activeRadius === option ? 'text-white' : 'text-slate-600'
+                      }`}>
                       {option}
                     </Text>
                   </TouchableOpacity>
@@ -243,13 +242,11 @@ export default function WorkerFeedScreen() {
             </View>
             <TouchableOpacity
               onPress={() => setRelocation(!relocation)}
-              className={`w-12 h-6 rounded-full justify-center px-1 transition-colors ${
-                relocation ? 'bg-primary' : 'bg-slate-300'
-              }`}
+              className={`w-12 h-6 rounded-full justify-center px-1 transition-colors ${relocation ? 'bg-primary' : 'bg-slate-300'
+                }`}
             >
-              <View className={`w-4 h-4 bg-white rounded-full transition-transform ${
-                relocation ? 'translate-x-6' : 'translate-x-0'
-              }`} />
+              <View className={`w-4 h-4 bg-white rounded-full transition-transform ${relocation ? 'translate-x-6' : 'translate-x-0'
+                }`} />
             </TouchableOpacity>
           </View>
         </View>

@@ -1,26 +1,26 @@
 import { Tabs } from 'expo-router';
 import { View, Text, StyleSheet } from 'react-native';
-import { Briefcase, CircleCheck, BookCheck, User } from 'lucide-react-native';
+import { Briefcase, CircleCheck, BookCheck, User, Navigation } from 'lucide-react-native';
 
 // Custom component to handle the pill background and icon
-function TabIcon({ 
-  IconComponent, 
-  focused, 
-  color 
-}: { 
-  IconComponent: any; 
-  focused: boolean; 
-  color: string 
+function TabIcon({
+  IconComponent,
+  focused,
+  color
+}: {
+  IconComponent: any;
+  focused: boolean;
+  color: string
 }) {
   return (
     <View style={[
-      styles.iconContainer, 
+      styles.iconContainer,
       focused && styles.activePill // Applies the light purple background
     ]}>
-      <IconComponent 
-        size={22} 
-        color={color} 
-        strokeWidth={focused ? 2.5 : 2} 
+      <IconComponent
+        size={22}
+        color={color}
+        strokeWidth={focused ? 2.5 : 2}
       />
     </View>
   );
@@ -43,6 +43,15 @@ export default function WorkerTabsLayout() {
           title: 'Jobs',
           tabBarIcon: ({ color, focused }) => (
             <TabIcon IconComponent={Briefcase} color={color} focused={focused} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="discovery"
+        options={{
+          title: 'Explore',
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon IconComponent={Navigation} color={color} focused={focused} />
           ),
         }}
       />

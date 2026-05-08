@@ -5,7 +5,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../../src/lib/api';
 import { auth } from '../../../src/lib/firebase';
-import { SKILL_LIST } from '@/utils';
+import { getAbsoluteUrl, SKILL_LIST } from '@/utils';
 import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 
 export default function ApplicantsScreen() {
@@ -15,24 +15,24 @@ export default function ApplicantsScreen() {
   const { data, isLoading } = useQuery({
     queryKey: ['applicants', jobId],
     queryFn: async () => {
-      const token = await auth.currentUser?.getIdToken();
-      const res = await api.get(`/applications/job/${jobId}`, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.get(`/applications/job/${jobId}`);
       return res.data.data as any[];
     },
   });
 
+  console.log('applicants', data);
+
   const shortlistMutation = useMutation({
     mutationFn: async (appId: string) => {
-      const token = await auth.currentUser?.getIdToken();
-      await api.patch(`/applications/${appId}/shortlist`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      // const token = await auth.currentUser?.getIdToken();
+      await api.patch(`/applications/${appId}/shortlist`);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['applicants', jobId] }),
   });
 
   const matchMutation = useMutation({
     mutationFn: async (appId: string) => {
-      const token = await auth.currentUser?.getIdToken();
-      await api.post('/matches', { application_id: appId }, { headers: { Authorization: `Bearer ${token}` } });
+      await api.post('/matches', { application_id: appId });
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['applicants', jobId] }),
   });
@@ -97,7 +97,7 @@ export default function ApplicantsScreen() {
                   {/* Worker info */}
                   <View className="flex-row items-center gap-3 mb-4">
                     {item.worker_photo ? (
-                      <Image source={{ uri: item.worker_photo }} className="w-14 h-14 rounded-full" />
+                      <Image source={{ uri: getAbsoluteUrl(item.worker_photo) }} className="w-14 h-14 rounded-full" />
                     ) : (
                       <View className="w-14 h-14 rounded-full bg-surface-container-highest items-center justify-center">
                         <LucideIcon name={skill?.icon || 'User'} size={26} color="#767683" />

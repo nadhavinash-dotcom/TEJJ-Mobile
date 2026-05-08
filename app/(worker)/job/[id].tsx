@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -80,6 +80,12 @@ export default function JobDetailScreen() {
       setApplying(false);
     }
   };
+
+  useEffect(() => {
+    if (job) {
+      console.log(job.description, "description");
+    }
+  }, [job]);
 
   if (isLoading || !job) {
     return (

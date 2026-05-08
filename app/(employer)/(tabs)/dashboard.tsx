@@ -42,6 +42,7 @@ export default function EmployerDashboardScreen() {
     try {
       setLoading(true);
       const response = await api.get('/jobs/mine');
+      // console.log('jobs', response.data);
       setJobs(response.data.data || response.data);
     } catch (error) {
       console.error('Error fetching jobs:', error);
@@ -209,7 +210,7 @@ export default function EmployerDashboardScreen() {
                       <StyledUsers color="#454652" size={18} />
                       <Text className="text-sm font-semibold text-on-surface-variant">Applications</Text>
                     </View>
-                    <Text className="text-primary font-bold">{job.application_count || 0}</Text>
+                    <Text className="text-primary font-bold">{job?.application_count || 0}</Text>
                   </View>
                 </View>
 
@@ -237,7 +238,7 @@ export default function EmployerDashboardScreen() {
       </ScrollView>
 
       <TouchableOpacity
-        onPress={() => router.push('/(employer)/post')}
+        onPress={() => router.push('/(employer)/post/lane')}
         className="absolute bottom-10 right-8 bg-primary w-16 h-16 rounded-full items-center justify-center shadow-2xl shadow-primary/30 active:scale-95"
       >
         <StyledFilePlus color="#ffffff" size={28} />
