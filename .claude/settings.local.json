@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx eas *)",
+      "PowerShell(java *)",
+      "Bash(findstr /n \"classifier\\\\|components.release\\\\|SoftwareComponent\" \"E:\\\\Pavan\\\\projects\\\\indieProjects\\\\Tejj\\\\Claude Generated\\\\TEJJ-Mobile\\\\node_modules\\\\expo\\\\android\\\\build.gradle\")",
+      "Bash(Remove-Item -Recurse -Force \"E:\\\\Pavan\\\\projects\\\\indieProjects\\\\Tejj\\\\TEJJ-Setup\\\\TEJJ-Mobile\\\\node_modules\\\\expo-barcode-scanner\" -ErrorAction SilentlyContinue)",
+      "Bash(Remove-Item -Recurse -Force \"E:\\\\Pavan\\\\projects\\\\indieProjects\\\\Tejj\\\\TEJJ-Setup\\\\TEJJ-Mobile\\\\node_modules\\\\expo-firebase-recaptcha\" -ErrorAction SilentlyContinue)",
+      "Bash(Remove-Item -Recurse -Force \"E:\\\\Pavan\\\\projects\\\\indieProjects\\\\Tejj\\\\TEJJ-Setup\\\\TEJJ-Mobile\\\\node_modules\\\\expo-firebase-core\" -ErrorAction SilentlyContinue)",
+      "Bash(Write-Host \"Done removing packages\")",
+      "Bash(cmd /c \"gradlew.bat assembleRelease\")",
+      "PowerShell(cmd /c \"cd /d E:\\\\T\\\\android && gradlew.bat assembleRelease\")",
+      "PowerShell(cmd /c \"dir E:\\\\T\\\\android\\\\gradlew.bat\")",
+      "PowerShell(cmd /c \"cd /d E:\\\\T\\\\android && call gradlew.bat assembleRelease\")",
+      "PowerShell(cmd /c \"E:\\\\T\\\\android\\\\gradlew.bat assembleRelease\")"
+    ]
+  }
+}
