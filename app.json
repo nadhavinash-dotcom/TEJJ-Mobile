@@ -3,7 +3,11 @@
     "name": "TEJJ",
     "slug": "tejj",
     "version": "1.0.0",
-    "platforms": ["ios", "android", "web"],
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "scheme": "tejj",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -13,7 +17,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#0A1628"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.tejj.app",
@@ -45,10 +51,21 @@
       "expo-camera",
       "expo-location",
       "expo-secure-store",
-      ["expo-av", { "microphonePermission": "Allow TEJJ to access your microphone." }]
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Allow TEJJ to access your microphone."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "f5ce7c0b-f733-44c0-b0f2-4f0ba710fcf6"
+      }
     }
   }
 }
