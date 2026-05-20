@@ -286,7 +286,6 @@ export default function JobDiscoveryScreen() {
       {/* Map */}
       <MapView
         ref={mapRef}
-        provider={PROVIDER_GOOGLE}
         style={styles.map}
         customMapStyle={mapStyle}
         onMapReady={() => console.log('[MapDebug] Map is ready')}
@@ -429,6 +428,7 @@ const styles = StyleSheet.create({
   },
   map: {
     flex: 1,
+    width: '100%',
   },
   filterContainer: {
     position: 'absolute',

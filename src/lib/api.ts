@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { useAuthStore } from '../store/authStore';
 import { router } from 'expo-router';
+import { API_URL } from '@/constants/urls';
 
 const api = axios.create({
-  baseURL: process.env.EXPO_PUBLIC_API_URL || 'http://localhost:4000',
+  baseURL: API_URL || 'http://localhost:4000',
   timeout: 30000,
 });
 
