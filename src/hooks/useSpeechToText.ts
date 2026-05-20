@@ -85,18 +85,21 @@ export function useSpeechToText(onResult: (result: SpeechResult) => void) {
 
   const startListening = useCallback(async () => {
     if (statusRef.current !== 'idle') return;
+    statusRef.current = 'listening'; // lock ref synchronously before any await
     if (!isVoiceSupported) {
+      setStatus('idle');
       setError('Voice input is not available in this environment');
       return;
     }
     setError(null);
     const { granted } = await SpeechRecognition.requestPermissionsAsync();
     if (!granted) {
+      setStatus('idle');
       setError('Microphone permission required');
       return;
     }
     try {
-      setStatus('listening');
+      setStatus('listening'); // sync state to match ref for UI update
       await SpeechRecognition.start({ lang: locale, interimResults: false });
     } catch {
       setStatus('idle');
