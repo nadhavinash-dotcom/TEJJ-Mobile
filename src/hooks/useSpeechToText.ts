@@ -46,7 +46,7 @@ export function useSpeechToText(onResult: (result: SpeechResult) => void) {
   const language = useAuthStore((s) => s.language);
   const locale = resolveLocale(language);
 
-  useSpeechRecognitionEvent('result', async (event: any) => {
+  const handleResult = useCallback(async (event: any) => {
     const text = event.results[0]?.transcript;
     if (!text || status === 'processing') return;
 
@@ -58,19 +58,25 @@ export function useSpeechToText(onResult: (result: SpeechResult) => void) {
       });
       if (res.data.success) {
         onResult(res.data.data);
+      } else {
+        setError('Transcription failed');
       }
     } catch {
       setError('Could not process speech');
     } finally {
       setStatus('idle');
     }
-  });
+  }, [status, language, onResult]);
 
-  useSpeechRecognitionEvent('error', (event: any) => {
+  useSpeechRecognitionEvent('result', handleResult);
+
+  const handleError = useCallback((event: any) => {
     console.error('Speech error:', event.error, event.message);
     setError('Could not recognise speech');
     setStatus('idle');
-  });
+  }, []);
+
+  useSpeechRecognitionEvent('error', handleError);
 
   const startListening = useCallback(async () => {
     if (status !== 'idle') return;
