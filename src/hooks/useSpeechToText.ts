@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import api from '../lib/api';
 import { useAuthStore } from '../store/authStore';
 
@@ -41,14 +41,19 @@ export const resolveLocale = (language: string | null | undefined): string =>
   LOCALE_MAP[language ?? ''] ?? 'en-US';
 
 export function useSpeechToText(onResult: (result: SpeechResult) => void) {
-  const [status, setStatus] = useState<SpeechStatus>('idle');
+  const [status, setStatusState] = useState<SpeechStatus>('idle');
+  const statusRef = useRef<SpeechStatus>('idle');
+  const setStatus = useCallback((s: SpeechStatus) => {
+    statusRef.current = s;
+    setStatusState(s);
+  }, []);
   const [error, setError] = useState<string | null>(null);
   const language = useAuthStore((s) => s.language);
   const locale = resolveLocale(language);
 
   const handleResult = useCallback(async (event: any) => {
     const text = event.results[0]?.transcript;
-    if (!text || status === 'processing') return;
+    if (!text || statusRef.current === 'processing') return;
 
     setStatus('processing');
     try {
@@ -66,7 +71,7 @@ export function useSpeechToText(onResult: (result: SpeechResult) => void) {
     } finally {
       setStatus('idle');
     }
-  }, [status, language, onResult]);
+  }, [language, onResult, setStatus]);
 
   useSpeechRecognitionEvent('result', handleResult);
 
@@ -79,7 +84,7 @@ export function useSpeechToText(onResult: (result: SpeechResult) => void) {
   useSpeechRecognitionEvent('error', handleError);
 
   const startListening = useCallback(async () => {
-    if (status !== 'idle') return;
+    if (statusRef.current !== 'idle') return;
     if (!isVoiceSupported) {
       setError('Voice input is not available in this environment');
       return;
@@ -97,7 +102,7 @@ export function useSpeechToText(onResult: (result: SpeechResult) => void) {
       setStatus('idle');
       setError('Failed to start speech recognition');
     }
-  }, [status, locale]);
+  }, [locale, setStatus]);
 
   const stopListening = useCallback(async () => {
     if (isVoiceSupported && SpeechRecognition) {
