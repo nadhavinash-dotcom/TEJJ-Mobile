@@ -9,6 +9,8 @@ import { queryClient } from '../src/lib/queryClient';
 import { useAuthStore } from '../src/store/authStore';
 import SplashScreen from './(shared)/SplashScreen';
 import { refreshUser } from '@/utils/referesh-user';
+import { navigateHome } from '@/utils/navigate-home';
+import { Toaster } from '../src/components/shared/Toaster';
 
 // ── Notifications (optional) ─────────────────────────────────────────────────
 
@@ -38,7 +40,7 @@ const SPLASH_MS = 1000;
 // ── Root layout ───────────────────────────────────────────────────────────────
 
 export default function RootLayout() {
-  const { setLoading, _hasHydrated, token, activeRole } = useAuthStore();
+  const { setLoading, _hasHydrated, token } = useAuthStore();
   const router = useRouter();
 
   const [phase, setPhase] = useState<AppPhase>('splash');
@@ -64,17 +66,7 @@ export default function RootLayout() {
   // 3️⃣  Navigate once everything is ready
   useEffect(() => {
     if (phase !== 'ready') return;
-
-    if (!token) {
-      router.replace('/(auth)/phone');
-      return;
-    }
-
-    if (activeRole === 'employer') {
-      router.replace('/(employer)/(tabs)/dashboard');
-    } else {
-      router.replace('/(worker)/(tabs)/feed');
-    }
+    navigateHome();
   }, [phase]);
 
   // ── Loading UI ──────────────────────────────────────────────────────────────
@@ -103,6 +95,7 @@ export default function RootLayout() {
           <Stack.Screen name="(employer)" />
           <Stack.Screen name="(shared)" />
         </Stack>
+        <Toaster />
       </QueryClientProvider>
     </GestureHandlerRootView>
   );

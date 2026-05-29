@@ -26,6 +26,7 @@
       "infoPlist": {
         "NSCameraUsageDescription": "TEJJ needs camera access to record your skill video and take a profile photo.",
         "NSMicrophoneUsageDescription": "TEJJ needs microphone access for skill video recording and voice input.",
+        "NSSpeechRecognitionUsageDescription": "TEJJ uses speech recognition so you can speak your answers during onboarding.",
         "NSLocationWhenInUseUsageDescription": "TEJJ uses your location to find nearby jobs.",
         "NSPhotoLibraryUsageDescription": "TEJJ needs photo library access to upload profile photos."
       }
@@ -55,6 +56,13 @@
         "expo-av",
         {
           "microphonePermission": "Allow TEJJ to access your microphone."
+        }
+      ],
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "Allow TEJJ to access your microphone for voice input.",
+          "speechRecognitionPermission": "Allow TEJJ to use speech recognition so you can speak your answers."
         }
       ]
     ],

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
@@ -14,12 +14,12 @@ export default function SubSkillScreen() {
   const skillDef = SKILL_LIST.find((s) => s.id === worker.primary_skill);
   const availableSubSkills = worker.primary_skill ? SUB_SKILLS_MAP[worker.primary_skill] || [] : [];
 
-  const handleVoiceResult = ({ keywords }: { keywords: string[] }) => {
-    const match = availableSubSkills.find((c) => 
+  const handleVoiceResult = useCallback(({ keywords }: { keywords: string[] }) => {
+    const match = availableSubSkills.find((c) =>
       keywords.some((k) => c.id === k || c.labelEn?.toLowerCase().includes(k) || (c.keywords && c.keywords.includes(k)))
     );
     if (match) updateWorker({ sub_skills: [match.id] });
-  };
+  }, [availableSubSkills, updateWorker]);
 
   const toggleSubSkill = (id: string) => {
     const current = worker.sub_skills ?? [];

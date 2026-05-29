@@ -1,11 +1,11 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import api from '../lib/api';
 import { useAuthStore } from '../store/authStore';
 
 // Graceful fallback: expo-speech-recognition is unavailable on web
 let useSpeechRecognitionEvent = (_event: string, _handler: any) => {};
 let SpeechRecognition: any = null;
-let isVoiceSupported = false;
+let isVoiceSupported = false; // false until confirmed — prevents null-crash if require fails
 
 try {
   const m = require('expo-speech-recognition');
@@ -51,6 +51,12 @@ export function useSpeechToText(onResult: (result: SpeechResult) => void) {
   const language = useAuthStore((s) => s.language);
   const locale = resolveLocale(language);
 
+  // Ref pattern: keeps onResult always current without making it a dep of handleResult.
+  // This prevents handleResult from recreating on every render (which would cause
+  // useSpeechRecognitionEvent to re-subscribe mid-recognition and miss results).
+  const onResultRef = useRef(onResult);
+  onResultRef.current = onResult;
+
   const handleResult = useCallback(async (event: any) => {
     const text = event.results[0]?.transcript;
     if (!text || statusRef.current === 'processing') return;
@@ -62,7 +68,7 @@ export function useSpeechToText(onResult: (result: SpeechResult) => void) {
         sourceLanguage: language ?? 'en',
       });
       if (res.data.success) {
-        onResult(res.data.data);
+        onResultRef.current(res.data.data);
       } else {
         setError('Transcription failed');
       }
@@ -71,7 +77,7 @@ export function useSpeechToText(onResult: (result: SpeechResult) => void) {
     } finally {
       setStatus('idle');
     }
-  }, [language, onResult, setStatus]);
+  }, [language, setStatus]); // onResult intentionally excluded — use ref above
 
   useSpeechRecognitionEvent('result', handleResult);
 
@@ -79,26 +85,37 @@ export function useSpeechToText(onResult: (result: SpeechResult) => void) {
     console.error('Speech error:', event.error, event.message);
     setError('Could not recognise speech');
     setStatus('idle');
-  }, []);
+  }, [setStatus]);
 
   useSpeechRecognitionEvent('error', handleError);
+
+  // Stop recognition if the screen unmounts while listening
+  useEffect(() => {
+    return () => {
+      if (isVoiceSupported && SpeechRecognition && statusRef.current !== 'idle') {
+        SpeechRecognition.stop().catch(() => {});
+      }
+    };
+  }, []);
 
   const startListening = useCallback(async () => {
     if (statusRef.current !== 'idle') return;
     statusRef.current = 'listening'; // lock ref synchronously before any await
+    setError(null); // always clear previous error before a new attempt
+
     if (!isVoiceSupported) {
       setStatus('idle');
       setError('Voice input is not available in this environment');
       return;
     }
-    setError(null);
-    const { granted } = await SpeechRecognition.requestPermissionsAsync();
-    if (!granted) {
-      setStatus('idle');
-      setError('Microphone permission required');
-      return;
-    }
+
     try {
+      const { granted } = await SpeechRecognition.requestPermissionsAsync();
+      if (!granted) {
+        setStatus('idle');
+        setError('Microphone permission required');
+        return;
+      }
       setStatus('listening'); // sync state to match ref for UI update
       await SpeechRecognition.start({ lang: locale, interimResults: false });
     } catch {
@@ -108,10 +125,21 @@ export function useSpeechToText(onResult: (result: SpeechResult) => void) {
   }, [locale, setStatus]);
 
   const stopListening = useCallback(async () => {
-    if (isVoiceSupported && SpeechRecognition) {
-      await SpeechRecognition.stop();
+    if (!isVoiceSupported || !SpeechRecognition) {
+      setStatus('idle');
+      return;
     }
-  }, []);
+    try {
+      await SpeechRecognition.stop();
+    } catch {
+      // stop() can throw if recognition isn't active — treat as stopped
+    }
+    // If the result/error event doesn't fire (e.g. no speech detected),
+    // reset status so the button doesn't stay stuck in 'listening'.
+    if (statusRef.current === 'listening') {
+      setStatus('idle');
+    }
+  }, [setStatus]);
 
   return { status, startListening, stopListening, error };
 }

@@ -14,6 +14,7 @@ import { useAuthStore } from '../../src/store/authStore';
 import api from '../../src/lib/api';
 import OtpForm from '../../src/components/tell/auth/OTPForm';
 import { refreshUser } from '@/utils/referesh-user';
+import { navigateHome } from '@/utils/navigate-home';
 
 // Lazily load so iOS never crashes
 let OtpVerify: any = null;
@@ -73,26 +74,18 @@ export default function OTPScreen() {
         throw new Error(response.data.error || 'Verification failed');
       }
 
-      const { token } = response.data.data;
+      const { token, refresh_token } = response.data.data;
       console.log('[OTPScreen] Token extracted successfully. Calling refreshUser...');
 
-      const {user}:any = await refreshUser(setLoading, token)
-      console.log('[OTPScreen] User refreshed:', user);
+      const result = await refreshUser(setLoading, token);
+      if (!result.ok) throw new Error('Session verification failed');
+      console.log('[OTPScreen] User refreshed:', result.user);
 
-      if (!user.language) return router.replace('/(auth)/language');
-      if (!user.active_role) return router.replace('/(auth)/role');
-
-      if (user.active_role === 'employer') {
-        router.replace(
-          user.has_employer
-            ? '/(employer)/(tabs)/dashboard'
-            : '/(employer)/onboarding/property'
-        );
-      } else {
-        router.replace(
-          user.has_worker ? '/(worker)/(tabs)/feed' : '/(worker)/onboarding/role'
-        );
+      if (refresh_token) {
+        useAuthStore.getState().setRefreshToken(refresh_token);
       }
+
+      navigateHome();
     } catch (e: any) {
       const errorMessage =
         e.response?.data?.error ??

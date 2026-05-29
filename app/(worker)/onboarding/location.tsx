@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
@@ -9,16 +9,24 @@ import { StepIndicator } from '../../../src/components/shared/StepIndicator';
 import { OnboardingFooter } from '../../../src/components/shared/OnboardingFooter';
 import { useOnboardingStore } from '../../../src/store/onboardingStore';
 import { LucideIcon } from '../../../src/components/shared/LucideIcon';
+import { INDIAN_CITIES } from '@/utils';
+
+function extractCityFromText(text: string): string | null {
+  const lower = text.toLowerCase();
+  for (const city of INDIAN_CITIES) {
+    if (lower.includes(city.toLowerCase())) return city;
+  }
+  return null;
+}
 
 export default function LocationScreen() {
   const { worker, updateWorker } = useOnboardingStore();
   const [detecting, setDetecting] = useState(false);
 
-  const handleVoiceResult = ({ structured }: { structured: Record<string, unknown>; englishText: string; keywords: string[]; originalText: string }) => {
-    if (structured.city) {
-      updateWorker({ home_city: structured.city as string });
-    }
-  };
+  const handleVoiceResult = useCallback(({ structured, englishText }: { structured: Record<string, unknown>; englishText: string; keywords: string[]; originalText: string }) => {
+    const city = (structured.city as string | undefined) ?? extractCityFromText(englishText);
+    if (city) updateWorker({ home_city: city });
+  }, [updateWorker]);
 
   const detectLocation = async () => {
     setDetecting(true);

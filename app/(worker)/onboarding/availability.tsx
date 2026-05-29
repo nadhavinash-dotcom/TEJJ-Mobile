@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
@@ -28,10 +28,14 @@ export default function AvailabilityScreen() {
     updateWorker({ preferred_shifts: shifts.includes(s) ? shifts.filter((x) => x !== s) : [...shifts, s] });
   };
 
-  const handleVoiceResult = ({ keywords }: { keywords: string[] }) => {
+  const handleVoiceResult = useCallback(({ keywords }: { keywords: string[] }) => {
     const matchedDays = DAYS.filter((d) => keywords.some((k) => k.toLowerCase().includes(d.toLowerCase())));
     if (matchedDays.length) updateWorker({ available_days: matchedDays });
-  };
+    const matchedShifts = SHIFTS.filter((s) =>
+      keywords.some((k) => k.toLowerCase().includes(s.id) || k.toLowerCase().includes(s.label.toLowerCase()))
+    ).map((s) => s.id);
+    if (matchedShifts.length) updateWorker({ preferred_shifts: matchedShifts });
+  }, [updateWorker]);
 
   return (
     <SafeScreen className="flex-1">

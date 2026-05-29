@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
@@ -13,10 +13,10 @@ export default function ExperienceScreen() {
   const { worker, updateWorker } = useOnboardingStore();
   const years = worker.years_experience ?? 1;
 
-  const handleVoiceResult = ({ englishText }: { englishText: string; keywords: string[]; originalText: string; structured: Record<string, unknown> }) => {
+  const handleVoiceResult = useCallback(({ englishText }: { englishText: string; keywords: string[]; originalText: string; structured: Record<string, unknown> }) => {
     const exp = mapVoiceToExperience(englishText);
     if (exp !== null) updateWorker({ years_experience: exp });
-  };
+  }, [updateWorker]);
 
   const expLabel = (n: number) => {
     if (n === 0) return 'Fresher (0 years)';

@@ -9,11 +9,11 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { HardHat, Briefcase, ArrowRight } from 'lucide-react-native';
-import { router } from 'expo-router';
 import { StyledMenu } from '../../src/components/tell/Icons';
 import api from '../../src/lib/api';
 import { useAuthStore } from '../../src/store/authStore';
 import { User } from '@/types';
+import { navigateHome } from '@/utils/navigate-home';
 
 const userTypes = [
   {
@@ -47,11 +47,7 @@ export default function RoleScreen() {
       if (response.data.success) {
         const { role } = response.data;
         setActiveRole(role);
-        if (role === 'employer') {
-          router.replace('/(employer)/onboarding/property');
-        } else {
-          router.replace('/(worker)/onboarding/role');
-        }
+        navigateHome();
       }
     } catch (error: any) {
       console.error("Role Selection Error:", error);

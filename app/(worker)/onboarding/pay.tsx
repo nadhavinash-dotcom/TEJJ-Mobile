@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
@@ -15,10 +15,10 @@ export default function PayScreen() {
   const { worker, updateWorker } = useOnboardingStore();
   const pay = worker.min_pay_per_shift ?? 500;
 
-  const handleVoiceResult = ({ englishText }: { englishText: string; keywords: string[]; originalText: string; structured: Record<string, unknown> }) => {
+  const handleVoiceResult = useCallback(({ englishText }: { englishText: string; keywords: string[]; originalText: string; structured: Record<string, unknown> }) => {
     const amount = mapVoiceToPay(englishText);
     if (amount) updateWorker({ min_pay_per_shift: amount });
-  };
+  }, [updateWorker]);
 
   return (
     <SafeScreen className="flex-1">

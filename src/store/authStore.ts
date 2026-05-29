@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 interface AuthState {
   userId: string | null;
   token: string | null;
+  refreshToken: string | null;
   language: Language;
   activeRole: 'worker' | 'employer' | null;
   hasWorker: boolean;
@@ -41,12 +42,15 @@ interface AuthState {
   setLoading: (v: boolean) => void;
   setVerificationId: (id: string) => void;
   setHasHydrated: (v: boolean) => void;
+  setToken: (token: string) => void;
+  setRefreshToken: (refreshToken: string) => void;
   clear: () => void;
 }
 
 const DEFAULT_STATE = {
   userId: null,
   token: null,
+  refreshToken: null,
   language: 'hi' as Language,
   activeRole: null,
   hasWorker: false,
@@ -93,6 +97,8 @@ export const useAuthStore = create<AuthState>()(
       setLoading: (isLoading) => set({ isLoading }),
       setVerificationId: (verificationId) => set({ verificationId }),
       setHasHydrated: (_hasHydrated) => set({ _hasHydrated }),
+      setToken: (token) => set({ token }),
+      setRefreshToken: (refreshToken) => set({ refreshToken }),
 
       clear: () => set({ ...DEFAULT_STATE }),
     }),
@@ -102,6 +108,7 @@ export const useAuthStore = create<AuthState>()(
       partialize: (state) => ({
         userId: state.userId,
         token: state.token,
+        refreshToken: state.refreshToken,
         language: state.language,
         activeRole: state.activeRole,
         hasWorker: state.hasWorker,

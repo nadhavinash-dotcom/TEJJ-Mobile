@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { SafeScreen } from '../../../src/components/shared/SafeScreen';
-import { router } from 'expo-router';
 import { EMPLOYER_PLANS } from '@/utils';
 import { LucideIcon } from '../../../src/components/shared/LucideIcon';
+import { navigateHome } from '@/utils/navigate-home';
 
 export default function EmployerWelcomeScreen() {
   return (
@@ -30,7 +30,7 @@ export default function EmployerWelcomeScreen() {
         </View>
 
         <TouchableOpacity
-          onPress={() => router.replace('/(employer)/(tabs)/dashboard')}
+          onPress={navigateHome}
           className="bg-blue-600 rounded-2xl py-4 items-center"
           activeOpacity={0.85}
         >

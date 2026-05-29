@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
@@ -12,10 +12,10 @@ import { SKILL_LIST } from '@/utils';
 export default function RoleScreen() {
   const { worker, updateWorker } = useOnboardingStore();
 
-  const handleVoiceResult = ({ keywords }: { keywords: string[]; englishText: string; originalText: string; structured: Record<string, unknown> }) => {
+  const handleVoiceResult = useCallback(({ keywords }: { keywords: string[]; englishText: string; originalText: string; structured: Record<string, unknown> }) => {
     const match = SKILL_LIST.find((s:any) => keywords.some((k:string) => s.keywords.includes(k.toLowerCase())));
     if (match) updateWorker({ primary_skill: match.id });
-  };
+  }, [updateWorker]);
 
   return (
     <SafeScreen className="flex-1">
@@ -23,7 +23,7 @@ export default function RoleScreen() {
         <View className="px-6 pt-8 pb-4">
           <StepIndicator currentStep={1} totalSteps={10} />
           <Text className="text-white text-2xl font-bold mb-1">What work do you do?</Text>
-          <Text className="text-navy-300 text-sm mb-4">What is your primary skill?</Text>
+          <Text className="text-white text-sm mb-4">What is your primary skill?</Text>
           <VoiceMicButton onResult={handleVoiceResult} />
         </View>
 

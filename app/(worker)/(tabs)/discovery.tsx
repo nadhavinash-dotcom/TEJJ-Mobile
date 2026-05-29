@@ -139,12 +139,6 @@ export default function JobDiscoveryScreen() {
   const flatListRef = useRef<FlatList>(null);
   
   useEffect(() => {
-    console.log('[MapDebug] API Key defined:', !!process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY);
-    if (!process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY) {
-      console.warn('[MapDebug] Warning: EXPO_PUBLIC_GOOGLE_MAPS_API_KEY is missing from environment.');
-    }
-  }, []);
-  useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
@@ -288,8 +282,7 @@ export default function JobDiscoveryScreen() {
         ref={mapRef}
         style={styles.map}
         customMapStyle={mapStyle}
-        onMapReady={() => console.log('[MapDebug] Map is ready')}
-        initialRegion={{
+initialRegion={{
           latitude: userCoords?.lat || 17.3850,
           longitude: userCoords?.lng || 78.4867,
           latitudeDelta: 0.05,

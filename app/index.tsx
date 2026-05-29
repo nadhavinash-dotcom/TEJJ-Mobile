@@ -1,52 +1,15 @@
 import { useEffect } from 'react';
 import { View, ActivityIndicator } from 'react-native';
-import { router } from 'expo-router';
 import { useAuthStore } from '../src/store/authStore';
+import { navigateHome } from '../utils/navigate-home';
 
 export default function Index() {
-  const { token, hasWorker, hasEmployer, activeRole, _hasHydrated, language } = useAuthStore();
+  const { _hasHydrated } = useAuthStore();
 
   useEffect(() => {
     if (!_hasHydrated) return;
-
-    console.log({ token, hasWorker, hasEmployer, activeRole, _hasHydrated, language })
-
-    if (!token) {
-      router.replace('/(auth)/phone');
-      return;
-    }
-
-    if(!language){
-      router.replace('/(auth)/language');
-      return;
-    }
-
-    if (!activeRole) {
-      router.replace('/(auth)/role');
-      return;
-    }
-
-    if (activeRole === 'employer') {
-      if (hasEmployer) {
-        router.replace('/(employer)/(tabs)/dashboard');
-      } else {
-        router.replace('/(employer)/onboarding/property');
-      }
-      return;
-    }
-
-    if (activeRole === 'worker') {
-      if (hasWorker) {
-        router.replace('/(worker)/(tabs)/feed');
-      } else {
-        router.replace('/(worker)/onboarding/role');
-      }
-      return;
-    }
-
-    router.replace('/(auth)/phone');
-  }, [token, activeRole, hasWorker, hasEmployer, _hasHydrated]);
-
+    navigateHome();
+  }, [_hasHydrated]);
 
   return (
     <View style={{ flex: 1, backgroundColor: '#0A1628', alignItems: 'center', justifyContent: 'center' }}>

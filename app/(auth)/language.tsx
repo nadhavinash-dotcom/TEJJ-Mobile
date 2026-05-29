@@ -11,6 +11,7 @@ import { router } from 'expo-router';
 import { StyledMenu, StyledArrowRight } from '../../src/components/tell/Icons';
 import { useAuthStore } from '@/src/store/authStore';
 import api from '@/src/lib/api';
+import { navigateHome } from '@/utils/navigate-home';
 
 const languages = [
   { id: 'en', label: 'English' },
@@ -26,7 +27,7 @@ const languages = [
 
 export default function LanguageScreen() {
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
-  const {setLanguage, activeRole, hasEmployer, hasWorker} = useAuthStore();
+  const { setLanguage } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
 
   // const handleContinue = () => {
@@ -47,31 +48,8 @@ export default function LanguageScreen() {
 
       if (response.data.success) {
         const { language } = response.data;
-
-        // const prevUser = useAuthStore.getState();
-        // console.log('Previous User State:', prevUser);
-
         setLanguage(language);
-        if (!activeRole) {
-          router.replace('/(auth)/role');
-          return;
-        }
-        if (activeRole === 'employer') {
-          if (hasEmployer) {
-            router.replace('/(employer)/(tabs)/dashboard');
-            return;
-          } else {
-            router.replace('/(employer)/onboarding/property');
-            return;
-          }
-        } else {
-          if (hasWorker) {
-            router.replace('/(worker)/(tabs)/feed');
-          } else {
-            router.replace('/(worker)/onboarding/role');
-            return;
-          }
-        }
+        navigateHome();
       }
     } catch (error: any) {
       console.error("Language Selection Error:", error);

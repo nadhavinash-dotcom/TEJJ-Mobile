@@ -12,6 +12,7 @@ import api from '../../../src/lib/api';
 import { auth } from '../../../src/lib/firebase';
 import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 import { refreshUser } from '@/utils/referesh-user';
+import { navigateHome } from '@/utils/navigate-home';
 
 export default function PreviewScreen() {
   const { worker, resetWorker } = useOnboardingStore();
@@ -79,9 +80,10 @@ export default function PreviewScreen() {
       //   workerId: user.worker_id,
       //   activeRole: 'worker',
       // });
-      await refreshUser(setLoading, token)
+      const result = await refreshUser(setLoading, token);
+      if (!result.ok) throw new Error('Session verification failed');
       resetWorker();
-      router.replace('/(worker)/(tabs)/feed');
+      navigateHome();
     } catch (e: any) {
       Alert.alert('Error', e?.response?.data?.message ?? 'Could not save profile. Please try again.');
     } finally {
