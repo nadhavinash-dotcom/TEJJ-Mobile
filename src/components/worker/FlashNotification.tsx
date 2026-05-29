@@ -4,7 +4,6 @@ import { router } from 'expo-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useDispatchStore } from '../../store/dispatchStore';
 import api from '../../lib/api';
-import { auth } from '../../lib/firebase';
 import { LucideIcon } from '../shared/LucideIcon';
 
 interface FlashJob {
@@ -33,8 +32,7 @@ export function FlashNotification({ job }: { job: FlashJob }) {
 
   const acceptMutation = useMutation({
     mutationFn: async () => {
-      const token = await auth.currentUser?.getIdToken();
-      const res = await api.post('/dispatch/accept', { job_id: job._id }, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.post('/dispatch/accept', { job_id: job._id });
       return res.data.data;
     },
     onSuccess: (match) => {

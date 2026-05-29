@@ -3,7 +3,6 @@ import { View, Text, ScrollView, TouchableOpacity, TextInput, ActivityIndicator,
 import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router, useLocalSearchParams } from 'expo-router';
 import api from '../../../src/lib/api';
-import { auth } from '../../../src/lib/firebase';
 import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 
 function StarRating({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
@@ -35,7 +34,6 @@ export default function RateWorkerScreen() {
     if (overall === 0) { Alert.alert('Rating required', 'Please give an overall rating.'); return; }
     setSubmitting(true);
     try {
-      const token = await auth.currentUser?.getIdToken();
       await api.post('/ratings/worker', {
         match_id: id,
         overall_score: overall,
@@ -44,7 +42,7 @@ export default function RateWorkerScreen() {
         conduct_score: conduct || overall,
         would_rehire: rehire,
         comment,
-      }, { headers: { Authorization: `Bearer ${token}` } });
+      });
       router.replace('/(employer)/(tabs)/dashboard');
     } catch {
       Alert.alert('Error', 'Could not submit rating.');

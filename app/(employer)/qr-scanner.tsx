@@ -5,7 +5,6 @@ import { router } from 'expo-router';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useMutation } from '@tanstack/react-query';
 import api from '../../src/lib/api';
-import { auth } from '../../src/lib/firebase';
 import { LucideIcon } from '../../src/components/shared/LucideIcon';
 
 export default function QRScannerScreen() {
@@ -14,8 +13,7 @@ export default function QRScannerScreen() {
 
   const mutation = useMutation({
     mutationFn: async (qrToken: string) => {
-      const token = await auth.currentUser?.getIdToken();
-      const res = await api.post('/dispatch/verify-arrival', { qr_token: qrToken }, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.post('/dispatch/verify-arrival', { qr_token: qrToken });
       return res.data.data;
     },
     onSuccess: () => {

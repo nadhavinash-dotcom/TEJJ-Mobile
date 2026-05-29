@@ -4,7 +4,6 @@ import { SafeScreen } from '../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../src/lib/api';
-import { auth } from '../../src/lib/firebase';
 import { ChevronLeft, Stethoscope, Bike, Banknote, Users, CalendarDays } from 'lucide-react-native';
 
 const C = {
@@ -28,8 +27,7 @@ export default function RetainScreen() {
   const { data, isLoading } = useQuery({
     queryKey: ['retain-dashboard'],
     queryFn: async () => {
-      const token = await auth.currentUser?.getIdToken();
-      const res = await api.get('/employers/retain', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.get('/employers/retain');
       return res.data.data;
     },
   });

@@ -4,7 +4,6 @@ import { SafeScreen } from '../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../src/lib/api';
-import { auth } from '../../src/lib/firebase';
 import { AlertTriangle, QrCode, UserX } from 'lucide-react-native';
 
 const C = {
@@ -26,8 +25,7 @@ export default function ConfirmGateScreen() {
   const { data, isLoading } = useQuery({
     queryKey: ['confirm-gate'],
     queryFn: async () => {
-      const token = await auth.currentUser?.getIdToken();
-      const res = await api.get('/employers/confirm-gate', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.get('/employers/confirm-gate');
       return res.data.data as { blocked: boolean; pending_match?: any };
     },
   });
@@ -102,12 +100,7 @@ export default function ConfirmGateScreen() {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={async () => {
-              const token = await auth.currentUser?.getIdToken();
-              await api.post(
-                `/matches/${data.pending_match._id}/no-show`,
-                {},
-                { headers: { Authorization: `Bearer ${token}` } }
-              );
+              await api.post(`/matches/${data.pending_match._id}/no-show`, {});
               router.replace('/(employer)/post/lane');
             }}
             className="rounded-2xl py-4 flex-row items-center justify-center gap-2"

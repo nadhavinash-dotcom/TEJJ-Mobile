@@ -4,7 +4,6 @@ import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../../src/lib/api';
-import { auth } from '../../../src/lib/firebase';
 import { Clock, ClipboardList, CheckCircle, XCircle, MinusCircle, ChevronRight, MapPin, Banknote } from 'lucide-react-native';
 
 type StatusConfig = {
@@ -51,8 +50,7 @@ export default function ApplicationsScreen() {
   const { data, isLoading } = useQuery({
     queryKey: ['my-applications'],
     queryFn: async () => {
-      const token = await auth.currentUser?.getIdToken();
-      const res = await api.get('/applications/mine', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.get('/applications/mine');
       return res.data.data as any[];
     },
     staleTime: 60_000,

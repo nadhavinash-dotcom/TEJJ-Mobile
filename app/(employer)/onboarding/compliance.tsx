@@ -7,7 +7,6 @@ import { StepIndicator } from '../../../src/components/shared/StepIndicator';
 import { OnboardingFooter } from '../../../src/components/shared/OnboardingFooter';
 import { useAuthStore } from '../../../src/store/authStore';
 import api from '../../../src/lib/api';
-import { auth } from '../../../src/lib/firebase';
 import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 
 export default function ComplianceScreen() {
@@ -18,7 +17,6 @@ export default function ComplianceScreen() {
   const handleComplete = async () => {
     setSubmitting(true);
     try {
-      // const token = await auth.currentUser?.getIdToken();
       const res = await api.post('/employers/create', {
         property_type: employer.property_type,
         property_name: employer.property_name,

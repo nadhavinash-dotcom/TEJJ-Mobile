@@ -5,15 +5,13 @@ import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { QRCodeDisplay } from '../../src/components/shared/QRCodeDisplay';
 import api from '../../src/lib/api';
-import { auth } from '../../src/lib/firebase';
 import { LucideIcon } from '../../src/components/shared/LucideIcon';
 
 export default function QRCodeScreen() {
   const { data, isLoading, refetch } = useQuery({
     queryKey: ['qr-token'],
     queryFn: async () => {
-      const token = await auth.currentUser?.getIdToken();
-      const res = await api.get('/dispatch/qr-token', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.get('/dispatch/qr-token');
       return res.data.data as { qr_token: string; expires_at: string };
     },
     staleTime: 4 * 60 * 1000, // refresh every 4 min (token valid 5 min)

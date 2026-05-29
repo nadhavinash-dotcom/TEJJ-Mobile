@@ -4,7 +4,6 @@ import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../../src/lib/api';
-import { auth } from '../../../src/lib/firebase';
 import { CheckCircle, MapPin, Clock, Banknote, User, QrCode, ArrowLeft } from 'lucide-react-native';
 
 const C = {
@@ -40,8 +39,7 @@ export default function MatchScreen() {
   const { data: match, isLoading } = useQuery({
     queryKey: ['match', id],
     queryFn: async () => {
-      const token = await auth.currentUser?.getIdToken();
-      const res = await api.get(`/matches/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.get(`/matches/${id}`);
       return res.data.data;
     },
   });

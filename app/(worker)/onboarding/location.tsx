@@ -23,9 +23,10 @@ export default function LocationScreen() {
   const { worker, updateWorker } = useOnboardingStore();
   const [detecting, setDetecting] = useState(false);
 
-  const handleVoiceResult = useCallback(({ structured, englishText }: { structured: Record<string, unknown>; englishText: string; keywords: string[]; originalText: string }) => {
+  const handleVoiceResult = useCallback(({ structured, englishText }: { structured: Record<string, unknown>; englishText: string; keywords: string[]; originalText: string }): boolean => {
     const city = (structured.city as string | undefined) ?? extractCityFromText(englishText);
-    if (city) updateWorker({ home_city: city });
+    if (city) { updateWorker({ home_city: city }); return true; }
+    return false;
   }, [updateWorker]);
 
   const detectLocation = async () => {

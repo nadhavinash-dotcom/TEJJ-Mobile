@@ -4,7 +4,6 @@ import { SafeScreen } from '../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../src/lib/api';
-import { auth } from '../../src/lib/firebase';
 import { LucideIcon } from '../../src/components/shared/LucideIcon';
 
 export default function NotificationsScreen() {
@@ -13,16 +12,14 @@ export default function NotificationsScreen() {
   const { data, isLoading } = useQuery({
     queryKey: ['notifications'],
     queryFn: async () => {
-      const token = await auth.currentUser?.getIdToken();
-      const res = await api.get('/notifications', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.get('/notifications');
       return res.data.data as any[];
     },
   });
 
   const markReadMutation = useMutation({
     mutationFn: async (id: string) => {
-      const token = await auth.currentUser?.getIdToken();
-      await api.patch(`/notifications/${id}/read`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      await api.patch(`/notifications/${id}/read`, {});
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['notifications'] }),
   });

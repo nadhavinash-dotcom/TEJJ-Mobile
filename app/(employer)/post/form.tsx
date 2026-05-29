@@ -8,7 +8,6 @@ import { SkillGrid } from '../../../src/components/shared/SkillGrid';
 import { useOnboardingStore } from '../../../src/store/onboardingStore';
 import { PayBenchmarkBox } from '../../../src/components/employer/PayBenchmarkBox';
 import api from '../../../src/lib/api';
-import { auth } from '../../../src/lib/firebase';
 import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 
 export default function JobFormScreen() {

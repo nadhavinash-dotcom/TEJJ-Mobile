@@ -14,11 +14,12 @@ export default function SubSkillScreen() {
   const skillDef = SKILL_LIST.find((s) => s.id === worker.primary_skill);
   const availableSubSkills = worker.primary_skill ? SUB_SKILLS_MAP[worker.primary_skill] || [] : [];
 
-  const handleVoiceResult = useCallback(({ keywords }: { keywords: string[] }) => {
+  const handleVoiceResult = useCallback(({ keywords }: { keywords: string[] }): boolean => {
     const match = availableSubSkills.find((c) =>
       keywords.some((k) => c.id === k || c.labelEn?.toLowerCase().includes(k) || (c.keywords && c.keywords.includes(k)))
     );
-    if (match) updateWorker({ sub_skills: [match.id] });
+    if (match) { updateWorker({ sub_skills: [match.id] }); return true; }
+    return false;
   }, [availableSubSkills, updateWorker]);
 
   const toggleSubSkill = (id: string) => {

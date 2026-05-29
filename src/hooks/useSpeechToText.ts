@@ -2,10 +2,9 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import api from '../lib/api';
 import { useAuthStore } from '../store/authStore';
 
-// Graceful fallback: expo-speech-recognition is unavailable on web
 let useSpeechRecognitionEvent = (_event: string, _handler: any) => {};
 let SpeechRecognition: any = null;
-let isVoiceSupported = false; // false until confirmed — prevents null-crash if require fails
+let isVoiceSupported = false;
 
 try {
   const m = require('expo-speech-recognition');
@@ -13,7 +12,7 @@ try {
   SpeechRecognition = m.ExpoSpeechRecognitionModule;
   isVoiceSupported = true;
 } catch {
-  // Running in web or environment without native speech recognition
+  // web or environment without native speech recognition
 }
 
 export type SpeechResult = {
@@ -24,6 +23,11 @@ export type SpeechResult = {
 };
 
 export type SpeechStatus = 'idle' | 'listening' | 'processing';
+
+// 'no-speech'  → user should retry, not a hard failure
+// 'permission' → microphone denied
+// 'error'      → something else went wrong
+export type SpeechError = 'no-speech' | 'permission' | 'unsupported' | 'error' | null;
 
 const LOCALE_MAP: Record<string, string> = {
   hi: 'hi-IN',
@@ -36,7 +40,6 @@ const LOCALE_MAP: Record<string, string> = {
   en: 'en-US',
 };
 
-// Exported for unit testing — pure function with no side effects
 export const resolveLocale = (language: string | null | undefined): string =>
   LOCALE_MAP[language ?? ''] ?? 'en-US';
 
@@ -47,19 +50,28 @@ export function useSpeechToText(onResult: (result: SpeechResult) => void) {
     statusRef.current = s;
     setStatusState(s);
   }, []);
-  const [error, setError] = useState<string | null>(null);
+
+  const [transcript, setTranscript] = useState('');
+  const [error, setError] = useState<SpeechError>(null);
+
   const language = useAuthStore((s) => s.language);
   const locale = resolveLocale(language);
 
-  // Ref pattern: keeps onResult always current without making it a dep of handleResult.
-  // This prevents handleResult from recreating on every render (which would cause
-  // useSpeechRecognitionEvent to re-subscribe mid-recognition and miss results).
+  // Ref keeps onResult stable so handleResult never needs to re-subscribe
   const onResultRef = useRef(onResult);
   onResultRef.current = onResult;
 
   const handleResult = useCallback(async (event: any) => {
-    const text = event.results[0]?.transcript;
-    if (!text || statusRef.current === 'processing') return;
+    const resultItem = event.results?.[0];
+    const text: string = resultItem?.transcript ?? '';
+    if (!text) return;
+
+    // Always show live transcript (interim + final)
+    setTranscript(text);
+
+    // isFinal is on the EVENT in expo-speech-recognition, not on results[0]
+    const isFinal: boolean = event.isFinal ?? resultItem?.isFinal ?? true;
+    if (!isFinal || statusRef.current === 'processing') return;
 
     setStatus('processing');
     try {
@@ -70,26 +82,33 @@ export function useSpeechToText(onResult: (result: SpeechResult) => void) {
       if (res.data.success) {
         onResultRef.current(res.data.data);
       } else {
-        setError('Transcription failed');
+        setError('error');
       }
     } catch {
-      setError('Could not process speech');
+      setError('error');
     } finally {
       setStatus('idle');
     }
-  }, [language, setStatus]); // onResult intentionally excluded — use ref above
+  }, [language, setStatus]);
 
   useSpeechRecognitionEvent('result', handleResult);
 
-  const handleError = useCallback((event: any) => {
-    console.error('Speech error:', event.error, event.message);
-    setError('Could not recognise speech');
+  const handleSpeechError = useCallback((event: any) => {
+    const code: string = event.error ?? '';
+    // 'no-speech' and 'no-match' are soft errors — offer retry, not failure
+    if (code === 'no-speech' || code === 'no-match') {
+      setError('no-speech');
+    } else {
+      console.error('Speech error:', code, event.message);
+      setError('error');
+    }
+    setTranscript('');
     setStatus('idle');
   }, [setStatus]);
 
-  useSpeechRecognitionEvent('error', handleError);
+  useSpeechRecognitionEvent('error', handleSpeechError);
 
-  // Stop recognition if the screen unmounts while listening
+  // Stop recognition on unmount (e.g. screen navigate-away mid-listen)
   useEffect(() => {
     return () => {
       if (isVoiceSupported && SpeechRecognition && statusRef.current !== 'idle') {
@@ -100,12 +119,13 @@ export function useSpeechToText(onResult: (result: SpeechResult) => void) {
 
   const startListening = useCallback(async () => {
     if (statusRef.current !== 'idle') return;
-    statusRef.current = 'listening'; // lock ref synchronously before any await
-    setError(null); // always clear previous error before a new attempt
+    statusRef.current = 'listening';
+    setError(null);
+    setTranscript('');
 
     if (!isVoiceSupported) {
       setStatus('idle');
-      setError('Voice input is not available in this environment');
+      setError('unsupported');
       return;
     }
 
@@ -113,14 +133,24 @@ export function useSpeechToText(onResult: (result: SpeechResult) => void) {
       const { granted } = await SpeechRecognition.requestPermissionsAsync();
       if (!granted) {
         setStatus('idle');
-        setError('Microphone permission required');
+        setError('permission');
         return;
       }
-      setStatus('listening'); // sync state to match ref for UI update
-      await SpeechRecognition.start({ lang: locale, interimResults: false });
+      setStatus('listening');
+      await SpeechRecognition.start({
+        lang: locale,
+        interimResults: true,   // enables live transcript display
+        continuous: false,
+        // Give Android extra time before declaring no-speech
+        androidIntentOptions: {
+          EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS: 4000,
+          EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS: 2000,
+          EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS: 2000,
+        },
+      });
     } catch {
       setStatus('idle');
-      setError('Failed to start speech recognition');
+      setError('error');
     }
   }, [locale, setStatus]);
 
@@ -132,14 +162,18 @@ export function useSpeechToText(onResult: (result: SpeechResult) => void) {
     try {
       await SpeechRecognition.stop();
     } catch {
-      // stop() can throw if recognition isn't active — treat as stopped
+      // stop() throws when recognition isn't active — safe to ignore
     }
-    // If the result/error event doesn't fire (e.g. no speech detected),
-    // reset status so the button doesn't stay stuck in 'listening'.
     if (statusRef.current === 'listening') {
       setStatus('idle');
     }
   }, [setStatus]);
 
-  return { status, startListening, stopListening, error };
+  const reset = useCallback(() => {
+    setError(null);
+    setTranscript('');
+    setStatus('idle');
+  }, [setStatus]);
+
+  return { status, transcript, error, startListening, stopListening, reset };
 }

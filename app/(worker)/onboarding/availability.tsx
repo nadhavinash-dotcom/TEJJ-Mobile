@@ -28,13 +28,14 @@ export default function AvailabilityScreen() {
     updateWorker({ preferred_shifts: shifts.includes(s) ? shifts.filter((x) => x !== s) : [...shifts, s] });
   };
 
-  const handleVoiceResult = useCallback(({ keywords }: { keywords: string[] }) => {
+  const handleVoiceResult = useCallback(({ keywords }: { keywords: string[] }): boolean => {
     const matchedDays = DAYS.filter((d) => keywords.some((k) => k.toLowerCase().includes(d.toLowerCase())));
-    if (matchedDays.length) updateWorker({ available_days: matchedDays });
     const matchedShifts = SHIFTS.filter((s) =>
       keywords.some((k) => k.toLowerCase().includes(s.id) || k.toLowerCase().includes(s.label.toLowerCase()))
     ).map((s) => s.id);
+    if (matchedDays.length) updateWorker({ available_days: matchedDays });
     if (matchedShifts.length) updateWorker({ preferred_shifts: matchedShifts });
+    return matchedDays.length > 0 || matchedShifts.length > 0;
   }, [updateWorker]);
 
   return (

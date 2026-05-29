@@ -5,7 +5,6 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { HIRING_LANES } from '@/utils';
 import api from '../../../src/lib/api';
-import { auth } from '../../../src/lib/firebase';
 import {
   ChevronLeft,
   ChevronRight,
@@ -62,8 +61,7 @@ export default function JobDetailScreen() {
   const { data: job, isLoading } = useQuery({
     queryKey: ['job', id],
     queryFn: async () => {
-      const token = await auth.currentUser?.getIdToken();
-      const res = await api.get(`/jobs/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.get(`/jobs/${id}`);
       return res.data.data;
     },
   });
@@ -71,8 +69,7 @@ export default function JobDetailScreen() {
   const handleApply = async () => {
     setApplying(true);
     try {
-      const token = await auth.currentUser?.getIdToken();
-      const res = await api.post('/applications', { job_id: id }, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.post('/applications', { job_id: id });
       router.replace({ pathname: '/(worker)/applied/[id]', params: { id: res.data.data._id } });
     } catch (e: any) {
       Alert.alert('Error', e?.response?.data?.message ?? 'Could not apply. Please try again.');

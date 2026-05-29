@@ -4,7 +4,6 @@ import { SafeScreen } from '../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../src/lib/api';
-import { auth } from '../../src/lib/firebase';
 import { ChevronLeft, Plus, Users, X } from 'lucide-react-native';
 
 const C = {
@@ -28,16 +27,14 @@ export default function CrewPoolsScreen() {
   const { data, isLoading } = useQuery({
     queryKey: ['crew-pools'],
     queryFn: async () => {
-      const token = await auth.currentUser?.getIdToken();
-      const res = await api.get('/crew-pools', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.get('/crew-pools');
       return res.data.data as any[];
     },
   });
 
   const createMutation = useMutation({
     mutationFn: async (name: string) => {
-      const token = await auth.currentUser?.getIdToken();
-      await api.post('/crew-pools', { name }, { headers: { Authorization: `Bearer ${token}` } });
+      await api.post('/crew-pools', { name });
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['crew-pools'] });

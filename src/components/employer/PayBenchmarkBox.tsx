@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../lib/api';
-import { auth } from '../../lib/firebase';
 import { LucideIcon } from '../shared/LucideIcon';
 
 interface PayBenchmarkBoxProps {
@@ -14,8 +13,7 @@ export function PayBenchmarkBox({ skill, payRate }: PayBenchmarkBoxProps) {
   const { data } = useQuery({
     queryKey: ['market-rate', skill],
     queryFn: async () => {
-      const token = await auth.currentUser?.getIdToken();
-      const res = await api.get(`/market-rates/${skill}`, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.get(`/market-rates/${skill}`);
       return res.data.data as { median: number; p25: number; p75: number };
     },
     enabled: !!skill,

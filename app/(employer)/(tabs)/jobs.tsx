@@ -4,7 +4,6 @@ import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../../src/lib/api';
-import { auth } from '../../../src/lib/firebase';
 import { HIRING_LANES } from '@/utils';
 import { Plus, ChevronRight, Users, ClipboardList } from 'lucide-react-native';
 import { LucideIcon } from '../../../src/components/shared/LucideIcon';
@@ -28,8 +27,7 @@ export default function EmployerJobsScreen() {
   const { data, isLoading } = useQuery({
     queryKey: ['employer-jobs'],
     queryFn: async () => {
-      const token = await auth.currentUser?.getIdToken();
-      const res = await api.get('/jobs/mine', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.get('/jobs/mine');
       return res.data.data as any[];
     },
     staleTime: 30_000,

@@ -4,7 +4,6 @@ import { SafeScreen } from '../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { VoiceMicButton } from '../../src/components/shared/VoiceMicButton';
 import api from '../../src/lib/api';
-import { auth } from '../../src/lib/firebase';
 import { LucideIcon } from '../../src/components/shared/LucideIcon';
 
 const CATEGORIES = ['Late / no payment', 'Unsafe workplace', 'Harassment', 'Work mismatch', 'Other'];
@@ -23,8 +22,7 @@ export default function WhisperScreen() {
     if (!category || !text.trim()) { Alert.alert('Incomplete', 'Please select a category and describe the issue.'); return; }
     setSubmitting(true);
     try {
-      const token = await auth.currentUser?.getIdToken();
-      await api.post('/whisper', { category, employer_locality: employerLocality, complaint_text: text }, { headers: { Authorization: `Bearer ${token}` } });
+      await api.post('/whisper', { category, employer_locality: employerLocality, complaint_text: text });
       Alert.alert('Submitted', 'Your anonymous report has been submitted. Thank you for keeping the community safe.', [
         { text: 'OK', onPress: () => router.back() },
       ]);

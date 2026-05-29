@@ -9,7 +9,6 @@ import { SKILL_LIST } from '@/utils';
 import { StepIndicator } from '../../../src/components/shared/StepIndicator';
 import { OnboardingFooter } from '../../../src/components/shared/OnboardingFooter';
 import api from '../../../src/lib/api';
-import { auth } from '../../../src/lib/firebase';
 import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 import { refreshUser } from '@/utils/referesh-user';
 import { navigateHome } from '@/utils/navigate-home';
@@ -24,8 +23,8 @@ export default function PreviewScreen() {
   const handleGoLive = async () => {
     setLoading(true);
     try {
-      const token = await auth.currentUser?.getIdToken();
-      
+      const token = useAuthStore.getState().token;
+
       const formData = new FormData();
       
       // Append text fields
@@ -60,8 +59,7 @@ export default function PreviewScreen() {
       }
 
       const res = await api.post('/workers/create', formData, {
-        headers: { 
-          Authorization: `Bearer ${token}`,
+        headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
@@ -74,7 +72,7 @@ export default function PreviewScreen() {
       // setUser({
       //   userId: user._id,
       //   token: token!,
-      //   // firebaseUid: auth.currentUser?.uid || '',
+
       //   hasWorker: true,
       //   hasEmployer: false,
       //   workerId: user.worker_id,

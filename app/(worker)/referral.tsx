@@ -4,15 +4,13 @@ import { SafeScreen } from '../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../src/lib/api';
-import { auth } from '../../src/lib/firebase';
 import { LucideIcon } from '../../src/components/shared/LucideIcon';
 
 export default function ReferralScreen() {
   const { data, isLoading } = useQuery({
     queryKey: ['referrals'],
     queryFn: async () => {
-      const token = await auth.currentUser?.getIdToken();
-      const res = await api.get('/referrals/mine', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.get('/referrals/mine');
       return res.data.data;
     },
   });

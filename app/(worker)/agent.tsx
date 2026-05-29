@@ -5,15 +5,13 @@ import Slider from '@react-native-community/slider';
 import { router } from 'expo-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../src/lib/api';
-import { auth } from '../../src/lib/firebase';
 
 export default function AgentScreen() {
   const qc = useQueryClient();
   const { data, isLoading } = useQuery({
     queryKey: ['worker-agent'],
     queryFn: async () => {
-      const token = await auth.currentUser?.getIdToken();
-      const res = await api.get('/workers/me', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.get('/workers/me');
       return res.data.data;
     },
   });
@@ -24,8 +22,7 @@ export default function AgentScreen() {
 
   const mutation = useMutation({
     mutationFn: async (payload: any) => {
-      const token = await auth.currentUser?.getIdToken();
-      await api.patch('/workers/agent-mode', payload, { headers: { Authorization: `Bearer ${token}` } });
+      await api.patch('/workers/agent-mode', payload);
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['worker-agent'] }); Alert.alert('Saved', 'Agent settings updated!'); },
     onError: () => Alert.alert('Error', 'Could not save settings.'),

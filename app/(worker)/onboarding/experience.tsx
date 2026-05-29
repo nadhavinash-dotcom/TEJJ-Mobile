@@ -13,9 +13,11 @@ export default function ExperienceScreen() {
   const { worker, updateWorker } = useOnboardingStore();
   const years = worker.years_experience ?? 1;
 
-  const handleVoiceResult = useCallback(({ englishText }: { englishText: string; keywords: string[]; originalText: string; structured: Record<string, unknown> }) => {
-    const exp = mapVoiceToExperience(englishText);
-    if (exp !== null) updateWorker({ years_experience: exp });
+  const handleVoiceResult = useCallback(({ englishText, structured }: { englishText: string; keywords: string[]; originalText: string; structured: Record<string, unknown> }): boolean => {
+    // Prefer backend-computed value (already ran mapVoiceToExperience on translated text)
+    const exp = (structured.years_experience as number | undefined) ?? mapVoiceToExperience(englishText);
+    if (exp !== null && exp !== undefined) { updateWorker({ years_experience: exp }); return true; }
+    return false;
   }, [updateWorker]);
 
   const expLabel = (n: number) => {

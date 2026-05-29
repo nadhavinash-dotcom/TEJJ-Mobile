@@ -4,7 +4,6 @@ import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../../src/lib/api';
-import { auth } from '../../../src/lib/firebase';
 import { getAbsoluteUrl, SKILL_LIST } from '@/utils';
 import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 
@@ -24,7 +23,6 @@ export default function ApplicantsScreen() {
 
   const shortlistMutation = useMutation({
     mutationFn: async (appId: string) => {
-      // const token = await auth.currentUser?.getIdToken();
       await api.patch(`/applications/${appId}/shortlist`);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['applicants', jobId] }),

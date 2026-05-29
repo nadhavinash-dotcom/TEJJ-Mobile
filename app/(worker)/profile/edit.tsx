@@ -5,7 +5,6 @@ import * as Location from 'expo-location';
 import api from '@/src/lib/api';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { SafeScreen } from '@/src/components/shared/SafeScreen';
-import { auth } from '@/src/lib/firebase';
 import { EditWorkTab, EditScheduleTab, EditMediaTab } from '@/src/components/worker/profile-edit';
 import { useAuthStore } from '@/src/store/authStore';
 import { refreshUser } from '@/utils/referesh-user';
@@ -23,8 +22,7 @@ export default function ProfileEditScreen() {
   const { data: profile, isLoading } = useQuery({
     queryKey: ['worker-profile'],
     queryFn: async () => {
-      const token = await auth.currentUser?.getIdToken();
-      const res = await api.get('/workers/me', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.get('/workers/me');
       return res.data.data;
     },
   });
@@ -43,8 +41,6 @@ export default function ProfileEditScreen() {
     if (!draft) return;
     setSaving(true);
     try {
-      const token = await auth.currentUser?.getIdToken();
-      
       const formData = new FormData();
 
       // Append text fields
@@ -80,11 +76,10 @@ export default function ProfileEditScreen() {
         formData.append('skill_video', { uri, name, type } as any);
       }
 
-      const res = await api.patch('/workers/me', formData, { 
-        headers: { 
-          Authorization: `Bearer ${token}`,
+      const res = await api.patch('/workers/me', formData, {
+        headers: {
           'Content-Type': 'multipart/form-data',
-        } 
+        },
       });
 
       if (!res.data.success) {

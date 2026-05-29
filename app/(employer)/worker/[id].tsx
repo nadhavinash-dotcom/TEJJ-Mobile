@@ -6,7 +6,6 @@ import { useQuery } from '@tanstack/react-query';
 import { SKILL_LIST } from '@/utils';
 import { AIScoreBar } from '../../../src/components/worker/AIScoreBar';
 import api from '../../../src/lib/api';
-import { auth } from '../../../src/lib/firebase';
 import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 
 export default function WorkerSkillCardScreen() {
@@ -15,8 +14,7 @@ export default function WorkerSkillCardScreen() {
   const { data: worker, isLoading } = useQuery({
     queryKey: ['worker-card', id],
     queryFn: async () => {
-      const token = await auth.currentUser?.getIdToken();
-      const res = await api.get(`/workers/${id}/card`, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.get(`/workers/${id}/card`);
       return res.data.data;
     },
   });

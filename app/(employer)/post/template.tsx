@@ -5,7 +5,6 @@ import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { useOnboardingStore } from '../../../src/store/onboardingStore';
 import api from '../../../src/lib/api';
-import { auth } from '../../../src/lib/firebase';
 import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 
 export default function TemplateScreen() {
@@ -14,8 +13,7 @@ export default function TemplateScreen() {
   const { data, isLoading } = useQuery({
     queryKey: ['job-templates'],
     queryFn: async () => {
-      const token = await auth.currentUser?.getIdToken();
-      const res = await api.get('/jobs/templates', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await api.get('/jobs/templates');
       return res.data.data as any[];
     },
   });
