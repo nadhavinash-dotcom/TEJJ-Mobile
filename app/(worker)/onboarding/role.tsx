@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect } from "react";
-import { View, Text, ScrollView } from "react-native";
+import React, { useCallback, useEffect, useRef } from "react";
+import { View, Text, ScrollView, Animated } from "react-native";
 import { SafeScreen } from "../../../src/components/shared/SafeScreen";
 import { router } from "expo-router";
 import { SkillGrid } from "../../../src/components/shared/SkillGrid";
@@ -13,6 +13,15 @@ import { SKILL_LIST } from "@/utils";
 
 export default function RoleScreen() {
   const { worker, updateWorker } = useOnboardingStore();
+  const opacity = useRef(new Animated.Value(0)).current;
+  const slideY = useRef(new Animated.Value(22)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacity, { toValue: 1, duration: 360, useNativeDriver: true }),
+      Animated.timing(slideY, { toValue: 0, duration: 360, useNativeDriver: true }),
+    ]).start();
+  }, []);
 
   const getOptions = useCallback(
     () => SKILL_LIST.map((s) => ({ id: s.id, label: s.labelEn, aliases: [...s.keywords] })),
@@ -21,27 +30,24 @@ export default function RoleScreen() {
 
   const { handleVoiceResult, match, speechResult, dismiss } = useVoiceStep('role', getOptions);
 
-  // Log whenever match state changes
-  useEffect(() => {
-    console.log('[RoleScreen] match state changed:', JSON.stringify(match));
-  }, [match]);
-
   return (
     <SafeScreen className="flex-1">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <View className="px-6 pt-8 pb-4">
+        <Animated.View
+          style={{ opacity, transform: [{ translateY: slideY }] }}
+          className="px-6 pt-8 pb-4"
+        >
           <StepIndicator currentStep={1} totalSteps={10} />
-          <Text className="text-white text-2xl font-bold mb-1">What work do you do?</Text>
-          <Text className="text-white text-sm mb-4">What is your primary skills?</Text>
+          <Text className="text-on-surface text-2xl font-bold mb-1">What work do you do?</Text>
+          <Text className="text-on-surface-variant text-sm mb-5">
+            Select your primary skill — we'll match you with the right jobs
+          </Text>
           <VoiceMicButton onResult={handleVoiceResult} />
-        </View>
+        </Animated.View>
 
         <SkillGrid
           selected={worker.primary_skill}
-          onSelect={(id) => {
-            console.log('[RoleScreen] SkillGrid manual select:', id);
-            updateWorker({ primary_skill: id });
-          }}
+          onSelect={(id) => updateWorker({ primary_skill: id })}
         />
 
         <OnboardingFooter
@@ -57,14 +63,10 @@ export default function RoleScreen() {
         speechResult={speechResult}
         multiSelect={false}
         onConfirm={(selected) => {
-          console.log('[RoleScreen] VoiceSuggestionSheet confirmed:', JSON.stringify(selected));
           if (selected[0]) updateWorker({ primary_skill: selected[0].id });
           dismiss();
         }}
-        onClose={() => {
-          console.log('[RoleScreen] VoiceSuggestionSheet closed/cancelled');
-          dismiss();
-        }}
+        onClose={dismiss}
       />
     </SafeScreen>
   );

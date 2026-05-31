@@ -110,18 +110,18 @@ export default function VideoScreen() {
 
   // If permissions are still loading or not granted yet
   if (!cameraPermission || !micPermission) {
-    return <SafeScreen className="flex-1 items-center justify-center bg-zinc-950"><ActivityIndicator size="large" color="#F59E0B" /></SafeScreen>;
+    return <SafeScreen className="flex-1 items-center justify-center"><ActivityIndicator size="large" color="#000666" /></SafeScreen>;
   }
 
   if (!cameraPermission.granted || !micPermission.granted) {
     return (
-      <SafeScreen className="flex-1 bg-zinc-950 justify-center items-center px-6">
-        <View className="bg-zinc-900 p-8 rounded-[40px] items-center border border-zinc-800">
-          <View className="bg-amber-500/10 p-6 rounded-full mb-6">
-            <LucideIcon name="Video" size={48} color="#F59E0B" />
+      <SafeScreen className="flex-1 justify-center items-center px-6">
+        <View style={{ backgroundColor: '#FFFFFF', padding: 32, borderRadius: 28, alignItems: 'center', borderWidth: 1, borderColor: '#E4E1E7', shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 20, shadowOffset: { width: 0, height: 4 }, elevation: 4 }}>
+          <View style={{ backgroundColor: '#E0E0FF', padding: 20, borderRadius: 24, marginBottom: 20 }}>
+            <LucideIcon name="Video" size={48} color="#000666" />
           </View>
-          <Text className="text-white text-2xl font-bold text-center mb-4">Camera & Mic Needed</Text>
-          <Text className="text-zinc-400 text-center mb-8 leading-relaxed">
+          <Text className="text-on-surface text-2xl font-bold text-center mb-3">Camera & Mic Needed</Text>
+          <Text className="text-on-surface-variant text-center mb-8 leading-relaxed">
             We need access to your camera and microphone to record your skill verification video.
           </Text>
           <TouchableOpacity
@@ -129,9 +129,9 @@ export default function VideoScreen() {
               requestCameraPermission();
               requestMicPermission();
             }}
-            className="bg-amber-500 w-full py-4 rounded-2xl items-center"
+            style={{ backgroundColor: '#000666', width: '100%', paddingVertical: 16, borderRadius: 16, alignItems: 'center' }}
           >
-            <Text className="text-white font-bold text-lg">Grant Permissions</Text>
+            <Text style={{ color: '#FFFFFF', fontWeight: '700', fontSize: 16 }}>Grant Permissions</Text>
           </TouchableOpacity>
         </View>
       </SafeScreen>
@@ -139,25 +139,25 @@ export default function VideoScreen() {
   }
 
   return (
-    <SafeScreen className="flex-1 bg-zinc-950">
+    <SafeScreen className="flex-1">
       <ScrollView className="flex-1 px-6 pt-8 pb-10" showsVerticalScrollIndicator={false}>
         <StepIndicator currentStep={8} totalSteps={10} />
-        
+
         {/* Header Section */}
         <View className="mb-6">
-          <Text className="text-white text-3xl font-bold mb-1">Record Skill{'\n'}Verification</Text>
-          <Text className="text-zinc-400 text-sm leading-relaxed mb-6">
+          <Text className="text-on-surface text-3xl font-bold mb-1">Record Skill{'\n'}Verification</Text>
+          <Text className="text-on-surface-variant text-sm leading-relaxed mb-6">
             Show your skills in action. Introduce yourself and demonstrate a basic task in under 90 seconds.
           </Text>
 
-          <View className="bg-zinc-900/50 border border-zinc-800 rounded-3xl p-5 gap-4">
+          <View style={{ backgroundColor: '#F6F2F8', borderWidth: 1, borderColor: '#E4E1E7', borderRadius: 20, padding: 18, gap: 12 }}>
             <View className="flex-row items-start gap-3">
-              <LucideIcon name="CheckCircle2" color="#10B981" size={20} />
-              <Text className="text-zinc-300 text-sm flex-1">Keep the background clean and quiet.</Text>
+              <LucideIcon name="CheckCircle2" color="#16A34A" size={18} />
+              <Text className="text-on-surface-variant text-sm flex-1">Keep the background clean and quiet.</Text>
             </View>
             <View className="flex-row items-start gap-3">
-              <LucideIcon name="CheckCircle2" color="#10B981" size={20} />
-              <Text className="text-zinc-300 text-sm flex-1">Wear your professional uniform if available.</Text>
+              <LucideIcon name="CheckCircle2" color="#16A34A" size={18} />
+              <Text className="text-on-surface-variant text-sm flex-1">Wear your professional uniform if available.</Text>
             </View>
           </View>
         </View>
@@ -242,12 +242,12 @@ export default function VideoScreen() {
 
         {/* AI Score Display */}
         {worker.ai_score && !uploading && (
-          <View className="mb-8 bg-zinc-900 p-6 rounded-[32px] border border-zinc-800">
+          <View style={{ marginBottom: 32, backgroundColor: '#FFFFFF', padding: 20, borderRadius: 24, borderWidth: 1, borderColor: '#E4E1E7', shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 }}>
             <View className="flex-row items-center gap-3 mb-4">
-              <View className="bg-amber-500/20 p-2 rounded-xl">
-                <LucideIcon name="Sparkles" size={20} color="#F59E0B" />
+              <View style={{ backgroundColor: '#E0E0FF', padding: 8, borderRadius: 12 }}>
+                <LucideIcon name="Sparkles" size={20} color="#000666" />
               </View>
-              <Text className="text-white text-xl font-bold">AI Skill Analysis</Text>
+              <Text className="text-on-surface text-xl font-bold">AI Skill Analysis</Text>
             </View>
             <AIScoreBar scores={worker.ai_score} />
           </View>
@@ -259,19 +259,19 @@ export default function VideoScreen() {
             <>
               <TouchableOpacity
                 onPress={handleDiscard}
-                className="flex-1 flex-row items-center justify-center gap-2 py-4 rounded-2xl bg-red-500/10 border border-red-500/20"
+                style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, borderRadius: 16, backgroundColor: '#FEF2F2', borderWidth: 1, borderColor: '#FECACA' }}
                 activeOpacity={0.7}
               >
                 <LucideIcon name="Trash2" color="#EF4444" size={20} />
-                <Text className="font-bold text-red-500">Discard</Text>
+                <Text style={{ fontWeight: '700', color: '#EF4444' }}>Discard</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={pickVideo}
-                className="flex-1 flex-row items-center justify-center gap-2 py-4 rounded-2xl bg-zinc-900 border border-zinc-800"
+                style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, borderRadius: 16, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E4E1E7' }}
                 activeOpacity={0.7}
               >
-                <LucideIcon name="Upload" color="#F59E0B" size={20} />
-                <Text className="font-bold text-white">Upload New</Text>
+                <LucideIcon name="Upload" color="#000666" size={20} />
+                <Text style={{ fontWeight: '700', color: '#1B1B1F' }}>Upload New</Text>
               </TouchableOpacity>
             </>
           ) : (
@@ -279,20 +279,20 @@ export default function VideoScreen() {
               <TouchableOpacity
                 onPress={pickVideo}
                 disabled={isRecording}
-                className={`flex-1 flex-row items-center justify-center gap-2 py-4 rounded-2xl bg-zinc-900 border border-zinc-800 ${isRecording ? 'opacity-50' : ''}`}
+                style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, borderRadius: 16, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E4E1E7', opacity: isRecording ? 0.5 : 1 }}
                 activeOpacity={0.7}
               >
-                <LucideIcon name="Upload" color="#F59E0B" size={20} />
-                <Text className="font-bold text-white">Upload File</Text>
+                <LucideIcon name="Upload" color="#000666" size={20} />
+                <Text style={{ fontWeight: '700', color: '#1B1B1F' }}>Upload File</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={toggleCameraFacing}
                 disabled={isRecording}
-                className={`flex-1 flex-row items-center justify-center gap-2 py-4 rounded-2xl bg-zinc-900 border border-zinc-800 ${isRecording ? 'opacity-50' : ''}`}
+                style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, borderRadius: 16, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E4E1E7', opacity: isRecording ? 0.5 : 1 }}
                 activeOpacity={0.7}
               >
-                <LucideIcon name="SwitchCamera" color="#F59E0B" size={20} />
-                <Text className="font-bold text-white">Flip Cam</Text>
+                <LucideIcon name="SwitchCamera" color="#000666" size={20} />
+                <Text style={{ fontWeight: '700', color: '#1B1B1F' }}>Flip Cam</Text>
               </TouchableOpacity>
             </>
           )}

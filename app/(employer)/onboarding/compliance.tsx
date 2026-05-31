@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, ScrollView, TextInput, Alert, Animated, StyleSheet } from 'react-native';
 import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { useOnboardingStore } from '../../../src/store/onboardingStore';
@@ -9,10 +9,27 @@ import { useAuthStore } from '../../../src/store/authStore';
 import api from '../../../src/lib/api';
 import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 
+const BLUE = '#2563EB';
+
 export default function ComplianceScreen() {
   const { employer, updateEmployer, resetEmployer } = useOnboardingStore();
   const { setUser } = useAuthStore();
   const [submitting, setSubmitting] = useState(false);
+  const [focused, setFocused] = useState(false);
+
+  const opacity = useRef(new Animated.Value(0)).current;
+  const slideY = useRef(new Animated.Value(22)).current;
+  const cardOp = useRef(new Animated.Value(0)).current;
+  const cardSlide = useRef(new Animated.Value(18)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacity, { toValue: 1, duration: 340, useNativeDriver: true }),
+      Animated.timing(slideY, { toValue: 0, duration: 340, useNativeDriver: true }),
+      Animated.timing(cardOp, { toValue: 1, duration: 360, delay: 100, useNativeDriver: true }),
+      Animated.timing(cardSlide, { toValue: 0, duration: 360, delay: 100, useNativeDriver: true }),
+    ]).start();
+  }, []);
 
   const handleComplete = async () => {
     setSubmitting(true);
@@ -41,49 +58,130 @@ export default function ComplianceScreen() {
     }
   };
 
+  const validGstin = employer.gstin && employer.gstin.length === 15;
+
   return (
     <SafeScreen className="flex-1">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <View className="px-6 pt-8 gap-4">
-          <StepIndicator currentStep={4} totalSteps={4} />
-          <View>
-            <Text className="text-white text-2xl font-bold mb-1">Business Compliance</Text>
-            <Text className="text-zinc-300 text-sm mb-6">GSTIN verification builds trust with workers</Text>
-          </View>
+        <Animated.View
+          style={{ opacity, transform: [{ translateY: slideY }] }}
+          className="px-6 pt-8"
+        >
+          <StepIndicator currentStep={4} totalSteps={4} accentColor={BLUE} />
+          <Text className="text-on-surface text-2xl font-bold mb-1">Business compliance</Text>
+          <Text className="text-on-surface-variant text-sm mb-6">
+            GSTIN verification builds trust with workers
+          </Text>
+        </Animated.View>
 
+        <Animated.View
+          style={{ opacity: cardOp, transform: [{ translateY: cardSlide }] }}
+          className="px-6 gap-5"
+        >
           <View>
-            <Text className="text-zinc-300 text-sm mb-2">GSTIN (optional)</Text>
-            <TextInput
-              value={employer.gstin ?? ''}
-              onChangeText={(v) => updateEmployer({ gstin: v.toUpperCase() })}
-              placeholder="15-character GST number"
-              placeholderTextColor="#4B5563"
-              autoCapitalize="characters"
-              maxLength={15}
-              className="bg-zinc-800 border border-zinc-600 rounded-xl px-4 py-3 text-white text-sm font-mono"
-            />
-            {employer.gstin && employer.gstin.length === 15 && (
-              <View className="flex-row items-center gap-1 mt-1">
-                <LucideIcon name="Check" size={12} color="#4ADE80" />
-                <Text className="text-green-400 text-xs">Valid GSTIN format — will be verified</Text>
+            <View style={styles.labelRow}>
+              <Text style={styles.label}>GSTIN</Text>
+              <Text style={styles.optional}>optional</Text>
+            </View>
+            <View style={[styles.inputWrap, focused && styles.inputFocused]}>
+              <LucideIcon name="FileText" size={17} color={focused ? BLUE : '#C6C5D4'} />
+              <TextInput
+                value={employer.gstin ?? ''}
+                onChangeText={(v) => updateEmployer({ gstin: v.toUpperCase() })}
+                placeholder="15-character GST number"
+                placeholderTextColor="#9CA3AF"
+                autoCapitalize="characters"
+                maxLength={15}
+                onFocus={() => setFocused(true)}
+                onBlur={() => setFocused(false)}
+                style={styles.input}
+              />
+              {validGstin && (
+                <LucideIcon name="CheckCircle2" size={18} color="#16A34A" />
+              )}
+            </View>
+            {validGstin && (
+              <View style={styles.validRow}>
+                <LucideIcon name="Check" size={12} color="#16A34A" />
+                <Text style={styles.validText}>Valid GSTIN format — will be verified</Text>
               </View>
             )}
           </View>
 
-          <View className="bg-zinc-800 border border-zinc-700 rounded-xl p-4">
-            <Text className="text-white font-medium mb-1">Why add GSTIN?</Text>
-            <Text className="text-zinc-300 text-sm">Verified employers get a GST badge on job cards, which increases worker applications by 40%.</Text>
+          {/* Trust card */}
+          <View style={styles.trustCard}>
+            <View style={styles.trustIconWrap}>
+              <LucideIcon name="ShieldCheck" size={22} color={BLUE} />
+            </View>
+            <View className="flex-1">
+              <Text style={styles.trustTitle}>Why add GSTIN?</Text>
+              <Text style={styles.trustDesc}>
+                Verified employers get a GST badge on job cards —{' '}
+                <Text style={{ color: BLUE, fontWeight: '700' }}>40% more applications</Text> on average.
+              </Text>
+            </View>
           </View>
 
-          <OnboardingFooter 
+          <OnboardingFooter
             onBack={() => router.back()}
             onNext={handleComplete}
-            nextLabel={submitting ? 'Setting up...' : 'Complete Setup →'}
+            nextLabel={submitting ? 'Setting up...' : 'Complete Setup'}
             nextDisabled={submitting}
-            color="bg-blue-600"
+            color={BLUE}
           />
-        </View>
+        </Animated.View>
       </ScrollView>
     </SafeScreen>
   );
 }
+
+const styles = StyleSheet.create({
+  labelRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
+  label: { color: '#767683', fontSize: 11, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase' },
+  optional: { color: '#C6C5D4', fontSize: 11 },
+  inputWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E4E1E7',
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 3,
+    elevation: 1,
+  },
+  inputFocused: {
+    borderColor: '#BFDBFE',
+    backgroundColor: '#EFF6FF',
+    shadowColor: '#2563EB',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  input: { flex: 1, color: '#1B1B1F', fontSize: 15, fontFamily: 'monospace', padding: 0 },
+  validRow: { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 6 },
+  validText: { color: '#16A34A', fontSize: 12, fontWeight: '500' },
+  trustCard: {
+    flexDirection: 'row',
+    gap: 14,
+    backgroundColor: '#EFF6FF',
+    borderWidth: 1,
+    borderColor: '#BFDBFE',
+    borderRadius: 18,
+    padding: 18,
+  },
+  trustIconWrap: {
+    backgroundColor: '#DBEAFE',
+    borderRadius: 12,
+    padding: 10,
+    alignSelf: 'flex-start',
+  },
+  trustTitle: { color: '#1B1B1F', fontWeight: '700', fontSize: 14, marginBottom: 4 },
+  trustDesc: { color: '#454652', fontSize: 13, lineHeight: 19 },
+});

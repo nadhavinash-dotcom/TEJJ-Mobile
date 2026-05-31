@@ -33,7 +33,7 @@ export function SkillGrid({ selected, onSelect, multiSelect, selectedList = [], 
             onPress={() => handlePress(skill.id)}
             className={`items-center justify-center rounded-2xl border w-[22%] py-3 ${isSelected
               ? 'bg-amber-500 border-amber-500'
-              : 'bg-zinc-800 border-zinc-600'
+              : 'bg-white text-black border-zinc-700'
               }`}
             activeOpacity={0.7}
           >
