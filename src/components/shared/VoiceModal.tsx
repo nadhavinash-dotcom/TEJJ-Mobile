@@ -14,19 +14,24 @@ import { LucideIcon } from './LucideIcon';
 interface VoiceModalProps {
   visible: boolean;
   onClose: () => void;
-  /** Return true when the result was actually applied; false/void = no match found */
-  onResult: (result: SpeechResult) => boolean | void;
+  /**
+   * true     → applied immediately; show "Applied!" then close.
+   * 'pending' → suggestion sheet opens after close; show "Got it!" then close.
+   * false/void → no match found; show retry prompt.
+   */
+  onResult: (result: SpeechResult) => boolean | 'pending' | void;
 }
 
 const ERROR_MESSAGES: Record<string, string> = {
   'no-speech': "Didn't catch that or couldn't match your input. Try again.",
   'permission': 'Microphone permission denied. Enable it in Settings.',
   'unsupported': 'Voice input not available on this device.',
+  'lang-not-downloaded': 'Language pack not installed — switching to English. Speak now...',
   'error': 'Something went wrong. Please try again.',
 };
 
 export function VoiceModal({ visible, onClose, onResult }: VoiceModalProps) {
-  const [applied, setApplied] = useState(false);
+  const [applied, setApplied] = useState<boolean | 'pending'>(false);
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const pulseRef = useRef<Animated.CompositeAnimation | null>(null);
 
@@ -37,15 +42,23 @@ export function VoiceModal({ visible, onClose, onResult }: VoiceModalProps) {
   onCloseRef.current = onClose;
 
   const handleResult = useCallback((result: SpeechResult) => {
+    console.log('[VoiceModal] handleResult — originalText:', result.originalText, '| englishText:', result.englishText, '| keywords:', result.keywords);
     const wasApplied = onResultRef.current(result);
+    console.log('[VoiceModal] onResult returned:', wasApplied);
     if (wasApplied === true) {
       setApplied(true);
       setTimeout(() => {
         setApplied(false);
         onCloseRef.current();
       }, 1200);
+    } else if (wasApplied === 'pending') {
+      setApplied('pending');
+      setTimeout(() => {
+        setApplied(false);
+        onCloseRef.current();
+      }, 800);
     } else {
-      // No field matched — show friendly retry prompt
+      console.warn('[VoiceModal] onResult returned false/void — showing retry prompt');
       setError('no-speech');
     }
   }, []);
@@ -107,7 +120,8 @@ export function VoiceModal({ visible, onClose, onResult }: VoiceModalProps) {
 
   // ── Derived display values ─────────────────────────────────────────────────
   const isNoSpeech = error === 'no-speech';
-  const isHardError = error && error !== 'no-speech';
+  // lang-not-downloaded auto-retries — treat as soft so modal stays open with message
+  const isHardError = error && error !== 'no-speech' && error !== 'lang-not-downloaded';
 
   const micColor = applied
     ? '#22C55E'
@@ -129,8 +143,10 @@ export function VoiceModal({ visible, onClose, onResult }: VoiceModalProps) {
     ? 'border-red-500/50 bg-red-500/5'
     : 'border-zinc-600 bg-zinc-800';
 
-  const statusLabel = applied
+  const statusLabel = applied === true
     ? '✓ Applied!'
+    : applied === 'pending'
+    ? '✓ Got it!'
     : status === 'listening'
     ? 'Listening...'
     : status === 'processing'
@@ -246,9 +262,13 @@ export function VoiceModal({ visible, onClose, onResult }: VoiceModalProps) {
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-            {applied ? (
+            {applied === true ? (
               <Text style={{ color: '#22C55E', fontSize: 15, textAlign: 'center', fontWeight: '600' }}>
                 Voice input applied successfully!
+              </Text>
+            ) : applied === 'pending' ? (
+              <Text style={{ color: '#22C55E', fontSize: 15, textAlign: 'center', fontWeight: '600' }}>
+                Got it! Select from the options below.
               </Text>
             ) : transcript ? (
               <Text style={{ color: '#fff', fontSize: 15, textAlign: 'center', lineHeight: 22 }}>

@@ -12,7 +12,10 @@
       "PowerShell(cmd /c \"cd /d E:\\\\T\\\\android && gradlew.bat assembleRelease\")",
       "PowerShell(cmd /c \"dir E:\\\\T\\\\android\\\\gradlew.bat\")",
       "PowerShell(cmd /c \"cd /d E:\\\\T\\\\android && call gradlew.bat assembleRelease\")",
-      "PowerShell(cmd /c \"E:\\\\T\\\\android\\\\gradlew.bat assembleRelease\")"
+      "PowerShell(cmd /c \"E:\\\\T\\\\android\\\\gradlew.bat assembleRelease\")",
+      "Bash(dir \"E:\\\\Pavan\\\\projects\\\\indieProjects\\\\Tejj\\\\TEJJ-Setup\\\\TEJJ-Backend\\\\src\" /s /b)",
+      "Bash(dir E:\\\\Pavan\\\\projects\\\\indieProjects\\\\Tejj\\\\TEJJ-Setup\\\\TEJJ-Backend\\\\src\\\\utils *)",
+      "Bash(npx tsc *)"
     ]
   }
 }

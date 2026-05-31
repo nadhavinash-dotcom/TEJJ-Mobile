@@ -4,30 +4,25 @@ import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import * as Location from 'expo-location';
 import { VoiceMicButton } from '../../../src/components/shared/VoiceMicButton';
+import { VoiceSuggestionSheet } from '../../../src/components/shared/VoiceSuggestionSheet';
 import { MapPicker } from '../../../src/components/shared/MapPicker';
 import { StepIndicator } from '../../../src/components/shared/StepIndicator';
 import { OnboardingFooter } from '../../../src/components/shared/OnboardingFooter';
 import { useOnboardingStore } from '../../../src/store/onboardingStore';
+import { useVoiceStep } from '../../../src/hooks/useVoiceStep';
 import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 import { INDIAN_CITIES } from '@/utils';
-
-function extractCityFromText(text: string): string | null {
-  const lower = text.toLowerCase();
-  for (const city of INDIAN_CITIES) {
-    if (lower.includes(city.toLowerCase())) return city;
-  }
-  return null;
-}
 
 export default function LocationScreen() {
   const { worker, updateWorker } = useOnboardingStore();
   const [detecting, setDetecting] = useState(false);
 
-  const handleVoiceResult = useCallback(({ structured, englishText }: { structured: Record<string, unknown>; englishText: string; keywords: string[]; originalText: string }): boolean => {
-    const city = (structured.city as string | undefined) ?? extractCityFromText(englishText);
-    if (city) { updateWorker({ home_city: city }); return true; }
-    return false;
-  }, [updateWorker]);
+  const getOptions = useCallback(
+    () => INDIAN_CITIES.map((city) => ({ id: city, label: city })),
+    [],
+  );
+
+  const { handleVoiceResult, match, speechResult, dismiss } = useVoiceStep('location', getOptions);
 
   const detectLocation = async () => {
     setDetecting(true);
@@ -38,15 +33,16 @@ export default function LocationScreen() {
         return;
       }
       const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
-      updateWorker({
-        home_lat: loc.coords.latitude,
-        home_lng: loc.coords.longitude,
+      updateWorker({ home_lat: loc.coords.latitude, home_lng: loc.coords.longitude });
+      const geo = await Location.reverseGeocodeAsync({
+        latitude: loc.coords.latitude,
+        longitude: loc.coords.longitude,
       });
-      const geo = await Location.reverseGeocodeAsync({ latitude: loc.coords.latitude, longitude: loc.coords.longitude });
       if (geo[0]) {
-        const city = geo[0].city ?? geo[0].subregion ?? '';
-        const area = geo[0].district ?? geo[0].street ?? '';
-        updateWorker({ home_city: city, home_area: area });
+        updateWorker({
+          home_city: geo[0].city ?? geo[0].subregion ?? '',
+          home_area: geo[0].district ?? geo[0].street ?? '',
+        });
       }
     } catch {
       Alert.alert('Location error', 'Could not detect location. Please set manually.');
@@ -78,7 +74,9 @@ export default function LocationScreen() {
         {worker.home_city && (
           <View className="bg-zinc-800 border border-zinc-600 rounded-xl px-4 py-3 mb-4 flex-row items-center gap-2">
             <LucideIcon name="MapPin" size={16} color="#F59E0B" />
-            <Text className="text-white font-medium flex-1">{worker.home_area ? `${worker.home_area}, ` : ''}{worker.home_city}</Text>
+            <Text className="text-white font-medium flex-1">
+              {worker.home_area ? `${worker.home_area}, ` : ''}{worker.home_city}
+            </Text>
           </View>
         )}
 
@@ -88,16 +86,29 @@ export default function LocationScreen() {
           className="bg-zinc-800 border border-amber-500/40 rounded-2xl py-3 flex-row items-center justify-center gap-2 mb-6"
           activeOpacity={0.8}
         >
-          {detecting ? <ActivityIndicator color="#F59E0B" size="small" /> : <LucideIcon name="Locate" size={18} color="#F59E0B" />}
+          {detecting
+            ? <ActivityIndicator color="#F59E0B" size="small" />
+            : <LucideIcon name="Locate" size={18} color="#F59E0B" />}
           <Text className="text-amber-400 font-semibold">{detecting ? 'Detecting...' : 'Detect my location'}</Text>
         </TouchableOpacity>
 
-        <OnboardingFooter 
+        <OnboardingFooter
           onBack={() => router.back()}
           onNext={() => router.push('/(worker)/onboarding/availability')}
           nextDisabled={!worker.home_lat && !worker.home_city}
         />
       </View>
+
+      <VoiceSuggestionSheet
+        match={match}
+        speechResult={speechResult}
+        multiSelect={false}
+        onConfirm={(selected) => {
+          if (selected[0]) updateWorker({ home_city: selected[0].id });
+          dismiss();
+        }}
+        onClose={dismiss}
+      />
     </SafeScreen>
   );
 }

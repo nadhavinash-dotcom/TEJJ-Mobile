@@ -3,9 +3,11 @@ import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { VoiceMicButton } from '../../../src/components/shared/VoiceMicButton';
+import { VoiceSuggestionSheet } from '../../../src/components/shared/VoiceSuggestionSheet';
 import { StepIndicator } from '../../../src/components/shared/StepIndicator';
 import { OnboardingFooter } from '../../../src/components/shared/OnboardingFooter';
 import { useOnboardingStore } from '../../../src/store/onboardingStore';
+import { useVoiceStep } from '../../../src/hooks/useVoiceStep';
 import { SUB_SKILLS_MAP, SKILL_LIST } from '@/utils';
 
 export default function SubSkillScreen() {
@@ -14,21 +16,23 @@ export default function SubSkillScreen() {
   const skillDef = SKILL_LIST.find((s) => s.id === worker.primary_skill);
   const availableSubSkills = worker.primary_skill ? SUB_SKILLS_MAP[worker.primary_skill] || [] : [];
 
-  const handleVoiceResult = useCallback(({ keywords }: { keywords: string[] }): boolean => {
-    const match = availableSubSkills.find((c) =>
-      keywords.some((k) => c.id === k || c.labelEn?.toLowerCase().includes(k) || (c.keywords && c.keywords.includes(k)))
-    );
-    if (match) { updateWorker({ sub_skills: [match.id] }); return true; }
-    return false;
-  }, [availableSubSkills, updateWorker]);
+  const getOptions = useCallback(
+    () => availableSubSkills.map((s) => ({
+      id: s.id,
+      label: s.labelEn ?? s.label,
+      aliases: s.keywords ? [...s.keywords] : undefined,
+    })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [worker.primary_skill],
+  );
+
+  const { handleVoiceResult, match, speechResult, dismiss } = useVoiceStep('sub_skill', getOptions);
 
   const toggleSubSkill = (id: string) => {
     const current = worker.sub_skills ?? [];
-    if (current.includes(id)) {
-      updateWorker({ sub_skills: current.filter((s) => s !== id) });
-    } else {
-      updateWorker({ sub_skills: [...current, id] });
-    }
+    updateWorker({
+      sub_skills: current.includes(id) ? current.filter((s) => s !== id) : [...current, id],
+    });
   };
 
   return (
@@ -70,11 +74,24 @@ export default function SubSkillScreen() {
           </View>
         )}
 
-        <OnboardingFooter 
+        <OnboardingFooter
           onBack={() => router.back()}
           onNext={() => router.push('/(worker)/onboarding/experience')}
         />
       </ScrollView>
+
+      <VoiceSuggestionSheet
+        match={match}
+        speechResult={speechResult}
+        multiSelect={true}
+        onConfirm={(selected) => {
+          const ids = selected.map((s) => s.id);
+          const current = worker.sub_skills ?? [];
+          updateWorker({ sub_skills: Array.from(new Set([...current, ...ids])) });
+          dismiss();
+        }}
+        onClose={dismiss}
+      />
     </SafeScreen>
   );
 }

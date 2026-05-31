@@ -5,7 +5,7 @@ import { VoiceModal } from './VoiceModal';
 import { SpeechResult } from '../../hooks/useSpeechToText';
 
 interface VoiceMicButtonProps {
-  onResult: (params: SpeechResult) => boolean | void;
+  onResult: (params: SpeechResult) => boolean | 'pending' | void;
   disabled?: boolean;
 }
 

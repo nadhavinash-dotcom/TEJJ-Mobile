@@ -3,9 +3,12 @@ import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { VoiceMicButton } from '../../../src/components/shared/VoiceMicButton';
+import { VoiceSuggestionSheet } from '../../../src/components/shared/VoiceSuggestionSheet';
 import { StepIndicator } from '../../../src/components/shared/StepIndicator';
 import { OnboardingFooter } from '../../../src/components/shared/OnboardingFooter';
 import { useOnboardingStore } from '../../../src/store/onboardingStore';
+import { useVoiceStep } from '../../../src/hooks/useVoiceStep';
+import { VoiceSuggestion } from '../../../src/types/voice';
 import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -16,10 +19,16 @@ const SHIFTS = [
   { id: 'night', label: 'Night', time: '10pm–6am', icon: 'Moon' },
 ];
 
+const SHIFT_IDS = new Set(SHIFTS.map((s) => s.id));
+
 export default function AvailabilityScreen() {
   const { worker, updateWorker } = useOnboardingStore();
   const days = worker.available_days ?? [];
   const shifts = worker.preferred_shifts ?? [];
+
+  // Pass empty options — backend uses stepType 'availability' to handle days+shifts internally
+  const getOptions = useCallback(() => [], []);
+  const { handleVoiceResult, match, speechResult, dismiss } = useVoiceStep('availability', getOptions);
 
   const toggleDay = (d: string) => {
     updateWorker({ available_days: days.includes(d) ? days.filter((x) => x !== d) : [...days, d] });
@@ -28,15 +37,13 @@ export default function AvailabilityScreen() {
     updateWorker({ preferred_shifts: shifts.includes(s) ? shifts.filter((x) => x !== s) : [...shifts, s] });
   };
 
-  const handleVoiceResult = useCallback(({ keywords }: { keywords: string[] }): boolean => {
-    const matchedDays = DAYS.filter((d) => keywords.some((k) => k.toLowerCase().includes(d.toLowerCase())));
-    const matchedShifts = SHIFTS.filter((s) =>
-      keywords.some((k) => k.toLowerCase().includes(s.id) || k.toLowerCase().includes(s.label.toLowerCase()))
-    ).map((s) => s.id);
-    if (matchedDays.length) updateWorker({ available_days: matchedDays });
-    if (matchedShifts.length) updateWorker({ preferred_shifts: matchedShifts });
-    return matchedDays.length > 0 || matchedShifts.length > 0;
-  }, [updateWorker]);
+  const handleSuggestionConfirm = (selected: VoiceSuggestion[]) => {
+    const dayIds = selected.filter((s) => !SHIFT_IDS.has(s.id)).map((s) => s.id);
+    const shiftIds = selected.filter((s) => SHIFT_IDS.has(s.id)).map((s) => s.id);
+    if (dayIds.length) updateWorker({ available_days: Array.from(new Set([...days, ...dayIds])) });
+    if (shiftIds.length) updateWorker({ preferred_shifts: Array.from(new Set([...shifts, ...shiftIds])) });
+    dismiss();
+  };
 
   return (
     <SafeScreen className="flex-1">
@@ -94,13 +101,21 @@ export default function AvailabilityScreen() {
             })}
           </View>
 
-          <OnboardingFooter 
+          <OnboardingFooter
             onBack={() => router.back()}
             onNext={() => router.push('/(worker)/onboarding/pay')}
             nextDisabled={days.length === 0 || shifts.length === 0}
           />
         </View>
       </ScrollView>
+
+      <VoiceSuggestionSheet
+        match={match}
+        speechResult={speechResult}
+        multiSelect={true}
+        onConfirm={handleSuggestionConfirm}
+        onClose={dismiss}
+      />
     </SafeScreen>
   );
 }
