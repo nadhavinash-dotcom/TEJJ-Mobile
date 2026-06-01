@@ -45,8 +45,7 @@ export default function RoleScreen() {
       });
 
       if (response.data.success) {
-        const { role } = response.data;
-        setActiveRole(role);
+        setActiveRole(selectedUserType as 'worker' | 'employer');
         navigateHome();
       }
     } catch (error: any) {

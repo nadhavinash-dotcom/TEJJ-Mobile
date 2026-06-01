@@ -13,7 +13,7 @@ const BLUE = '#2563EB';
 
 export default function ComplianceScreen() {
   const { employer, updateEmployer, resetEmployer } = useOnboardingStore();
-  const { setUser } = useAuthStore();
+  const { setUser, userId: currentUserId, token: currentToken, language: currentLanguage } = useAuthStore();
   const [submitting, setSubmitting] = useState(false);
   const [focused, setFocused] = useState(false);
 
@@ -47,8 +47,16 @@ export default function ComplianceScreen() {
         email: employer.email,
         gstin: employer.gstin,
       });
-      const user = res.data.data;
-      setUser({ userId: user._id, hasWorker: false, hasEmployer: true, activeRole: 'employer' });
+      const createdEmployer = res.data.data;
+      setUser({
+        userId: currentUserId!,
+        token: currentToken!,
+        language: currentLanguage,
+        hasWorker: false,
+        hasEmployer: true,
+        activeRole: 'employer',
+        employerId: createdEmployer._id,
+      });
       resetEmployer();
       router.replace('/(employer)/onboarding/welcome');
     } catch (e: any) {
