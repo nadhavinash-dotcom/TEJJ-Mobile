@@ -82,7 +82,7 @@ export default function LocationScreen() {
     <SafeScreen className="flex-1">
       <View className="flex-1 px-6 pt-8">
         <Animated.View style={{ opacity, transform: [{ translateY: slideY }] }}>
-          <StepIndicator currentStep={5} totalSteps={10} />
+          <StepIndicator currentStep={6} totalSteps={11} />
           <Text className="text-on-surface text-2xl font-bold mb-1">Where do you live?</Text>
           <Text className="text-on-surface-variant text-sm mb-4">We'll find jobs closest to your home</Text>
           <VoiceMicButton onResult={handleVoiceResult} />

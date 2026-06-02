@@ -3,6 +3,7 @@ import { Stack } from 'expo-router';
 export default function OnboardingLayout() {
   return (
     <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#FBFAFF' } }}>
+      <Stack.Screen name="sector" />
       <Stack.Screen name="role" />
       <Stack.Screen name="sub-skill" />
       <Stack.Screen name="experience" />

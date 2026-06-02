@@ -57,7 +57,7 @@ export default function SubSkillScreen() {
           style={{ opacity, transform: [{ translateY: slideY }] }}
           className="px-6 pt-8 pb-4"
         >
-          <StepIndicator currentStep={2} totalSteps={10} />
+          <StepIndicator currentStep={3} totalSteps={11} />
           <Text className="text-on-surface text-2xl font-bold mb-1">Your speciality?</Text>
           <Text className="text-on-surface-variant text-sm mb-4">
             {skillDef ? `${skillDef.label} — ` : ''}Pick everything that applies

@@ -9,7 +9,7 @@ export function getHomeRoute(): string {
   if (activeRole === 'employer') {
     return hasEmployer ? '/(employer)/(tabs)/dashboard' : '/(employer)/onboarding/property';
   }
-  return hasWorker ? '/(worker)/(tabs)/feed' : '/(worker)/onboarding/role';
+  return hasWorker ? '/(worker)/(tabs)/feed' : '/(worker)/onboarding/sector';
 }
 
 export function navigateHome() {

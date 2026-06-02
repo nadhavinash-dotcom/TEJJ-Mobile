@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 
 interface WorkerOnboarding {
+  sector?: string;
   primary_skill?: string;
   sub_skills?: string[];
   years_experience?: number;

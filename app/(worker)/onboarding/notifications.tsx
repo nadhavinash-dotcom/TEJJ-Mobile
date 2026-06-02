@@ -71,7 +71,7 @@ export default function NotificationsScreen() {
       <View className="flex-1 px-6 pt-8 justify-between">
         <View>
           <Animated.View style={{ opacity, transform: [{ translateY: slideY }] }}>
-            <StepIndicator currentStep={9} totalSteps={10} />
+            <StepIndicator currentStep={10} totalSteps={11} />
             <Text className="text-on-surface text-2xl font-bold mb-1">Turn on job alerts</Text>
             <Text className="text-on-surface-variant text-sm mb-6">
               Flash jobs fill in minutes — don't miss a gig near you

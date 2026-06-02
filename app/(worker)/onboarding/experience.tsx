@@ -57,7 +57,7 @@ export default function ExperienceScreen() {
           style={{ opacity, transform: [{ translateY: slideY }] }}
           className="px-6 pt-8"
         >
-          <StepIndicator currentStep={3} totalSteps={10} />
+          <StepIndicator currentStep={4} totalSteps={11} />
           <Text className="text-on-surface text-2xl font-bold mb-1">Years of experience?</Text>
           <Text className="text-on-surface-variant text-sm mb-4">
             Honest experience = better job matches

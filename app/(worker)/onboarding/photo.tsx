@@ -80,7 +80,7 @@ export default function PhotoScreen() {
     <SafeScreen className="flex-1">
       <View className="flex-1 px-6 pt-8">
         <Animated.View style={{ opacity, transform: [{ translateY: slideY }] }}>
-          <StepIndicator currentStep={4} totalSteps={10} />
+          <StepIndicator currentStep={5} totalSteps={11} />
           <Text className="text-on-surface text-2xl font-bold mb-1">Add your photo</Text>
           <Text className="text-on-surface-variant text-sm mb-8">
             A clear face photo builds trust with employers

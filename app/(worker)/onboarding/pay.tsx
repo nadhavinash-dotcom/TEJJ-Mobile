@@ -51,7 +51,7 @@ export default function PayScreen() {
           style={{ opacity, transform: [{ translateY: slideY }] }}
           className="px-6 pt-8"
         >
-          <StepIndicator currentStep={7} totalSteps={10} />
+          <StepIndicator currentStep={8} totalSteps={11} />
           <Text className="text-on-surface text-2xl font-bold mb-1">Minimum pay per shift?</Text>
           <Text className="text-on-surface-variant text-sm mb-4">
             Set your floor — employers won't see jobs below this rate

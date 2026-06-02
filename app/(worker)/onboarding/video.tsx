@@ -141,7 +141,7 @@ export default function VideoScreen() {
   return (
     <SafeScreen className="flex-1">
       <ScrollView className="flex-1 px-6 pt-8 pb-10" showsVerticalScrollIndicator={false}>
-        <StepIndicator currentStep={8} totalSteps={10} />
+        <StepIndicator currentStep={9} totalSteps={11} />
 
         {/* Header Section */}
         <View className="mb-6">

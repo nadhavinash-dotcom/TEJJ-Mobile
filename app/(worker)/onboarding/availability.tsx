@@ -63,7 +63,7 @@ export default function AvailabilityScreen() {
           style={{ opacity, transform: [{ translateY: slideY }] }}
           className="px-6 pt-8"
         >
-          <StepIndicator currentStep={6} totalSteps={10} />
+          <StepIndicator currentStep={7} totalSteps={11} />
           <Text className="text-on-surface text-2xl font-bold mb-1">When are you available?</Text>
           <Text className="text-on-surface-variant text-sm mb-4">
             Select days and shifts you can work

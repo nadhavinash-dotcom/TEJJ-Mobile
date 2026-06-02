@@ -43,6 +43,7 @@ export default function PreviewScreen() {
       const token = useAuthStore.getState().token;
       const formData = new FormData();
 
+      formData.append('sector', worker.sector || '');
       formData.append('primary_skill', worker.primary_skill || '');
       formData.append('years_experience', String(worker.years_experience || 0));
       formData.append('home_lat', String(worker.home_lat || 0));
@@ -90,7 +91,7 @@ export default function PreviewScreen() {
           style={{ opacity, transform: [{ translateY: slideY }] }}
           className="px-6 pt-8"
         >
-          <StepIndicator currentStep={10} totalSteps={10} />
+          <StepIndicator currentStep={11} totalSteps={11} />
           <Text className="text-on-surface text-2xl font-bold mb-1">Your Skill Card</Text>
           <Text className="text-on-surface-variant text-sm mb-6">
             This is how employers will discover you
