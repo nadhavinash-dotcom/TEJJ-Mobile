@@ -8,7 +8,7 @@ import {
   Platform,
   Alert,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeScreen } from '../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import api from '../../src/lib/api';
 import PhoneForm from '../../src/components/tell/auth/PhoneForm';
@@ -88,7 +88,7 @@ export default function PhoneScreen() {
 
 
   return (
-    <SafeAreaView className="flex-1 bg-surface">
+    <SafeScreen bgClassName="bg-surface">
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
@@ -189,6 +189,6 @@ export default function PhoneScreen() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

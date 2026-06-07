@@ -2,11 +2,11 @@ import React, { useEffect, useRef } from 'react';
 import {
   View,
   Text,
-  SafeAreaView,
   Animated,
   StatusBar,
   Platform
 } from 'react-native';
+import { SafeScreen } from '../../src/components/shared/SafeScreen';
 
 const SplashScreen: React.FC = () => {
   // Simple animation for the progress bar to make the splash screen feel alive
@@ -26,8 +26,7 @@ const SplashScreen: React.FC = () => {
   });
 
   return (
-    // Standardizing on the primary brand color for the root background
-    <SafeAreaView className="flex-1 bg-primary">
+    <SafeScreen bgClassName="bg-primary">
       <StatusBar barStyle="light-content" backgroundColor="#000666" />
       
       <View className="flex-1 relative items-center justify-between overflow-hidden">
@@ -95,7 +94,7 @@ const SplashScreen: React.FC = () => {
         </View>
 
       </View>
-    </SafeAreaView>
+    </SafeScreen>
   );
 };
 

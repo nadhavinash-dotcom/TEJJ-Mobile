@@ -5,10 +5,12 @@ import { router } from 'expo-router';
 // import DateTimePicker from '@react-native-community/datetimepicker';
 import { VoiceMicButton } from '../../../src/components/shared/VoiceMicButton';
 import { SkillGrid } from '../../../src/components/shared/SkillGrid';
+import { CategorySelector } from '../../../src/components/shared/CategorySelector';
 import { useOnboardingStore } from '../../../src/store/onboardingStore';
 import { PayBenchmarkBox } from '../../../src/components/employer/PayBenchmarkBox';
 import api from '../../../src/lib/api';
 import { LucideIcon } from '../../../src/components/shared/LucideIcon';
+import { SKILL_LIST } from '@/utils';
 
 export default function JobFormScreen() {
   const { jobDraft, updateJobDraft, clearJobDraft } = useOnboardingStore();
@@ -65,8 +67,24 @@ export default function JobFormScreen() {
           </View>
 
           <View>
+            <Text className="text-zinc-300 text-sm mb-1">Sector *</Text>
+            <Text className="text-zinc-500 text-xs mb-2">Pick a department to filter the skill list</Text>
+            <CategorySelector
+              selected={jobDraft.sector}
+              onSelect={(sectorId) => {
+                const skill = SKILL_LIST.find((s) => s.id === jobDraft.primary_skill);
+                const reset = skill && skill.category !== sectorId;
+                updateJobDraft({ sector: sectorId, ...(reset ? { primary_skill: undefined } : {}) });
+              }}
+              dark
+            />
+          </View>
+
+          <View>
             <Text className="text-zinc-300 text-sm mb-2">Primary Skill *</Text>
             <SkillGrid
+              category={jobDraft.sector}
+              grouped={!jobDraft.sector}
               selected={jobDraft.primary_skill}
               onSelect={(id) => updateJobDraft({ primary_skill: id })}
             />

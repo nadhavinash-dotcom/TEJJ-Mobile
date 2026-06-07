@@ -6,7 +6,7 @@ import {
   ScrollView,
   Alert
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeScreen } from '../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import { StyledMenu, StyledArrowRight } from '../../src/components/tell/Icons';
 import { useAuthStore } from '@/src/store/authStore';
@@ -63,7 +63,7 @@ export default function LanguageScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-surface">
+    <SafeScreen bgClassName="bg-surface">
       <View className="bg-[#fbf8fe]/90 flex-row justify-between items-center px-6 py-4 z-50 border-b border-surface-container-highest/20">
         <View className="flex-row items-center gap-4">
           {/* <TouchableOpacity className="active:opacity-70 p-1">
@@ -132,6 +132,6 @@ export default function LanguageScreen() {
           <StyledArrowRight color={selectedLanguage ? '#ffffff' : '#000666'} size={22} />
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

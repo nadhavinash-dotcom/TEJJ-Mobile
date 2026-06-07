@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
-import { View, ActivityIndicator } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import { useAuthStore } from '../src/store/authStore';
 import { navigateHome } from '../utils/navigate-home';
+import { SafeScreen } from '../src/components/shared/SafeScreen';
 
 export default function Index() {
   const { _hasHydrated } = useAuthStore();
@@ -12,8 +13,8 @@ export default function Index() {
   }, [_hasHydrated]);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#0A1628', alignItems: 'center', justifyContent: 'center' }}>
+    <SafeScreen bgClassName="bg-[#0A1628]" className="items-center justify-center">
       <ActivityIndicator color="#F59E0B" size="large" />
-    </View>
+    </SafeScreen>
   );
 }

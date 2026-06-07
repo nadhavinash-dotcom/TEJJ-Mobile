@@ -8,7 +8,7 @@ import {
   Alert,
   TouchableOpacity,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeScreen } from '../../src/components/shared/SafeScreen';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useAuthStore } from '../../src/store/authStore';
 import api from '../../src/lib/api';
@@ -131,7 +131,7 @@ export default function OTPScreen() {
     : '';
 
   return (
-    <SafeAreaView className="flex-1 bg-surface">
+    <SafeScreen bgClassName="bg-surface">
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
@@ -211,6 +211,6 @@ export default function OTPScreen() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

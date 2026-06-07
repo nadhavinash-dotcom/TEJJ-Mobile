@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
 import { SafeScreen } from '../../../src/components/shared/SafeScreen';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../../src/lib/api';
 import { getAbsoluteUrl, SKILL_LIST } from '@/utils';
@@ -11,15 +11,21 @@ export default function ApplicantsScreen() {
   const { jobId } = useLocalSearchParams<{ jobId: string }>();
   const qc = useQueryClient();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, refetch, isFetching } = useQuery({
     queryKey: ['applicants', jobId],
     queryFn: async () => {
       const res = await api.get(`/applications/job/${jobId}`);
       return res.data.data as any[];
     },
+    enabled: !!jobId,
+    staleTime: 0,
   });
 
-  console.log('applicants', data);
+  useFocusEffect(
+    React.useCallback(() => {
+      if (jobId) qc.invalidateQueries({ queryKey: ['applicants', jobId] });
+    }, [jobId])
+  );
 
   const shortlistMutation = useMutation({
     mutationFn: async (appId: string) => {
@@ -56,6 +62,16 @@ export default function ApplicantsScreen() {
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator color="#000666" size="large" />
         </View>
+      ) : isError ? (
+        <View className="flex-1 items-center justify-center px-8">
+          <View className="w-16 h-16 bg-error-container rounded-full items-center justify-center mb-4">
+            <LucideIcon name="AlertCircle" size={32} color="#ba1a1a" />
+          </View>
+          <Text className="text-on-surface text-base font-semibold text-center">Failed to load applicants</Text>
+          <TouchableOpacity onPress={() => refetch()} className="mt-4 bg-primary px-6 py-2.5 rounded-xl">
+            <Text className="text-white font-semibold text-sm">Try Again</Text>
+          </TouchableOpacity>
+        </View>
       ) : (data?.length ?? 0) === 0 ? (
         <View className="flex-1 items-center justify-center px-8">
           <View className="w-16 h-16 bg-surface-container-highest rounded-full items-center justify-center mb-4">
@@ -68,6 +84,8 @@ export default function ApplicantsScreen() {
         <FlatList
           data={data ?? []}
           keyExtractor={(item) => item._id}
+          onRefresh={refetch}
+          refreshing={isFetching && !isLoading}
           contentContainerStyle={{ paddingTop: 16, paddingBottom: 32 }}
           renderItem={({ item }) => {
             const skill = SKILL_LIST.find((s) => s.id === item.worker_primary_skill);

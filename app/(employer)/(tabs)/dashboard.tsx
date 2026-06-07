@@ -5,10 +5,11 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
-  SafeAreaView,
   ActivityIndicator,
   Modal,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router } from 'expo-router';
 import Animated, { SlideInLeft, SlideOutLeft } from 'react-native-reanimated';
 import {
@@ -132,7 +133,7 @@ export default function EmployerDashboardScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-surface">
+    <SafeScreen bgClassName="bg-surface">
       <Sidebar />
 
       <View className="bg-[#fbf8fe]/90 flex-row justify-between items-center px-6 py-4 z-50 border-b border-surface-container-highest/30">
@@ -243,6 +244,6 @@ export default function EmployerDashboardScreen() {
       >
         <StyledFilePlus color="#ffffff" size={28} />
       </TouchableOpacity>
-    </SafeAreaView>
+    </SafeScreen>
   );
 }

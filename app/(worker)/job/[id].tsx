@@ -1,62 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { SafeScreen } from '../../../src/components/shared/SafeScreen';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useQuery } from '@tanstack/react-query';
-import { HIRING_LANES } from '@/utils';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { ChevronLeft } from 'lucide-react-native';
 import api from '../../../src/lib/api';
-import {
-  ChevronLeft,
-  ChevronRight,
-  BadgeCheck,
-  Star,
-  MapPin,
-  Clock,
-  Users,
-  Zap,
-  Building2,
-  AlarmClock,
-} from 'lucide-react-native';
-import { LucideIcon } from '../../../src/components/shared/LucideIcon';
 
-const C = {
-  primary: '#000666',
-  primaryFixed: '#e0e0ff',
-  onPrimary: '#ffffff',
-  background: '#fbf8fe',
-  surfaceContainerLowest: '#ffffff',
-  surfaceContainerLow: '#f6f2f8',
-  surfaceContainer: '#f0edf2',
-  surfaceContainerHigh: '#eae7ed',
-  onSurface: '#1b1b1f',
-  onSurfaceVariant: '#454652',
-  outline: '#767683',
-  outlineVariant: '#c6c5d4',
-  secondary: '#006b5e',
-  secondaryContainer: '#94f0df',
-  onSecondaryContainer: '#006f62',
-  tertiaryFixed: '#ffdcc6',
-  onTertiaryContainer: '#ec7700',
-  error: '#ba1a1a',
-  errorContainer: '#ffdad6',
-  amber: '#F59E0B',
-};
-
-function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
-  return (
-    <View className="flex-row items-center justify-between py-3">
-      <View className="flex-row items-center gap-2.5">
-        {icon}
-        <Text className="text-sm" style={{ color: C.onSurfaceVariant }}>{label}</Text>
-      </View>
-      <Text className="font-semibold text-sm" style={{ color: C.onSurface }}>{value}</Text>
-    </View>
-  );
-}
+import { JobDetailHeader } from '../../../src/components/worker/job-detail/JobDetailHeader';
+import { SpotsUrgencyBanner } from '../../../src/components/worker/job-detail/SpotsUrgencyBanner';
+import { JobExpiryBanner } from '../../../src/components/worker/job-detail/JobExpiryBanner';
+import { JobShiftSection } from '../../../src/components/worker/job-detail/JobShiftSection';
+import { JobPerksRow } from '../../../src/components/worker/job-detail/JobPerksRow';
+import { JobDescriptionSection } from '../../../src/components/worker/job-detail/JobDescriptionSection';
+import { EmployerCard } from '../../../src/components/worker/job-detail/EmployerCard';
+import { JobApplyCTA } from '../../../src/components/worker/job-detail/JobApplyCTA';
+import { C } from '../../../src/components/worker/job-detail/colors';
 
 export default function JobDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [applying, setApplying] = useState(false);
+  const queryClient = useQueryClient();
 
   const { data: job, isLoading } = useQuery({
     queryKey: ['job', id],
@@ -70,6 +33,8 @@ export default function JobDetailScreen() {
     setApplying(true);
     try {
       const res = await api.post('/applications', { job_id: id });
+      queryClient.invalidateQueries({ queryKey: ['feed'] });
+      queryClient.invalidateQueries({ queryKey: ['job', id] });
       router.replace({ pathname: '/(worker)/applied/[id]', params: { id: res.data.data._id } });
     } catch (e: any) {
       Alert.alert('Error', e?.response?.data?.message ?? 'Could not apply. Please try again.');
@@ -77,12 +42,6 @@ export default function JobDetailScreen() {
       setApplying(false);
     }
   };
-
-  useEffect(() => {
-    if (job) {
-      console.log(job.description, "description");
-    }
-  }, [job]);
 
   if (isLoading || !job) {
     return (
@@ -92,212 +51,102 @@ export default function JobDetailScreen() {
     );
   }
 
-  const laneKey = `L${job.lane}` as keyof typeof HIRING_LANES;
-  const lane = HIRING_LANES[laneKey];
-  const shiftTime = job.shift_start_time
-    ? new Date(job.shift_start_time).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })
-    : null;
   const spotsLeft = job.number_of_openings - job.openings_filled;
 
   return (
     <SafeScreen style={{ flex: 1, backgroundColor: C.background }}>
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
-
+      <ScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 120 }}
+      >
         {/* Back */}
         <View className="px-4 pt-5 pb-2">
           <TouchableOpacity onPress={() => router.back()} className="flex-row items-center gap-1 self-start">
             <ChevronLeft size={20} color={C.primary} />
-            <Text className="text-base font-medium" style={{ color: C.primary }}>Back</Text>
+            <Text style={{ color: C.primary, fontSize: 15, fontWeight: '500' }}>Back</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Header Card */}
-        <View
-          className="mx-4 rounded-3xl p-5 mb-4"
-          style={{ backgroundColor: C.primary }}
-        >
-          <View className="flex-row items-center gap-2 mb-4">
-            <View
-              className="px-2.5 py-1 rounded-lg flex-row items-center gap-1.5"
-              style={{ backgroundColor: lane.color + '30' }}
-            >
-              <LucideIcon name={lane.icon} size={12} color={lane.color} />
-              <Text className="font-bold text-[11px] uppercase tracking-tight" style={{ color: lane.color }}>
-                {lane.label}
-              </Text>
-            </View>
-            <Text className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>{lane.window}</Text>
-            {job.employer_gstin_verified && (
-              <View
-                className="flex-row items-center gap-1 px-2 py-1 rounded-lg ml-auto"
-                style={{ backgroundColor: C.secondaryContainer }}
-              >
-                <BadgeCheck size={11} color={C.onSecondaryContainer} />
-                <Text className="text-[10px] font-bold" style={{ color: C.onSecondaryContainer }}>GST Verified</Text>
-              </View>
-            )}
-          </View>
+        <JobDetailHeader job={job} />
 
-          <Text className="text-white text-2xl font-bold mb-1">{job.job_title}</Text>
-          <View className="flex-row items-center gap-1.5 mb-4">
-            <Building2 size={13} color="rgba(255,255,255,0.6)" />
-            <Text style={{ color: 'rgba(255,255,255,0.65)', fontSize: 13 }}>
-              {job.employer_property_type}{job.employer_area_locality ? ` · ${job.employer_area_locality}` : ''}
-            </Text>
-          </View>
+        <SpotsUrgencyBanner spotsLeft={spotsLeft} />
 
-          <View className="flex-row items-end justify-between">
-            <View>
-              <Text style={{ color: 'rgba(255,255,255,0.55)', fontSize: 11 }}>Pay per shift</Text>
-              <Text className="text-3xl font-bold" style={{ color: C.amber }}>
-                ₹{job.pay_rate?.toLocaleString('en-IN')}
-              </Text>
-            </View>
-            {job.distance_km != null && (
-              <View
-                className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-full"
-                style={{ backgroundColor: 'rgba(255,255,255,0.12)' }}
-              >
-                <MapPin size={12} color="rgba(255,255,255,0.7)" />
-                <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: 13, fontWeight: '600' }}>
-                  {job.distance_km} km
-                </Text>
-              </View>
-            )}
-          </View>
-        </View>
+        <JobExpiryBanner
+          expires_at={job.expires_at}
+          lane={job.lane}
+          status={job.status}
+          contract_start_date={job.contract_start_date}
+          contract_duration={job.contract_duration}
+        />
 
-        {/* Urgency banner */}
-        {spotsLeft > 0 && spotsLeft <= 3 && (
-          <View
-            className="mx-4 mb-4 rounded-xl px-4 py-3 flex-row items-center gap-2"
-            style={{ backgroundColor: C.errorContainer, borderWidth: 1, borderColor: '#fecdd3' }}
-          >
-            <Zap size={15} color={C.error} />
-            <Text className="font-bold text-sm" style={{ color: C.error }}>
-              Only {spotsLeft} spot{spotsLeft > 1 ? 's' : ''} left — apply fast!
-            </Text>
-          </View>
-        )}
+        <JobShiftSection
+          lane={job.lane}
+          shift_start_time={job.shift_start_time}
+          shift_end_time={job.shift_end_time}
+          shift_duration_hours={job.shift_duration_hours}
+          number_of_openings={job.number_of_openings}
+          openings_filled={job.openings_filled}
+          experience_years_min={job.experience_years_min}
+          minimum_qualification={job.minimum_qualification}
+          contract_start_date={job.contract_start_date}
+          contract_duration={job.contract_duration}
+          notice_period_max_days={job.notice_period_max_days}
+          interview_required={job.interview_required}
+          interview_format={job.interview_format}
+        />
 
-        {/* Shift Details */}
-        <View
-          className="mx-4 rounded-2xl px-4 mb-4"
-          style={{
-            backgroundColor: C.surfaceContainerLowest,
-            borderWidth: 1,
-            borderColor: C.outlineVariant,
-          }}
-        >
-          <Text
-            className="text-xs font-bold uppercase tracking-widest pt-4 pb-2"
-            style={{ color: C.outline, letterSpacing: 1 }}
-          >
-            Shift Details
-          </Text>
-          {shiftTime && (
-            <InfoRow
-              icon={<AlarmClock size={15} color={C.onSurfaceVariant} />}
-              label="Start time"
-              value={shiftTime}
-            />
-          )}
-          {job.shift_duration_hours && (
-            <InfoRow
-              icon={<Clock size={15} color={C.onSurfaceVariant} />}
-              label="Duration"
-              value={`${job.shift_duration_hours} hours`}
-            />
-          )}
-          <InfoRow
-            icon={<Users size={15} color={C.onSurfaceVariant} />}
-            label="Openings"
-            value={`${job.number_of_openings} total · ${spotsLeft} left`}
-          />
-          <View style={{ height: 4 }} />
-        </View>
+        <JobPerksRow
+          meals_provided={job.meals_provided}
+          accommodation_provided={job.accommodation_provided}
+          transport_provided={job.transport_provided}
+          uniform_provided={job.uniform_provided}
+          uniform_details={job.uniform_details}
+        />
 
-        {/* Description */}
-        {job.description && (
-          <View
-            className="mx-4 rounded-2xl p-5 mb-4"
-            style={{
-              backgroundColor: C.surfaceContainerLowest,
-              borderWidth: 1,
-              borderColor: C.outlineVariant,
-            }}
-          >
-            <Text
-              className="text-xs font-bold uppercase tracking-widest mb-3"
-              style={{ color: C.outline, letterSpacing: 1 }}
-            >
-              Job Description
-            </Text>
-            <Text className="text-sm leading-6" style={{ color: C.onSurface }}>{job.description}</Text>
-          </View>
-        )}
+        <JobDescriptionSection
+          description={job.description}
+          secondary_skills_preferred={job.secondary_skills_preferred}
+          cuisine_preferred={job.cuisine_preferred}
+          special_instructions={job.special_instructions}
+        />
 
-        {/* Employer */}
-        <View
-          className="mx-4 rounded-2xl p-5 mb-4"
-          style={{
-            backgroundColor: C.surfaceContainerLowest,
-            borderWidth: 1,
-            borderColor: C.outlineVariant,
-          }}
-        >
-          <Text
-            className="text-xs font-bold uppercase tracking-widest mb-3"
-            style={{ color: C.outline, letterSpacing: 1 }}
-          >
-            Employer
-          </Text>
-          <View className="flex-row items-center gap-3">
-            <View
-              className="w-10 h-10 rounded-xl items-center justify-center"
-              style={{ backgroundColor: C.primaryFixed }}
-            >
-              <Building2 size={18} color={C.primary} />
-            </View>
-            <View className="flex-1">
-              <Text className="font-semibold text-base" style={{ color: C.onSurface }}>
-                {job.employer_property_type}
-              </Text>
-              {job.employer_dignity_score > 0 && (
-                <View className="flex-row items-center gap-1 mt-0.5">
-                  <Star size={12} color={C.amber} fill={C.amber} />
-                  <Text className="text-xs font-medium" style={{ color: C.onSurfaceVariant }}>
-                    {job.employer_dignity_score.toFixed(1)} Dignity Score
-                  </Text>
-                </View>
-              )}
-            </View>
-          </View>
-        </View>
+        <EmployerCard
+          employer_property_name={job.employer_property_name}
+          employer_property_type={job.employer_property_type}
+          employer_property_segment={job.employer_property_segment}
+          employer_area_locality={job.employer_area_locality}
+          employer_city={job.employer_city}
+          employer_location_landmark={job.employer_location_landmark}
+          employer_nearest_metro={job.employer_nearest_metro}
+          employer_parking_available={job.employer_parking_available}
+          employer_cuisine_types={job.employer_cuisine_types}
+          employer_covers_capacity={job.employer_covers_capacity}
+          employer_number_of_rooms={job.employer_number_of_rooms}
+          employer_brand_affiliation={job.employer_brand_affiliation}
+          employer_year_established={job.employer_year_established}
+          employer_dignity_score={job.employer_dignity_score}
+          employer_dignity_state={job.employer_dignity_state}
+          employer_gstin_verified={job.employer_gstin_verified}
+          employer_fssai_verified={job.employer_fssai_verified}
+          employer_liquor_license={job.employer_liquor_license}
+          employer_psara_registered={job.employer_psara_registered}
+          employer_verified_badge={job.employer_verified_badge}
+          employer_confirmation_rate={job.employer_confirmation_rate}
+          employer_pay_accuracy_rate={job.employer_pay_accuracy_rate}
+          employer_fair_treatment_rate={job.employer_fair_treatment_rate}
+          employer_worker_return_rate={job.employer_worker_return_rate}
+          employer_total_confirmed_arrivals={job.employer_total_confirmed_arrivals}
+        />
       </ScrollView>
 
-      {/* Apply CTA */}
-      <View
-        className="px-4 pb-6 pt-3"
-        style={{ borderTopWidth: 1, borderTopColor: C.outlineVariant, backgroundColor: C.background }}
-      >
-        <TouchableOpacity
-          onPress={handleApply}
-          disabled={applying}
-          className="rounded-2xl py-4 items-center"
-          style={{ backgroundColor: applying ? C.surfaceContainerHigh : C.primary }}
-          activeOpacity={0.85}
-        >
-          {applying ? (
-            <ActivityIndicator color={C.primary} />
-          ) : (
-            <View className="flex-row items-center gap-2">
-              <Text className="text-white font-bold text-lg">Apply Now</Text>
-              <ChevronRight size={20} color="#ffffff" />
-            </View>
-          )}
-        </TouchableOpacity>
-      </View>
+      <JobApplyCTA
+        status={job.status}
+        has_applied={job.has_applied}
+        application_id={job.application_id}
+        applying={applying}
+        onApply={handleApply}
+      />
     </SafeScreen>
   );
 }

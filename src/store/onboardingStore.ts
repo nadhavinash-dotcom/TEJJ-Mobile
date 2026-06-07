@@ -36,6 +36,7 @@ interface EmployerOnboarding {
 
 interface JobDraft {
   lane?: number;
+  sector?: string;
   job_title?: string;
   primary_skill?: string;
   description?: string;
